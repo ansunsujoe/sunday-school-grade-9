@@ -7,6 +7,8 @@ A small class app for lessons, quizzes, and a Sunday gradebook.
 
 The **gradebook** has a slot for every Sunday of the school year (Jul 26, 2026 – May 16, 2027; see `lib/school-year.ts`): attendance (P/A), memory verse (/100), quiz (/100), and sermon notes (Y/N). Any slot can be left blank; blanks don't count toward averages.
 
+**The Exodus** (the Exodus tab) is a role-playing game. Six clans (Eagle, Lion, Monkey, Bear, Shark, Sea Turtle) are each led by one student, who sees their clan's people and supplies and gives each person a role. Teachers see every clan, send scenarios for leaders to answer in writing, post camp news, give or take supplies, and send notifications. Clan definitions and resource types are in `lib/exodus/`, starting rosters in `data/exodus-rosters.json`, and logos in `public/exodus/`. After `npm run db:push`, open the Exodus tab as a teacher and click **Found the clans** to start.
+
 Built with Next.js, Neon Postgres, and Drizzle ORM.
 
 ## One-time setup on Vercel

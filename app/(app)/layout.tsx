@@ -9,6 +9,7 @@ const TEACHER_LINKS = [
   { href: "/", label: "Home", icon: "home" },
   { href: "/content", label: "Content", icon: "book" },
   { href: "/calendar", label: "Calendar", icon: "calendar" },
+  { href: "/exodus", label: "Exodus", icon: "tent" },
   { href: "/quizzes", label: "Quizzes", icon: "quiz" },
   { href: "/grades", label: "Gradebook", icon: "grades" },
   { href: "/people", label: "People", icon: "people" },
@@ -18,6 +19,7 @@ const STUDENT_LINKS = [
   { href: "/", label: "Home", icon: "home" },
   { href: "/content", label: "Content", icon: "book" },
   { href: "/calendar", label: "Calendar", icon: "calendar" },
+  { href: "/exodus", label: "Exodus", icon: "tent" },
   { href: "/quizzes", label: "Quizzes", icon: "quiz" },
   { href: "/grades", label: "My grades", icon: "grades" },
 ] as const;

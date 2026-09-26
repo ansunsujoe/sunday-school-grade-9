@@ -125,3 +125,82 @@ export const announcementReads = pgTable(
 );
 
 export type Role = (typeof roleEnum.enumValues)[number];
+
+// ---------------------------------------------------------------------------
+// The Exodus: a role-playing game. Clan definitions (names, logos, resource
+// types) live in lib/exodus; these tables hold the game's changing state.
+
+// One row per clan. Each clan is led by one student; teachers see every clan.
+// `resources` maps a resource key from lib/exodus/resources.ts to an amount.
+export const clans = pgTable("clans", {
+  slug: text("slug").primaryKey(),
+  leaderId: integer("leader_id")
+    .unique()
+    .references(() => users.id, { onDelete: "set null" }),
+  resources: jsonb("resources").$type<Record<string, number>>().notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// The people of a clan. `role` is one of CLAN_ROLES in lib/exodus/roles.ts.
+export const clanMembers = pgTable("clan_members", {
+  id: serial("id").primaryKey(),
+  clanSlug: text("clan_slug")
+    .notNull()
+    .references(() => clans.slug, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  role: text("role").notNull().default("Villager"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// A situation a teacher puts to some or all clans; each answers in writing.
+// `prompt` is Markdown. Closed scenarios can no longer be answered.
+export const scenarios = pgTable("scenarios", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  prompt: text("prompt").notNull(),
+  closed: boolean("closed").notNull().default(false),
+  authorId: integer("author_id").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Which clans a scenario was sent to, and each clan's answer once given.
+export const scenarioRecipients = pgTable(
+  "scenario_recipients",
+  {
+    scenarioId: integer("scenario_id")
+      .notNull()
+      .references(() => scenarios.id, { onDelete: "cascade" }),
+    clanSlug: text("clan_slug")
+      .notNull()
+      .references(() => clans.slug, { onDelete: "cascade" }),
+    response: text("response"),
+    respondedAt: timestamp("responded_at"),
+  },
+  (t) => [primaryKey({ columns: [t.scenarioId, t.clanSlug] })],
+);
+
+// News of the camp, posted by teachers and read by every clan. `content` is Markdown.
+export const gameNews = pgTable("game_news", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  authorId: integer("author_id").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at"),
+});
+
+export const NOTIFICATION_KINDS = ["scenario", "news", "resources", "response", "message"] as const;
+export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
+
+// In-game notifications. A row with a clan goes to that clan's leader; a row
+// with no clan goes to the teachers (e.g. "Eagle Clan answered a scenario").
+export const gameNotifications = pgTable("game_notifications", {
+  id: serial("id").primaryKey(),
+  clanSlug: text("clan_slug").references(() => clans.slug, { onDelete: "cascade" }),
+  kind: text("kind").$type<NotificationKind>().notNull(),
+  title: text("title").notNull(),
+  body: text("body"),
+  href: text("href"),
+  read: boolean("read").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
