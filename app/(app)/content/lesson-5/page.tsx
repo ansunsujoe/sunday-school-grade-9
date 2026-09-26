@@ -37,7 +37,7 @@ export default function Lesson5Page() {
         </Callout>
         <Callout label="Memory verse" tone="sky">
           <em>
-            “Now all these things happened unto them for examples: and they are written for our
+            “Now all these things happened unto them for ensamples: and they are written for our
             admonition, upon whom the ends of the world are come. Wherefore let him that thinketh he
             standeth take heed lest he fall.”
           </em>{" "}
@@ -104,7 +104,7 @@ export default function Lesson5Page() {
               displeasure with their complaining (11:3).
             </li>
           </ul>
-          <Callout label="Spiritual parallel" tone="violet">
+          <Callout label="Spiritual parallel" tone="violet" large>
             Complaining reveals ingratitude and unbelief in God’s providence.{" "}
             <em>
               “Do all things without murmurings and disputings: that ye may be blameless and harmless,
@@ -148,7 +148,7 @@ export default function Lesson5Page() {
             <strong>Kibroth-hattaavah</strong> means “graves of lust.” There they buried the people who
             had complained about the manna and lusted after the quail.
           </p>
-          <Callout label="Spiritual parallel" tone="violet">
+          <Callout label="Spiritual parallel" tone="violet" large>
             When we demand what God has not willed, he may allow it, but it will drain our spiritual
             life. Ingratitude leads to lust, and lust leads to judgment.
           </Callout>
@@ -180,7 +180,7 @@ export default function Lesson5Page() {
               stayed at Hazeroth until she returned.
             </li>
           </ul>
-          <Callout label="Spiritual parallel" tone="violet">
+          <Callout label="Spiritual parallel" tone="violet" large>
             Envy and rebellion against God’s ordained leadership bring spiritual uncleanness.
           </Callout>
         </LessonSection>
@@ -211,7 +211,7 @@ export default function Lesson5Page() {
             And Caleb stilled the people before Moses, and said, Let us go up at once, and possess it;
             for we are well able to overcome it.
           </Scripture>
-          <Callout label="Spiritual parallel" tone="violet">
+          <Callout label="Spiritual parallel" tone="violet" large>
             Unbelief keeps us out of God’s promises:{" "}
             <em>“So we see that they could not enter in because of unbelief”</em> (Hebrews 3:19). Many
             believers see the promise but are defeated by fear instead of walking by faith.
@@ -254,7 +254,7 @@ export default function Lesson5Page() {
             But my servant Caleb, because he had another spirit with him, and hath followed me fully, him
             will I bring into the land whereinto he went; and his seed shall possess it.
           </Scripture>
-          <Callout label="Spiritual parallel" tone="violet">
+          <Callout label="Spiritual parallel" tone="violet" large>
             Unbelief leads to wandering, but faith leads to inheritance. Joshua and Caleb represent the
             victorious remnant who wholly follow the Lord.
           </Callout>
@@ -302,7 +302,7 @@ export default function Lesson5Page() {
               (16:48).
             </li>
           </ul>
-          <Callout label="Spiritual parallel" tone="violet">
+          <Callout label="Spiritual parallel" tone="violet" large>
             Pride in ministry leads to destruction. True authority comes only by God’s calling, not by
             ambition.
           </Callout>
@@ -324,7 +324,7 @@ export default function Lesson5Page() {
             objects kept in the ark in the Most Holy Place, along with the Ten Commandments and a pot of
             manna (Hebrews 9:4).
           </p>
-          <Callout label="Spiritual parallel" tone="violet">
+          <Callout label="Spiritual parallel" tone="violet" large>
             Servants of God are appointed by God. We should submit to them and not question their
             authority.
           </Callout>
@@ -357,11 +357,9 @@ export default function Lesson5Page() {
         </LessonSection>
 
         <LessonSection id="memory-verse" title="Memory verse" read="1 Corinthians 10:11–12">
-          <Scripture cite="1 Corinthians 10:11–12">
-            Now all these things happened unto them for examples: and they are written for our
-            admonition, upon whom the ends of the world are come. Wherefore let him that thinketh he
-            standeth take heed lest he fall.
-          </Scripture>
+          <Callout label="1 Corinthians 10:11–12 · KJV" tone="sky" large>
+            <em>“Now all these things happened unto them for ensamples: and they are written for our admonition, upon whom the ends of the world are come. Wherefore let him that thinketh he standeth take heed lest he fall.”</em>
+          </Callout>
         </LessonSection>
       </div>
     </ContentPage>

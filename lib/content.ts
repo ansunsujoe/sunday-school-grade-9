@@ -32,10 +32,10 @@ const ITEMS: ContentItem[] = [
     added: "2026-09-26",
   },
   {
-    slug: "journey-of-the-israelites",
-    title: "Journey of the Israelites",
+    slug: "lesson-1",
+    title: "Lesson 1: Introduction",
     kind: "lesson",
-    summary: "From slavery in Egypt to the Promised Land, Exodus to Joshua.",
+    summary: "Journey of the Israelites, Exodus 1–14.",
     page: true,
     added: "2026-09-26",
   },

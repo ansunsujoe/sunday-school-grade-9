@@ -6,18 +6,23 @@ import { proseClass } from "./markdown";
 
 /** Long-form text in the app's reading style. */
 export function Prose({ children }: { children: React.ReactNode }) {
-  return <div className={`${proseClass} sm:prose-lg`}>{children}</div>;
+  return <div className={`${proseClass} prose-lg sm:prose-xl`}>{children}</div>;
 }
 
-/** A Bible passage, set large, with its reference underneath. */
+/**
+ * A Bible passage (KJV) with its reference underneath. Set smaller than the
+ * lesson text so the teaching, not the quote, carries the page.
+ */
 export function Scripture({ cite, children }: { cite: string; children: React.ReactNode }) {
   return (
-    <figure className="not-prose relative my-8 overflow-hidden first:mt-0 rounded-2xl border border-amber-300/15 bg-linear-to-br from-amber-400/[0.08] via-night-800/60 to-night-900/40 px-6 py-6 sm:px-8">
-      <span aria-hidden className="absolute inset-y-0 left-0 w-1 bg-amber-400/70" />
-      <blockquote className="relative font-display text-xl leading-relaxed text-balance text-slate-50 sm:text-2xl">
+    <figure className="not-prose relative my-5 overflow-hidden first:mt-0 rounded-xl border border-amber-300/15 bg-amber-400/[0.05] py-3.5 pr-4 pl-5 sm:pr-5">
+      <span aria-hidden className="absolute inset-y-0 left-0 w-1 bg-amber-400/60" />
+      <blockquote className="font-display text-[15px] leading-relaxed text-slate-200 sm:text-base">
         {children}
       </blockquote>
-      <figcaption className="relative mt-3 text-sm font-medium text-amber-200/90">{cite}</figcaption>
+      <figcaption className="mt-1.5 text-xs font-medium text-amber-200/90">
+        {cite} <span className="text-slate-500">· KJV</span>
+      </figcaption>
     </figure>
   );
 }
@@ -29,20 +34,35 @@ const CALLOUT_TONES = {
   emerald: "border-emerald-400/25 bg-emerald-400/[0.06] [--label:var(--color-emerald-300)]",
 } as const;
 
-/** A labeled box that stands out from the text, e.g. "Look for Jesus". */
+/**
+ * A labeled box that stands out from the text, e.g. "Spiritual parallel".
+ * `large` sets it bigger than the lesson text, for a section's main takeaway.
+ */
 export function Callout({
   label,
   tone = "gold",
+  large = false,
   children,
 }: {
   label: string;
   tone?: keyof typeof CALLOUT_TONES;
+  large?: boolean;
   children: React.ReactNode;
 }) {
   return (
-    <aside className={`not-prose my-6 rounded-2xl border p-4 sm:p-5 ${CALLOUT_TONES[tone]}`}>
-      <p className="mb-1.5 text-[11px] font-bold tracking-[0.2em] text-(--label) uppercase">{label}</p>
-      <div className="text-base leading-relaxed text-slate-200 [&_em]:text-slate-50 [&_strong]:text-slate-50">
+    <aside
+      className={`not-prose my-6 rounded-2xl border ${large ? "p-5 sm:p-7" : "p-4 sm:p-5"} ${CALLOUT_TONES[tone]}`}
+    >
+      <p
+        className={`mb-2 font-bold tracking-[0.2em] text-(--label) uppercase ${large ? "text-xs sm:text-sm" : "text-[11px]"}`}
+      >
+        {label}
+      </p>
+      <div
+        className={`leading-relaxed text-slate-200 [&_em]:text-slate-50 [&_strong]:text-slate-50 ${
+          large ? "text-xl font-medium sm:text-2xl" : "text-base sm:text-lg"
+        }`}
+      >
         {children}
       </div>
     </aside>
