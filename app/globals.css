@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @theme inline {
   --font-sans: var(--font-geist-sans);
@@ -41,4 +42,10 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 input[type="number"] {
   -moz-appearance: textfield;
+}
+
+/* Scripture quotes already include their own quotation marks. */
+.prose :where(blockquote p)::before,
+.prose :where(blockquote p)::after {
+  content: none;
 }

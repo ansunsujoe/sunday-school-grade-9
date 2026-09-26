@@ -54,7 +54,7 @@ export default async function QuizPage({ params }: { params: Promise<{ id: strin
             {quiz.lesson && (
               <>
                 {" · "}
-                <TextLink href={`/lessons/${quiz.lesson.id}`}>{quiz.lesson.title}</TextLink>
+                <TextLink href={`/content/${quiz.lesson.id}`}>{quiz.lesson.title}</TextLink>
               </>
             )}
           </>

@@ -23,11 +23,17 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+export const CONTENT_KINDS = ["lesson", "supplementary"] as const;
+export type ContentKind = (typeof CONTENT_KINDS)[number];
+
+// Shown in the app as "Content". Each item is a page written on the site
+// (`body`, in Markdown), a link to material elsewhere (`url`), or both.
 export const lessons = pgTable("lessons", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
-  // Link to the lesson material (Google Doc, PDF, slides, etc.).
-  url: text("url").notNull(),
+  kind: text("kind").$type<ContentKind>().notNull().default("lesson"),
+  url: text("url"),
+  body: text("body"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

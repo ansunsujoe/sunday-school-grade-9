@@ -1,12 +1,12 @@
 import { PageHeader } from "@/components/ui";
 import { createQuiz } from "@/lib/actions/quizzes";
 import { requireTeacher } from "@/lib/dal";
-import { getLessons } from "@/lib/queries";
+import { getContent } from "@/lib/queries";
 import { QuizBuilder } from "../quiz-builder";
 
 export default async function NewQuizPage() {
   await requireTeacher();
-  const lessons = await getLessons();
+  const lessons = await getContent();
   return (
     <>
       <PageHeader

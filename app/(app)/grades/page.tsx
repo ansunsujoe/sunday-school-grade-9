@@ -4,8 +4,8 @@ import { saveWeek } from "@/lib/actions/grades";
 import { requireUser } from "@/lib/dal";
 import { formatDate, formatShortDate, today } from "@/lib/format";
 import { getStudents, getWeeklyGrades } from "@/lib/queries";
-import { SEASON_END, SEASON_START, SUNDAYS, currentSunday, summarize } from "@/lib/season";
-import { SeasonView } from "./season-view";
+import { YEAR_END, YEAR_START, SUNDAYS, currentSunday, summarize } from "@/lib/school-year";
+import { YearView } from "./year-view";
 import { Overview, StudentWeek } from "./week-form";
 import { WeekPicker } from "./week-picker";
 
@@ -20,11 +20,11 @@ export default async function GradesPage({
     return (
       <>
         <PageHeader
-          eyebrow="2026 – 2027 class year"
+          eyebrow="2026 – 2027 school year"
           title="My grades"
           description="Every Sunday this year. Blank slots haven't been graded yet."
         />
-        <SeasonView grades={await getWeeklyGrades(user.id)} />
+        <YearView grades={await getWeeklyGrades(user.id)} />
       </>
     );
   }
@@ -41,7 +41,7 @@ export default async function GradesPage({
       <PageHeader
         eyebrow="Gradebook"
         title={formatDate(date)}
-        description={`Week ${SUNDAYS.indexOf(date) + 1} of ${SUNDAYS.length} · ${formatShortDate(SEASON_START)}, 2026 – ${formatShortDate(SEASON_END)}, 2027`}
+        description={`Week ${SUNDAYS.indexOf(date) + 1} of ${SUNDAYS.length} · ${formatShortDate(YEAR_START)}, 2026 – ${formatShortDate(YEAR_END)}, 2027`}
       />
       {students.length === 0 ? (
         <Card>

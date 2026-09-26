@@ -1,21 +1,21 @@
 import type { weeklyGrades } from "@/lib/db/schema";
 import { percent } from "@/lib/format";
 
-export const SEASON_START = "2026-07-26";
-export const SEASON_END = "2027-05-16";
+export const YEAR_START = "2026-07-26";
+export const YEAR_END = "2027-05-16";
 
-/** Every Sunday of the class year, as YYYY-MM-DD strings. */
+/** Every Sunday of the school year, as YYYY-MM-DD strings. */
 export const SUNDAYS: string[] = (() => {
   const days: string[] = [];
-  const d = new Date(`${SEASON_START}T00:00:00Z`);
-  while (d.toISOString().slice(0, 10) <= SEASON_END) {
+  const d = new Date(`${YEAR_START}T00:00:00Z`);
+  while (d.toISOString().slice(0, 10) <= YEAR_END) {
     days.push(d.toISOString().slice(0, 10));
     d.setUTCDate(d.getUTCDate() + 7);
   }
   return days;
 })();
 
-/** The most recent Sunday on or before `today`, clamped to the season. */
+/** The most recent Sunday on or before `today`, clamped to the school year. */
 export function currentSunday(today: string) {
   return SUNDAYS.findLast((s) => s <= today) ?? SUNDAYS[0];
 }
@@ -27,7 +27,7 @@ function average(values: number[]) {
   return Math.round(values.reduce((sum, v) => sum + v, 0) / values.length);
 }
 
-/** Season totals for one student. Blank slots are ignored, not counted as zero. */
+/** School-year totals for one student. Blank slots are ignored, not counted as zero. */
 export function summarize(grades: WeeklyGrade[]) {
   const marked = grades.filter((g) => g.present !== null);
   const present = marked.filter((g) => g.present).length;
@@ -42,4 +42,4 @@ export function summarize(grades: WeeklyGrade[]) {
   };
 }
 
-export type SeasonSummary = ReturnType<typeof summarize>;
+export type YearSummary = ReturnType<typeof summarize>;

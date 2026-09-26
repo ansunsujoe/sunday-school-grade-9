@@ -19,7 +19,7 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   title: "Grade 9 Sunday School",
-  description: "Lessons, quizzes, and grades for our Grade 9 class.",
+  description: "Content, quizzes, and grades for our Grade 9 class.",
   appleWebApp: { title: "Sunday School", statusBarStyle: "black-translucent" },
 };
 

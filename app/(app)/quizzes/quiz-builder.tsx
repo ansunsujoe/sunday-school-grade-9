@@ -72,7 +72,7 @@ export function QuizBuilder({
               className={inputClass}
             />
           </Field>
-          <Field label="Lesson (optional)" htmlFor="lesson">
+          <Field label="Content (optional)" htmlFor="lesson">
             <select
               id="lesson"
               value={draft.lessonId ?? ""}
@@ -81,7 +81,7 @@ export function QuizBuilder({
               }
               className={inputClass}
             >
-              <option value="">No lesson</option>
+              <option value="">None</option>
               {lessons.map((l) => (
                 <option key={l.id} value={l.id}>
                   {l.title}

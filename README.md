@@ -5,7 +5,7 @@ A small class app for lessons, quizzes, and a Sunday gradebook.
 - **Teachers** manage student accounts, post lessons (a title and a link to the material), write multiple-choice quizzes, and fill in the Sunday gradebook.
 - **Students** log in to open lessons, take published quizzes (graded automatically, one attempt), and view their own grades.
 
-The **gradebook** has a slot for every Sunday of the class year (Jul 26, 2026 – May 16, 2027; see `lib/season.ts`): attendance (P/A), memory verse (/100), quiz (/100), and sermon notes (Y/N). Any slot can be left blank; blanks don't count toward averages.
+The **gradebook** has a slot for every Sunday of the school year (Jul 26, 2026 – May 16, 2027; see `lib/school-year.ts`): attendance (P/A), memory verse (/100), quiz (/100), and sermon notes (Y/N). Any slot can be left blank; blanks don't count toward averages.
 
 Built with Next.js, Neon Postgres, and Drizzle ORM.
 

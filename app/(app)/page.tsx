@@ -1,17 +1,18 @@
 import { desc, eq } from "drizzle-orm";
+import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { Badge, Card, EmptyState, Stat, TextLink, scoreTone } from "@/components/ui";
 import { requireUser, type CurrentUser } from "@/lib/dal";
 import { db } from "@/lib/db";
 import { quizzes, submissions, users } from "@/lib/db/schema";
 import { percent, today } from "@/lib/format";
-import { getLessons, getPublishedQuizzes, getWeeklyGrades } from "@/lib/queries";
-import { currentSunday, summarize } from "@/lib/season";
+import { getContent, getPublishedQuizzes, getWeeklyGrades } from "@/lib/queries";
+import { currentSunday, summarize } from "@/lib/school-year";
 import { verseForWeek } from "@/lib/verses";
 
 export default async function HomePage() {
   const user = await requireUser();
-  const [latestLesson] = await getLessons();
+  const [latest] = await getContent();
   const verse = verseForWeek(currentSunday(today()));
 
   return (
@@ -36,32 +37,53 @@ export default async function HomePage() {
       </section>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card title="Latest lesson">
-          {latestLesson ? (
-            <a
-              href={latestLesson.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group -m-2 flex items-center gap-4 rounded-xl p-2 transition hover:bg-white/5"
-            >
+        <Card title="Latest in Content">
+          {latest ? (
+            <ContentLink item={latest}>
               <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-amber-400/10 text-amber-300 ring-1 ring-amber-400/20">
-                <Icon name="book" className="size-6" />
+                <Icon name={latest.kind === "lesson" ? "book" : "sparkle"} className="size-6" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-display text-lg font-semibold text-slate-50">
-                  {latestLesson.title}
+                  {latest.title}
                 </span>
-                <span className="block text-sm text-slate-400">Tap to open</span>
+                <span className="block text-sm text-slate-400">
+                  {latest.kind === "lesson" ? "Lesson" : "Supplementary"}
+                </span>
               </span>
-              <Icon name="external" className="size-4 shrink-0 text-slate-500" />
-            </a>
+              <Icon name={latest.body ? "chevronRight" : "external"} className="size-4 shrink-0 text-slate-500" />
+            </ContentLink>
           ) : (
-            <EmptyState>No lessons yet.</EmptyState>
+            <EmptyState>Nothing posted yet.</EmptyState>
           )}
         </Card>
         {user.role === "teacher" ? <TeacherHome /> : <StudentHome user={user} />}
       </div>
     </div>
+  );
+}
+
+const contentLinkClass = "-m-2 flex items-center gap-4 rounded-xl p-2 transition hover:bg-white/5";
+
+/** Link-only content opens the material directly; pages open on the site. */
+function ContentLink({
+  item,
+  children,
+}: {
+  item: { id: number; url: string | null; body: string | null };
+  children: React.ReactNode;
+}) {
+  if (!item.body && item.url) {
+    return (
+      <a href={item.url} target="_blank" rel="noopener noreferrer" className={contentLinkClass}>
+        {children}
+      </a>
+    );
+  }
+  return (
+    <Link href={`/content/${item.id}`} className={contentLinkClass}>
+      {children}
+    </Link>
   );
 }
 

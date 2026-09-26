@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { weeklyGrades } from "@/lib/db/schema";
 import { requireTeacher } from "@/lib/dal";
-import { SUNDAYS } from "@/lib/season";
+import { SUNDAYS } from "@/lib/school-year";
 import type { FormState } from "./types";
 
 /** "Y"/"N" radio value -> boolean, anything else -> blank. */
@@ -26,7 +26,7 @@ function score(value: FormDataEntryValue | null) {
 export async function saveWeek(_: FormState, formData: FormData): Promise<FormState> {
   await requireTeacher();
   const date = String(formData.get("date") ?? "");
-  if (!SUNDAYS.includes(date)) return { error: "Pick a Sunday in the class year." };
+  if (!SUNDAYS.includes(date)) return { error: "Pick a Sunday in the school year." };
 
   const studentIds = formData.getAll("studentId").map(Number).filter(Number.isInteger);
   const rows: (typeof weeklyGrades.$inferInsert)[] = [];

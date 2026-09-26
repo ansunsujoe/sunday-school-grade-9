@@ -5,7 +5,7 @@ import { updateQuiz } from "@/lib/actions/quizzes";
 import { requireTeacher } from "@/lib/dal";
 import { db } from "@/lib/db";
 import { questions, quizzes, submissions } from "@/lib/db/schema";
-import { getLessons } from "@/lib/queries";
+import { getContent } from "@/lib/queries";
 import { QuizBuilder } from "../../quiz-builder";
 
 export default async function EditQuizPage({ params }: { params: Promise<{ id: string }> }) {
@@ -17,7 +17,7 @@ export default async function EditQuizPage({ params }: { params: Promise<{ id: s
     db.select().from(quizzes).where(eq(quizzes.id, id)),
     db.select().from(questions).where(eq(questions.quizId, id)).orderBy(asc(questions.position)),
     db.select({ id: submissions.id }).from(submissions).where(eq(submissions.quizId, id)).limit(1),
-    getLessons(),
+    getContent(),
   ]);
   if (!quiz) notFound();
   if (taken) redirect(`/quizzes/${id}`);

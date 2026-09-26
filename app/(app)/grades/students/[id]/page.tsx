@@ -7,9 +7,9 @@ import { requireTeacher } from "@/lib/dal";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { getWeeklyGrades } from "@/lib/queries";
-import { SeasonView } from "../../season-view";
+import { YearView } from "../../year-view";
 
-export default async function StudentSeasonPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function StudentYearPage({ params }: { params: Promise<{ id: string }> }) {
   await requireTeacher();
   const id = Number((await params).id);
   if (!Number.isInteger(id)) notFound();
@@ -29,7 +29,7 @@ export default async function StudentSeasonPage({ params }: { params: Promise<{ 
         <Icon name="arrowLeft" className="size-4" /> Gradebook
       </Link>
       <PageHeader eyebrow={`@${student.username}`} title={student.name} />
-      <SeasonView grades={await getWeeklyGrades(id)} />
+      <YearView grades={await getWeeklyGrades(id)} />
     </>
   );
 }

@@ -1,4 +1,4 @@
-import { SUNDAYS } from "@/lib/season";
+import { SUNDAYS } from "@/lib/school-year";
 
 // NIV wording. One is shown per week, cycling through the list.
 const VERSES = [

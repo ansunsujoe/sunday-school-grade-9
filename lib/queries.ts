@@ -11,7 +11,8 @@ export function getStudents() {
     .orderBy(asc(users.name));
 }
 
-export function getLessons() {
+/** Lessons and supplementary material, newest first. */
+export function getContent() {
   return db.select().from(lessons).orderBy(desc(lessons.createdAt));
 }
 

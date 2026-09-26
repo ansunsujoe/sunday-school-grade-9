@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { Card, inputClass, segmentClass, segmentTones } from "@/components/ui";
-import type { SeasonSummary, WeeklyGrade } from "@/lib/season";
+import type { YearSummary, WeeklyGrade } from "@/lib/school-year";
 
 export function StudentWeek({
   student,
@@ -12,18 +12,18 @@ export function StudentWeek({
 }) {
   const id = student.id;
   return (
-    <li className="rounded-2xl border border-white/[0.07] bg-night-900/70 p-4 backdrop-blur-sm">
+    <li className="rounded-2xl border border-white/[0.07] bg-night-900/70 p-4 backdrop-blur-sm xl:flex xl:items-center xl:gap-6 xl:px-5">
       <input type="hidden" name="studentId" value={id} />
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <span className="truncate font-semibold text-slate-100">{student.name}</span>
+      <div className="mb-3 flex items-center justify-between gap-2 xl:mb-0 xl:w-44 xl:shrink-0 xl:flex-col xl:items-start xl:gap-0.5">
+        <span className="truncate font-semibold text-slate-100 xl:max-w-full">{student.name}</span>
         <Link
           href={`/grades/students/${id}`}
           className="shrink-0 text-xs font-medium text-slate-500 hover:text-amber-300"
         >
-          Season →
+          School year →
         </Link>
       </div>
-      <div className="grid grid-cols-2 gap-x-3 gap-y-4 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-x-3 gap-y-4 sm:grid-cols-4 xl:flex-1">
         <Slot label="Attendance">
           <Toggle name={`present-${id}`} value={grade?.present ?? null} yes="P" no="A" />
         </Slot>
@@ -110,11 +110,11 @@ function ScoreInput({ name, value, label }: { name: string; value: number | null
 export function Overview({
   rows,
 }: {
-  rows: { student: { id: number; name: string }; summary: SeasonSummary }[];
+  rows: { student: { id: number; name: string }; summary: YearSummary }[];
 }) {
   const pct = (v: number | null, suffix = "%") => (v == null ? "–" : `${v}${suffix}`);
   return (
-    <Card title="Season overview" className="lg:sticky lg:top-24">
+    <Card title="School year overview" className="lg:sticky lg:top-24">
       <ul className="-mx-2 space-y-1">
         {rows.map(({ student, summary }) => (
           <li key={student.id}>

@@ -1,6 +1,6 @@
 import { Card, Stat, scoreTone } from "@/components/ui";
 import { formatMonth, formatShortDate, today } from "@/lib/format";
-import { SUNDAYS, currentSunday, summarize, type WeeklyGrade } from "@/lib/season";
+import { SUNDAYS, currentSunday, summarize, type WeeklyGrade } from "@/lib/school-year";
 
 const TONE_TEXT = {
   slate: "text-slate-500",
@@ -23,15 +23,15 @@ function Score({ value }: { value: number | null }) {
   return <span className={`font-semibold tabular-nums ${TONE_TEXT[scoreTone(value)]}`}>{value}</span>;
 }
 
-/** Season stats and a week-by-week table for one student. */
-export function SeasonView({ grades }: { grades: WeeklyGrade[] }) {
+/** School-year stats and a week-by-week table for one student. */
+export function YearView({ grades }: { grades: WeeklyGrade[] }) {
   const summary = summarize(grades);
   const byDate = new Map(grades.map((g) => [g.date, g]));
   const thisWeek = currentSunday(today());
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+    <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:items-start">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:sticky lg:top-24 lg:grid-cols-1">
         <Stat label="Attendance" value={summary.attendance} />
         <Stat label="Memory verse avg" value={summary.memoryVerse} suffix="" />
         <Stat label="Quiz avg" value={summary.quiz} suffix="" />

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { asc } from "drizzle-orm";
 import { ActionForm } from "@/components/action-form";
 import { ConfirmButton } from "@/components/confirm-button";
@@ -41,6 +42,14 @@ export default async function PeoplePage() {
                       </form>
                     )}
                   </div>
+                  {p.id === me.id && (
+                    <Link
+                      href="/account"
+                      className="mt-2 inline-block text-sm text-amber-300 hover:text-amber-200"
+                    >
+                      Change my password →
+                    </Link>
+                  )}
                   {p.id !== me.id && (
                     <details className="mt-2">
                       <summary className="cursor-pointer text-sm text-slate-400 hover:text-slate-100">
