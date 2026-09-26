@@ -36,33 +36,21 @@ const CALLOUT_TONES = {
 
 /**
  * A labeled box that stands out from the text, e.g. "Spiritual parallel".
- * `large` sets it bigger than the lesson text, for a section's main takeaway.
+ * Its text is the same size as the lesson text around it.
  */
 export function Callout({
   label,
   tone = "gold",
-  large = false,
   children,
 }: {
   label: string;
   tone?: keyof typeof CALLOUT_TONES;
-  large?: boolean;
   children: React.ReactNode;
 }) {
   return (
-    <aside
-      className={`not-prose my-6 rounded-2xl border ${large ? "p-5 sm:p-7" : "p-4 sm:p-5"} ${CALLOUT_TONES[tone]}`}
-    >
-      <p
-        className={`mb-2 font-bold tracking-[0.2em] text-(--label) uppercase ${large ? "text-xs sm:text-sm" : "text-[11px]"}`}
-      >
-        {label}
-      </p>
-      <div
-        className={`leading-relaxed text-slate-200 [&_em]:text-slate-50 [&_strong]:text-slate-50 ${
-          large ? "text-xl font-medium sm:text-2xl" : "text-base sm:text-lg"
-        }`}
-      >
+    <aside className={`not-prose my-6 rounded-2xl border p-4 sm:p-5 ${CALLOUT_TONES[tone]}`}>
+      <p className="mb-1.5 text-[11px] font-bold tracking-[0.2em] text-(--label) uppercase">{label}</p>
+      <div className="text-lg leading-relaxed text-slate-200 sm:text-xl [&_em]:text-slate-50 [&_strong]:text-slate-50">
         {children}
       </div>
     </aside>

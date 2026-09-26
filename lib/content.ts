@@ -32,6 +32,15 @@ const ITEMS: ContentItem[] = [
     added: "2026-09-26",
   },
   {
+    slug: "lesson-3",
+    title: "Lesson 3: Shur to Alush",
+    kind: "lesson",
+    summary: "Journey of the Israelites, Exodus 15–17.",
+    url: "https://lesson3-gray.vercel.app/Grade_9___Lesson_3.pdf",
+    page: false,
+    added: "2026-09-26",
+  },
+  {
     slug: "lesson-1",
     title: "Lesson 1: Introduction",
     kind: "lesson",

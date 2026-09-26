@@ -32,20 +32,11 @@ export default function Lesson1Page() {
         </div>
       }
     >
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Callout label="The big idea">
-          The journey of the Israelites, out of Egypt, through the wilderness, and into the Promised
-          Land, is a picture of our own journey with God: out of sin, through this life, and home to
-          heaven.
-        </Callout>
-        <Callout label="Memory verse" tone="sky">
-          <em>
-            “If we confess our sins, he is faithful and just to forgive us our sins, and to cleanse us
-            from all unrighteousness.”
-          </em>{" "}
-          — 1 John 1:9
-        </Callout>
-      </div>
+      <Callout label="The big idea">
+        The journey of the Israelites, out of Egypt, through the wilderness, and into the Promised
+        Land, is a picture of our own journey with God: out of sin, through this life, and home to
+        heaven.
+      </Callout>
 
       <h2 className="mt-8 mb-4 font-display text-2xl font-semibold text-slate-50 sm:text-3xl">
         Their journey, our journey
@@ -77,7 +68,7 @@ export default function Lesson1Page() {
             Now all these things happened unto them for ensamples: and they are written for our
             admonition…
           </Scripture>
-          <Callout label="Spiritual parallel" tone="violet" large>
+          <Callout label="Spiritual parallel" tone="violet">
             <strong>Egypt</strong> represents the sinful world, and the <strong>Promised Land</strong>{" "}
             represents heaven. Every step between them is a picture of the Christian life.
           </Callout>
@@ -94,7 +85,7 @@ export default function Lesson1Page() {
             And they made their lives bitter with hard bondage, in morter, and in brick, and in all
             manner of service in the field…
           </Scripture>
-          <Callout label="Spiritual parallel" tone="violet" large>
+          <Callout label="Spiritual parallel" tone="violet">
             Just as the Israelites were slaves, we were <strong>servants to sin</strong> before we were
             saved. The love of money is one example: it pierces people “through with many sorrows” (1
             Timothy 6:10). As we serve sin, the devil can bring afflictions that make life bitter, and in
@@ -105,7 +96,7 @@ export default function Lesson1Page() {
           <Scripture cite="Exodus 3:8">
             And I am come down to deliver them out of the hand of the Egyptians…
           </Scripture>
-          <Callout label="Spiritual parallel" tone="violet" large>
+          <Callout label="Spiritual parallel" tone="violet">
             Those who are not saved are in bondage to three masters:
             <ul className="mt-3 list-disc space-y-1.5 pl-6 marker:text-violet-300">
               <li>
@@ -128,7 +119,7 @@ export default function Lesson1Page() {
             …let us go, we beseech thee, three days’ journey into the wilderness, that we may sacrifice to
             the LORD our God.
           </Scripture>
-          <Callout label="Spiritual parallel" tone="violet" large>
+          <Callout label="Spiritual parallel" tone="violet">
             We are called to offer our bodies as a <strong>living sacrifice</strong> to God, to do his
             will: <em>“present your bodies a living sacrifice, holy, acceptable unto God, which is your
             reasonable service”</em> (Romans 12:1–2).
@@ -138,7 +129,7 @@ export default function Lesson1Page() {
           <Scripture cite="Exodus 3:8">
             …unto a good land and a large, unto a land flowing with milk and honey…
           </Scripture>
-          <Callout label="Spiritual parallel" tone="violet" large>
+          <Callout label="Spiritual parallel" tone="violet">
             God has promised us an <strong>inheritance in his kingdom</strong>. He has given us{" "}
             <em>“exceeding great and precious promises”</em> (2 Peter 1:4).
           </Callout>
@@ -187,7 +178,7 @@ export default function Lesson1Page() {
               </Scripture>
             </li>
           </ol>
-          <Callout label="Spiritual parallel" tone="violet" large>
+          <Callout label="Spiritual parallel" tone="violet">
             Our salvation brings glory to God. We didn’t free ourselves any more than Israel did; the
             same strong hand that split the Red Sea is the hand that saves us.
           </Callout>
@@ -202,13 +193,13 @@ export default function Lesson1Page() {
             …when I see the blood, I will pass over you, and the plague shall not be upon you to destroy
             you…
           </Scripture>
-          <Callout label="Spiritual parallel" tone="violet" large>
+          <Callout label="Spiritual parallel" tone="violet">
             We are the firstborn in this picture. Our fate should have been death.
           </Callout>
 
           <h3>A lamb for every house</h3>
           <p>Each household observed the Passover by slaying a lamb (Exodus 12:3–6).</p>
-          <Callout label="Spiritual parallel" tone="violet" large>
+          <Callout label="Spiritual parallel" tone="violet">
             Jesus became our Passover lamb, slain for us: <em>“For even Christ our passover is sacrificed
             for us”</em> (1 Corinthians 5:7).
           </Callout>
@@ -219,7 +210,7 @@ export default function Lesson1Page() {
             And they shall take of the blood, and strike it on the two side posts and on the upper door
             post of the houses…
           </Scripture>
-          <Callout label="Spiritual parallel" tone="violet" large>
+          <Callout label="Spiritual parallel" tone="violet">
             We receive redemption through the blood of Jesus: <em>“In whom we have redemption through his
             blood, the forgiveness of sins”</em> (Ephesians 1:7). When we confess our sins and turn away
             from them, and accept Jesus as our personal Savior, <em>“the blood of Jesus Christ his Son
@@ -228,7 +219,7 @@ export default function Lesson1Page() {
         </LessonSection>
 
         <LessonSection id="memory-verse" title="Memory verse" read="1 John 1:9">
-          <Callout label="1 John 1:9 · KJV" tone="sky" large>
+          <Callout label="1 John 1:9 · KJV" tone="sky">
             <em>“If we confess our sins, he is faithful and just to forgive us our sins, and to cleanse us from all unrighteousness.”</em>
           </Callout>
         </LessonSection>
