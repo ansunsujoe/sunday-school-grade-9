@@ -20,7 +20,7 @@ export default async function EditNewsPage({ params }: { params: Promise<{ id: s
   return (
     <div className="max-w-3xl space-y-6">
       <div>
-        <BackLink href={`/exodus/news#n-${id}`}>News</BackLink>
+        <BackLink href={`/exodus/news/${id}`}>Article</BackLink>
         <h1 className="font-display text-3xl font-semibold text-slate-50">Edit article</h1>
       </div>
       <Card>

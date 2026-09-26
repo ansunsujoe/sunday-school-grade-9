@@ -148,10 +148,8 @@ export function getNews(limit?: number) {
       content: gameNews.content,
       createdAt: gameNews.createdAt,
       updatedAt: gameNews.updatedAt,
-      author: users.name,
     })
     .from(gameNews)
-    .leftJoin(users, eq(gameNews.authorId, users.id))
     .orderBy(desc(gameNews.createdAt), desc(gameNews.id));
   return limit ? query.limit(limit) : query;
 }

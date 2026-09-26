@@ -6,7 +6,7 @@ import { CONTENT, contentHref, type ContentItem } from "@/lib/content";
 import { requireUser, type CurrentUser } from "@/lib/dal";
 import { db } from "@/lib/db";
 import { quizzes, submissions, users } from "@/lib/db/schema";
-import { percent, timeAgo, today } from "@/lib/format";
+import { percent, plainText, timeAgo, today } from "@/lib/format";
 import {
   getAnnouncements,
   getPublishedQuizzes,
@@ -70,15 +70,6 @@ export default async function HomePage() {
       </div>
     </div>
   );
-}
-
-/** Markdown reduced to a line of plain text, for previews. */
-function plainText(markdown: string) {
-  return markdown
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
-    .replace(/[#>*_`~]|^\s*[-+]\s+|^\s*\d+\.\s+/gm, "")
-    .replace(/\s+/g, " ")
-    .trim();
 }
 
 function LatestAnnouncements({ items }: { items: AnnouncementItem[] }) {

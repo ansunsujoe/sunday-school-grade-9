@@ -73,3 +73,12 @@ export function timeAgo(date: Date, now = new Date()) {
   if (days < 7) return `${days} days ago`;
   return date.toLocaleDateString("en-US", { timeZone: TIME_ZONE, month: "short", day: "numeric" });
 }
+
+/** Markdown reduced to a line of plain text, for previews. */
+export function plainText(markdown: string) {
+  return markdown
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/[#>*_`~]|^\s*[-+]\s+|^\s*\d+\.\s+/gm, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}

@@ -1,9 +1,8 @@
 import { ActionForm } from "@/components/action-form";
 import { Card, Field, inputClass, secondaryButtonClass } from "@/components/ui";
-import { addMember, setClanLeader, setResources } from "@/lib/actions/exodus";
+import { addMember, setClanLeader } from "@/lib/actions/exodus";
 import { clanInfo } from "@/lib/exodus/clans";
 import { getClan, getClanMembers, getClans, getPlayer, getStudentsForLeaders } from "@/lib/exodus/queries";
-import { RESOURCES } from "@/lib/exodus/resources";
 import { CLAN_ROLES } from "@/lib/exodus/roles";
 import { ClanHero, ResourcePanel } from "../../game-ui";
 import { Roster } from "./roster";
@@ -87,34 +86,6 @@ async function TeacherTools({ row }: { row: Awaited<ReturnType<typeof getClan>> 
         </ActionForm>
       </Card>
 
-      <Card>
-        <details>
-          <summary className="cursor-pointer text-base font-semibold text-slate-100">Set exact supplies</summary>
-          <p className="mt-2 mb-4 text-sm text-slate-400">
-            Overwrites amounts without telling the clan. To give or take with a notification, use the form on the
-            Clans page.
-          </p>
-          <ActionForm action={setResources} submitLabel="Save supplies">
-            <input type="hidden" name="slug" value={row.slug} />
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {RESOURCES.map((r) => (
-                <Field key={r.key} label={`${r.emoji} ${r.label}`} htmlFor={`v_${r.key}`}>
-                  <input
-                    id={`v_${r.key}`}
-                    name={`v_${r.key}`}
-                    type="number"
-                    min={0}
-                    max={r.key === "morale" ? 100 : undefined}
-                    required
-                    defaultValue={row.resources[r.key]}
-                    className={inputClass}
-                  />
-                </Field>
-              ))}
-            </div>
-          </ActionForm>
-        </details>
-      </Card>
     </>
   );
 }

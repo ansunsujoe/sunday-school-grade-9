@@ -64,8 +64,7 @@ async function TeacherCamp() {
   return (
     <div className="space-y-6">
       <p className="text-sm text-slate-400">
-        {total.toLocaleString()} people in {clans.length} clans. Open a clan to see its people and change its leader
-        or supplies.
+        {total.toLocaleString()} people in {clans.length} clans. Open a clan to see its people or change its leader.
       </p>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {clans.map((row) => {
@@ -183,7 +182,7 @@ async function LeaderCamp({ player, slug }: { player: Player; slug: ClanSlug }) 
             <ul className="divide-y divide-white/5">
               {news.map((n) => (
                 <li key={n.id}>
-                  <Link href={`/exodus/news#n-${n.id}`} className="block py-3 hover:text-amber-100">
+                  <Link href={`/exodus/news/${n.id}`} className="block py-3 hover:text-amber-100">
                     <span className="block font-display text-lg font-semibold text-slate-50">{n.title}</span>
                     <span className="text-xs text-slate-500">{timeAgo(n.createdAt)}</span>
                   </Link>

@@ -184,23 +184,6 @@ export async function adjustResources(_: FormState, formData: FormData): Promise
   return { success: `Updated ${who}.` };
 }
 
-/** Sets one clan's resources to exact amounts. */
-export async function setResources(_: FormState, formData: FormData): Promise<FormState> {
-  await requireTeacher();
-  const slug = String(formData.get("slug"));
-  if (!isClanSlug(slug)) return { error: "Unknown clan." };
-
-  const amounts: Resources = {};
-  for (const r of RESOURCES) {
-    const value = Number(formData.get(`v_${r.key}`));
-    if (!Number.isInteger(value) || value < 0) return { error: `${r.label} must be a whole number, 0 or more.` };
-    amounts[r.key] = r.key === "morale" ? Math.min(value, 100) : value;
-  }
-  await db.update(clans).set({ resources: amounts }).where(eq(clans.slug, slug));
-  revalidateGame();
-  return { success: "Saved." };
-}
-
 // --- Scenarios -------------------------------------------------------------
 
 export async function createScenario(_: FormState, formData: FormData): Promise<FormState> {
@@ -304,7 +287,7 @@ export async function createNews(_: FormState, formData: FormData): Promise<Form
   await notify(await existingClans(), {
     kind: "news",
     title: `News: ${news.title}`,
-    href: `/exodus/news#n-${id}`,
+    href: `/exodus/news/${id}`,
   });
   revalidateGame();
   redirect("/exodus/news");
@@ -322,14 +305,14 @@ export async function updateNews(_: FormState, formData: FormData): Promise<Form
     .set({ ...news, updatedAt: new Date() })
     .where(eq(gameNews.id, id));
   revalidateGame();
-  redirect(`/exodus/news#n-${id}`);
+  redirect(`/exodus/news/${id}`);
 }
 
 export async function deleteNews(formData: FormData) {
   await requireTeacher();
   const id = Number(formData.get("id"));
   await db.delete(gameNews).where(eq(gameNews.id, id));
-  await db.delete(gameNotifications).where(eq(gameNotifications.href, `/exodus/news#n-${id}`));
+  await db.delete(gameNotifications).where(eq(gameNotifications.href, `/exodus/news/${id}`));
   revalidateGame();
   redirect("/exodus/news");
 }
