@@ -13,11 +13,6 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const roleEnum = pgEnum("role", ["teacher", "student"]);
-export const attendanceStatusEnum = pgEnum("attendance_status", [
-  "present",
-  "absent",
-  "excused",
-]);
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -30,25 +25,11 @@ export const users = pgTable("users", {
 
 export const lessons = pgTable("lessons", {
   id: serial("id").primaryKey(),
-  date: date("date").notNull(),
   title: text("title").notNull(),
-  scripture: text("scripture"),
-  notes: text("notes"),
+  // Link to the lesson material (Google Doc, PDF, slides, etc.).
+  url: text("url").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
-
-export const attendance = pgTable(
-  "attendance",
-  {
-    lessonId: integer("lesson_id")
-      .notNull()
-      .references(() => lessons.id, { onDelete: "cascade" }),
-    studentId: integer("student_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    status: attendanceStatusEnum("status").notNull(),
-  },
-  (t) => [primaryKey({ columns: [t.lessonId, t.studentId] })],
-);
 
 export const quizzes = pgTable("quizzes", {
   id: serial("id").primaryKey(),
@@ -91,5 +72,21 @@ export const submissions = pgTable(
   (t) => [unique().on(t.quizId, t.studentId)],
 );
 
+// One row per student per Sunday. Every grade column is nullable so the
+// teacher can leave slots blank and fill them in later.
+export const weeklyGrades = pgTable(
+  "weekly_grades",
+  {
+    studentId: integer("student_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    date: date("date").notNull(),
+    present: boolean("present"),
+    memoryVerse: integer("memory_verse"),
+    quiz: integer("quiz"),
+    sermonNotes: boolean("sermon_notes"),
+  },
+  (t) => [primaryKey({ columns: [t.studentId, t.date] })],
+);
+
 export type Role = (typeof roleEnum.enumValues)[number];
-export type AttendanceStatus = (typeof attendanceStatusEnum.enumValues)[number];

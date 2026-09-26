@@ -43,7 +43,7 @@ export default async function QuizPage({ params }: { params: Promise<{ id: strin
 
   return (
     <>
-      <Link href="/quizzes" className="text-sm text-stone-500 hover:text-stone-800">
+      <Link href="/quizzes" className="text-sm text-slate-400 hover:text-slate-100">
         ← All quizzes
       </Link>
       <PageHeader
@@ -61,7 +61,7 @@ export default async function QuizPage({ params }: { params: Promise<{ id: strin
         }
       />
       {quiz.quiz.description && (
-        <p className="-mt-2 mb-6 whitespace-pre-wrap text-sm text-stone-700">{quiz.quiz.description}</p>
+        <p className="-mt-2 mb-6 whitespace-pre-wrap text-sm text-slate-300">{quiz.quiz.description}</p>
       )}
       {user.role === "teacher" ? (
         <TeacherView quiz={quiz.quiz} questions={quizQuestions} />
@@ -104,13 +104,13 @@ async function TeacherView({
           <input type="hidden" name="quizId" value={quiz.id} />
           <ConfirmButton label="Delete quiz" confirmLabel="Delete quiz and all scores?" />
         </form>
-        <Badge tone={quiz.published ? "green" : "stone"}>
+        <Badge tone={quiz.published ? "green" : "slate"}>
           {quiz.published ? "Published" : "Draft"}
         </Badge>
       </div>
 
       <Card title="Results">
-        <ul className="divide-y divide-stone-100">
+        <ul className="divide-y divide-white/5">
           {students.map((s) => {
             const sub = byStudent.get(s.id);
             const pct = sub ? percent(sub.score, sub.total) : null;
@@ -128,12 +128,12 @@ async function TeacherView({
                       <ConfirmButton
                         label="Allow retake"
                         confirmLabel="Erase score?"
-                        className="text-xs text-stone-500 hover:text-red-700"
+                        className="text-xs text-slate-400 hover:text-rose-300"
                       />
                     </form>
                   </span>
                 ) : (
-                  <span className="text-sm text-stone-400">Not taken</span>
+                  <span className="text-sm text-slate-500">Not taken</span>
                 )}
               </li>
             );
@@ -153,7 +153,7 @@ async function TeacherView({
                     {i + 1}. {q.prompt}
                   </p>
                   {answered.length > 0 && (
-                    <span className="text-xs text-stone-500">
+                    <span className="text-xs text-slate-400">
                       {correct}/{answered.length} correct
                     </span>
                   )}
@@ -162,7 +162,7 @@ async function TeacherView({
                   {q.choices.map((choice, ci) => (
                     <li
                       key={ci}
-                      className={ci === q.correctIndex ? "font-medium text-green-700" : "text-stone-600"}
+                      className={ci === q.correctIndex ? "font-medium text-emerald-300" : "text-slate-400"}
                     >
                       {ci === q.correctIndex ? "✓" : "•"} {choice}
                     </li>
@@ -205,9 +205,9 @@ async function StudentView({
                 {q.choices.map((choice, ci) => (
                   <label
                     key={ci}
-                    className="flex cursor-pointer items-center gap-3 rounded-lg border border-stone-200 px-3 py-2 text-sm hover:bg-stone-50 has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50"
+                    className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 px-3.5 py-3 text-sm transition hover:bg-white/5 has-[:checked]:border-amber-400/60 has-[:checked]:bg-amber-400/10"
                   >
-                    <input type="radio" name={`q-${q.id}`} value={ci} required className="accent-indigo-600" />
+                    <input type="radio" name={`q-${q.id}`} value={ci} required className="accent-amber-400" />
                     {choice}
                   </label>
                 ))}
@@ -215,7 +215,7 @@ async function StudentView({
             </fieldset>
           </Card>
         ))}
-        <p className="text-sm text-stone-500">You can only submit once, so check your answers first.</p>
+        <p className="text-sm text-slate-400">You can only submit once, so check your answers first.</p>
       </ActionForm>
     );
   }
@@ -247,10 +247,10 @@ async function StudentView({
                     key={ci}
                     className={`rounded-lg px-3 py-2 ${
                       isCorrect
-                        ? "bg-green-50 font-medium text-green-800"
+                        ? "bg-emerald-400/10 font-medium text-emerald-200"
                         : isChosen
-                          ? "bg-red-50 text-red-800"
-                          : "text-stone-600"
+                          ? "bg-rose-400/10 text-rose-200"
+                          : "text-slate-400"
                     }`}
                   >
                     {isCorrect ? "✓ " : isChosen ? "✗ " : ""}

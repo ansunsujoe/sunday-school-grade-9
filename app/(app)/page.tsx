@@ -1,37 +1,67 @@
 import { desc, eq } from "drizzle-orm";
-import Link from "next/link";
-import { Badge, Card, EmptyState, PageHeader, TextLink, scoreTone } from "@/components/ui";
+import { Icon } from "@/components/icons";
+import { Badge, Card, EmptyState, Stat, TextLink, scoreTone } from "@/components/ui";
 import { requireUser, type CurrentUser } from "@/lib/dal";
 import { db } from "@/lib/db";
 import { quizzes, submissions, users } from "@/lib/db/schema";
-import { formatDate, percent, today } from "@/lib/format";
-import { getGradebook, getLessons } from "@/lib/queries";
+import { percent, today } from "@/lib/format";
+import { getLessons, getPublishedQuizzes, getWeeklyGrades } from "@/lib/queries";
+import { currentSunday, summarize } from "@/lib/season";
+import { verseForWeek } from "@/lib/verses";
 
 export default async function HomePage() {
   const user = await requireUser();
-  const lessons = await getLessons();
-  const nextLesson = lessons.find((l) => l.date >= today());
+  const [latestLesson] = await getLessons();
+  const verse = verseForWeek(currentSunday(today()));
 
   return (
-    <>
-      <PageHeader title={`Welcome, ${user.name.split(" ")[0]}!`} />
+    <div className="space-y-6">
+      <section className="relative overflow-hidden rounded-3xl border border-amber-300/15 bg-linear-to-br from-night-800 via-night-900 to-night-950 p-6 shadow-2xl shadow-black/30 sm:p-10">
+        <div className="pointer-events-none absolute -top-24 -right-16 size-72 rounded-full bg-amber-400/15 blur-3xl" />
+        <Icon
+          name="cross"
+          className="pointer-events-none absolute -right-6 -bottom-10 size-56 text-amber-200/[0.05] sm:right-6"
+        />
+        <p className="relative text-xs font-semibold tracking-[0.2em] text-amber-300/80 uppercase">
+          Welcome, {user.name.split(" ")[0]}
+        </p>
+        <blockquote className="relative mt-4 max-w-2xl">
+          <p className="font-display text-2xl leading-snug font-medium text-balance text-slate-50 sm:text-3xl">
+            “{verse.text}”
+          </p>
+          <footer className="mt-3 text-sm font-medium text-amber-200/90">
+            {verse.ref} <span className="text-slate-500">· Verse of the week</span>
+          </footer>
+        </blockquote>
+      </section>
+
       <div className="grid gap-6 md:grid-cols-2">
-        <Card title="Next lesson">
-          {nextLesson ? (
-            <Link href={`/lessons/${nextLesson.id}`} className="block hover:opacity-80">
-              <div className="text-lg font-medium">{nextLesson.title}</div>
-              <div className="text-sm text-stone-600">
-                {formatDate(nextLesson.date)}
-                {nextLesson.scripture && <> · {nextLesson.scripture}</>}
-              </div>
-            </Link>
+        <Card title="Latest lesson">
+          {latestLesson ? (
+            <a
+              href={latestLesson.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group -m-2 flex items-center gap-4 rounded-xl p-2 transition hover:bg-white/5"
+            >
+              <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-amber-400/10 text-amber-300 ring-1 ring-amber-400/20">
+                <Icon name="book" className="size-6" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-display text-lg font-semibold text-slate-50">
+                  {latestLesson.title}
+                </span>
+                <span className="block text-sm text-slate-400">Tap to open</span>
+              </span>
+              <Icon name="external" className="size-4 shrink-0 text-slate-500" />
+            </a>
           ) : (
-            <EmptyState>No upcoming lessons scheduled.</EmptyState>
+            <EmptyState>No lessons yet.</EmptyState>
           )}
         </Card>
         {user.role === "teacher" ? <TeacherHome /> : <StudentHome user={user} />}
       </div>
-    </>
+    </div>
   );
 }
 
@@ -56,12 +86,12 @@ async function TeacherHome() {
       {recent.length === 0 ? (
         <EmptyState>No submissions yet.</EmptyState>
       ) : (
-        <ul className="divide-y divide-stone-100 text-sm">
+        <ul className="divide-y divide-white/5 text-sm">
           {recent.map((r) => {
             const pct = percent(r.score, r.total);
             return (
-              <li key={r.id} className="flex items-center justify-between gap-2 py-2">
-                <span>
+              <li key={r.id} className="flex items-center justify-between gap-2 py-2.5">
+                <span className="min-w-0">
                   {r.student} · <TextLink href={`/quizzes/${r.quizId}`}>{r.quiz}</TextLink>
                 </span>
                 <Badge tone={scoreTone(pct)}>{pct}%</Badge>
@@ -75,15 +105,20 @@ async function TeacherHome() {
 }
 
 async function StudentHome({ user }: { user: CurrentUser }) {
-  const { quizzes: quizList, rows } = await getGradebook();
-  const me = rows.find((r) => r.student.id === user.id);
-  const todo = quizList.filter((q) => !me?.scores.has(q.id));
+  const [quizList, mine, grades] = await Promise.all([
+    getPublishedQuizzes(),
+    db.select({ quizId: submissions.quizId }).from(submissions).where(eq(submissions.studentId, user.id)),
+    getWeeklyGrades(user.id),
+  ]);
+  const taken = new Set(mine.map((s) => s.quizId));
+  const todo = quizList.filter((q) => !taken.has(q.id));
+  const summary = summarize(grades);
 
   return (
     <>
       <Card title="Quizzes to take">
         {todo.length === 0 ? (
-          <EmptyState>You&apos;re all caught up! 🎉</EmptyState>
+          <EmptyState>You&apos;re all caught up! 🙌</EmptyState>
         ) : (
           <ul className="space-y-2">
             {todo.map((q) => (
@@ -94,24 +129,17 @@ async function StudentHome({ user }: { user: CurrentUser }) {
           </ul>
         )}
       </Card>
-      <Card title="At a glance" className="md:col-span-2">
-        <div className="grid grid-cols-2 gap-4 text-center">
-          <Stat label="Quiz average" value={me?.quizAverage} />
-          <Stat label="Attendance" value={me?.attendance.rate} />
+      <Card title="My year at a glance" className="md:col-span-2">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <Stat label="Attendance" value={summary.attendance} />
+          <Stat label="Memory verse avg" value={summary.memoryVerse} suffix="" />
+          <Stat label="Quiz avg" value={summary.quiz} suffix="" />
+          <Stat label="Sermon notes" value={summary.sermonNotes} />
         </div>
         <p className="mt-4 text-center text-sm">
-          <TextLink href="/grades">See all my grades →</TextLink>
+          <TextLink href="/grades">See every Sunday →</TextLink>
         </p>
       </Card>
     </>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: number | null | undefined }) {
-  return (
-    <div className="rounded-lg bg-stone-50 p-4">
-      <div className="text-3xl font-semibold">{value == null ? "—" : `${value}%`}</div>
-      <div className="text-sm text-stone-600">{label}</div>
-    </div>
   );
 }

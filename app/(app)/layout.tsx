@@ -1,48 +1,82 @@
 import Link from "next/link";
-import { NavLinks } from "@/components/nav-links";
+import { Icon, LogoMark } from "@/components/icons";
+import { NavLinks, TabBar } from "@/components/nav-links";
 import { logout } from "@/lib/actions/auth";
 import { requireUser } from "@/lib/dal";
 
 const TEACHER_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/lessons", label: "Lessons" },
-  { href: "/quizzes", label: "Quizzes" },
-  { href: "/grades", label: "Gradebook" },
-  { href: "/people", label: "People" },
-];
+  { href: "/", label: "Home", icon: "home" },
+  { href: "/lessons", label: "Lessons", icon: "book" },
+  { href: "/quizzes", label: "Quizzes", icon: "quiz" },
+  { href: "/grades", label: "Gradebook", icon: "grades" },
+  { href: "/people", label: "People", icon: "people" },
+] as const;
 
 const STUDENT_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/lessons", label: "Lessons" },
-  { href: "/quizzes", label: "Quizzes" },
-  { href: "/grades", label: "My grades" },
-];
+  { href: "/", label: "Home", icon: "home" },
+  { href: "/lessons", label: "Lessons", icon: "book" },
+  { href: "/quizzes", label: "Quizzes", icon: "quiz" },
+  { href: "/grades", label: "My grades", icon: "grades" },
+] as const;
+
+function initials(name: string) {
+  return name
+    .split(/\s+/)
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
-  const links = user.role === "teacher" ? TEACHER_LINKS : STUDENT_LINKS;
+  const links = [...(user.role === "teacher" ? TEACHER_LINKS : STUDENT_LINKS)];
 
   return (
     <div className="flex min-h-full flex-1 flex-col">
-      <header className="border-b border-stone-200 bg-white">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3">
-          <div className="flex flex-wrap items-center gap-4">
-            <Link href="/" className="font-semibold text-stone-900">
-              ✝ Grade 9 Sunday School
+      <header className="sticky top-0 z-30 border-b border-white/[0.06] bg-night-950/75 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
+          <div className="flex min-w-0 items-center gap-6">
+            <Link href="/" className="flex min-w-0 items-center gap-2.5">
+              <LogoMark />
+              <span className="leading-tight">
+                <span className="block font-display text-[15px] font-semibold text-slate-50">
+                  Grade 9
+                </span>
+                <span className="block text-[11px] tracking-[0.18em] text-amber-300/80 uppercase">
+                  Sunday School
+                </span>
+              </span>
             </Link>
             <NavLinks links={links} />
           </div>
-          <div className="flex items-center gap-3 text-sm">
-            <Link href="/account" className="text-stone-600 hover:text-stone-900">
-              {user.name}
+          <div className="flex items-center gap-1">
+            <Link
+              href="/account"
+              className="flex items-center gap-2 rounded-full py-1 pr-1 pl-1 text-sm text-slate-300 transition hover:bg-white/5 sm:pr-3"
+              title="My account"
+            >
+              <span className="grid size-8 place-items-center rounded-full bg-night-700 text-xs font-semibold text-amber-200 ring-1 ring-amber-400/30">
+                {initials(user.name)}
+              </span>
+              <span className="hidden sm:inline">{user.name}</span>
             </Link>
             <form action={logout}>
-              <button className="text-stone-500 hover:text-stone-900">Log out</button>
+              <button
+                className="grid size-10 place-items-center rounded-full text-slate-400 transition hover:bg-white/5 hover:text-slate-100"
+                title="Log out"
+                aria-label="Log out"
+              >
+                <Icon name="logout" />
+              </button>
             </form>
           </div>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">{children}</main>
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:pt-10 md:pb-12">
+        {children}
+      </main>
+      <TabBar links={links} />
     </div>
   );
 }

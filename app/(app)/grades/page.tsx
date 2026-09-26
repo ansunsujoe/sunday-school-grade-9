@@ -1,151 +1,80 @@
-import { eq } from "drizzle-orm";
-import { Badge, Card, EmptyState, PageHeader, TextLink, scoreTone } from "@/components/ui";
+import { ActionForm } from "@/components/action-form";
+import { Card, EmptyState, PageHeader, TextLink } from "@/components/ui";
+import { saveWeek } from "@/lib/actions/grades";
 import { requireUser } from "@/lib/dal";
-import { db } from "@/lib/db";
-import { attendance, lessons } from "@/lib/db/schema";
-import { formatDate, percent } from "@/lib/format";
-import { getGradebook } from "@/lib/queries";
+import { formatDate, formatShortDate, today } from "@/lib/format";
+import { getStudents, getWeeklyGrades } from "@/lib/queries";
+import { SEASON_END, SEASON_START, SUNDAYS, currentSunday, summarize } from "@/lib/season";
+import { SeasonView } from "./season-view";
+import { Overview, StudentWeek } from "./week-form";
+import { WeekPicker } from "./week-picker";
 
-type Gradebook = Awaited<ReturnType<typeof getGradebook>>;
-
-export default async function GradesPage() {
+export default async function GradesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const user = await requireUser();
-  const gradebook = await getGradebook();
 
-  if (user.role === "teacher") return <TeacherGradebook gradebook={gradebook} />;
+  if (user.role === "student") {
+    return (
+      <>
+        <PageHeader
+          eyebrow="2026 – 2027 class year"
+          title="My grades"
+          description="Every Sunday this year. Blank slots haven't been graded yet."
+        />
+        <SeasonView grades={await getWeeklyGrades(user.id)} />
+      </>
+    );
+  }
 
-  const me = gradebook.rows.find((r) => r.student.id === user.id);
-  return <StudentGrades studentId={user.id} gradebook={gradebook} me={me} />;
-}
+  const { week } = await searchParams;
+  const thisWeek = currentSunday(today());
+  const date = typeof week === "string" && SUNDAYS.includes(week) ? week : thisWeek;
 
-function Score({ score }: { score?: { score: number; total: number } }) {
-  if (!score) return <span className="text-stone-400">—</span>;
-  const pct = percent(score.score, score.total);
-  return (
-    <Badge tone={scoreTone(pct)}>
-      {score.score}/{score.total}
-    </Badge>
-  );
-}
+  const [students, grades] = await Promise.all([getStudents(), getWeeklyGrades()]);
+  const forDate = new Map(grades.filter((g) => g.date === date).map((g) => [g.studentId, g]));
 
-function Pct({ value }: { value: number | null }) {
-  return <span className="font-medium">{value == null ? "—" : `${value}%`}</span>;
-}
-
-function TeacherGradebook({ gradebook }: { gradebook: Gradebook }) {
-  const { quizzes, rows } = gradebook;
   return (
     <>
       <PageHeader
-        title="Gradebook"
-        description="Published quizzes and attendance. Excused absences don't count against attendance."
+        eyebrow="Gradebook"
+        title={formatDate(date)}
+        description={`Week ${SUNDAYS.indexOf(date) + 1} of ${SUNDAYS.length} · ${formatShortDate(SEASON_START)}, 2026 – ${formatShortDate(SEASON_END)}, 2027`}
       />
-      <Card>
-        {rows.length === 0 ? (
-          <EmptyState>No students yet.</EmptyState>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="border-b border-stone-200 text-stone-600">
-                <tr>
-                  <th className="py-2 pr-4 font-medium">Student</th>
-                  {quizzes.map((q) => (
-                    <th key={q.id} className="max-w-32 px-2 py-2 font-medium">
-                      <TextLink href={`/quizzes/${q.id}`}>{q.title}</TextLink>
-                    </th>
-                  ))}
-                  <th className="px-2 py-2 font-medium">Quiz avg</th>
-                  <th className="px-2 py-2 font-medium">Attendance</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-stone-100">
-                {rows.map((row) => (
-                  <tr key={row.student.id}>
-                    <td className="py-2 pr-4 font-medium whitespace-nowrap">{row.student.name}</td>
-                    {quizzes.map((q) => (
-                      <td key={q.id} className="px-2 py-2">
-                        <Score score={row.scores.get(q.id)} />
-                      </td>
-                    ))}
-                    <td className="px-2 py-2">
-                      <Pct value={row.quizAverage} />
-                    </td>
-                    <td className="px-2 py-2 whitespace-nowrap">
-                      <Pct value={row.attendance.rate} />{" "}
-                      <span className="text-xs text-stone-500">
-                        ({row.attendance.present}P · {row.attendance.absent}A · {row.attendance.excused}E)
-                      </span>
-                    </td>
-                  </tr>
+      {students.length === 0 ? (
+        <Card>
+          <EmptyState>
+            Add students on the <TextLink href="/people">People</TextLink> page first.
+          </EmptyState>
+        </Card>
+      ) : (
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
+          <div className="space-y-4">
+            <WeekPicker
+              weeks={SUNDAYS.map((s) => ({ value: s, label: formatShortDate(s) }))}
+              value={date}
+              current={thisWeek}
+            />
+            {/* Keyed by date so switching weeks resets the uncontrolled inputs. */}
+            <ActionForm key={date} action={saveWeek} submitLabel="Save this Sunday" stickyFooter>
+              <input type="hidden" name="date" value={date} />
+              <ul className="space-y-3">
+                {students.map((s) => (
+                  <StudentWeek key={s.id} student={s} grade={forDate.get(s.id)} />
                 ))}
-              </tbody>
-            </table>
+              </ul>
+            </ActionForm>
           </div>
-        )}
-      </Card>
-    </>
-  );
-}
-
-async function StudentGrades({
-  studentId,
-  gradebook,
-  me,
-}: {
-  studentId: number;
-  gradebook: Gradebook;
-  me: Gradebook["rows"][number] | undefined;
-}) {
-  const myAttendance = await db
-    .select({ lesson: lessons, status: attendance.status })
-    .from(attendance)
-    .innerJoin(lessons, eq(attendance.lessonId, lessons.id))
-    .where(eq(attendance.studentId, studentId))
-    .orderBy(lessons.date);
-
-  const statusTone = { present: "green", absent: "red", excused: "amber" } as const;
-
-  return (
-    <>
-      <PageHeader title="My grades" />
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card title={<>Quizzes · <Pct value={me?.quizAverage ?? null} /> average</>}>
-          {gradebook.quizzes.length === 0 ? (
-            <EmptyState>No quizzes yet.</EmptyState>
-          ) : (
-            <ul className="divide-y divide-stone-100">
-              {gradebook.quizzes.map((q) => (
-                <li key={q.id} className="flex items-center justify-between gap-2 py-2 text-sm">
-                  <TextLink href={`/quizzes/${q.id}`}>{q.title}</TextLink>
-                  {me?.scores.has(q.id) ? (
-                    <Score score={me.scores.get(q.id)} />
-                  ) : (
-                    <Badge tone="indigo">Not taken</Badge>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </Card>
-        <Card title={<>Attendance · <Pct value={me?.attendance.rate ?? null} /></>}>
-          {myAttendance.length === 0 ? (
-            <EmptyState>No attendance recorded yet.</EmptyState>
-          ) : (
-            <ul className="divide-y divide-stone-100">
-              {myAttendance.map(({ lesson, status }) => (
-                <li key={lesson.id} className="flex items-center justify-between gap-2 py-2 text-sm">
-                  <span>
-                    <span className="text-stone-500">{formatDate(lesson.date)}</span> · {lesson.title}
-                  </span>
-                  <Badge tone={statusTone[status]}>
-                    <span className="capitalize">{status}</span>
-                  </Badge>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Card>
-      </div>
+          <Overview
+            rows={students.map((s) => ({
+              student: s,
+              summary: summarize(grades.filter((g) => g.studentId === s.id)),
+            }))}
+          />
+        </div>
+      )}
     </>
   );
 }

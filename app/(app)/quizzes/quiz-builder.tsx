@@ -23,7 +23,7 @@ export function QuizBuilder({
   initial,
 }: {
   action: (state: FormState, formData: FormData) => Promise<FormState>;
-  lessons: { id: number; title: string; date: string }[];
+  lessons: { id: number; title: string }[];
   quizId?: number;
   initial?: QuizDraft;
 }) {
@@ -84,7 +84,7 @@ export function QuizBuilder({
               <option value="">No lesson</option>
               {lessons.map((l) => (
                 <option key={l.id} value={l.id}>
-                  {l.date} · {l.title}
+                  {l.title}
                 </option>
               ))}
             </select>
@@ -102,7 +102,7 @@ export function QuizBuilder({
                 <button
                   type="button"
                   onClick={() => removeQuestion(qi)}
-                  className="text-sm font-normal text-red-700 hover:underline"
+                  className="text-sm font-normal text-rose-300 hover:underline"
                 >
                   Remove
                 </button>
@@ -119,7 +119,7 @@ export function QuizBuilder({
               onChange={(e) => updateQuestion(qi, { prompt: e.target.value })}
               className={inputClass}
             />
-            <p className="text-xs text-stone-500">Select the circle next to the correct answer.</p>
+            <p className="text-xs text-slate-400">Select the circle next to the correct answer.</p>
             {q.choices.map((choice, ci) => (
               <div key={ci} className="flex items-center gap-2">
                 <input
@@ -128,7 +128,7 @@ export function QuizBuilder({
                   aria-label={`Choice ${ci + 1} is correct`}
                   checked={q.correctIndex === ci}
                   onChange={() => updateQuestion(qi, { correctIndex: ci })}
-                  className="h-4 w-4 accent-green-600"
+                  className="h-4 w-4 accent-emerald-400"
                 />
                 <input
                   aria-label={`Choice ${ci + 1}`}
@@ -152,7 +152,7 @@ export function QuizBuilder({
                           q.correctIndex === ci ? 0 : q.correctIndex > ci ? q.correctIndex - 1 : q.correctIndex,
                       })
                     }
-                    className="px-2 text-stone-400 hover:text-red-700"
+                    className="px-2 text-slate-500 hover:text-rose-300"
                   >
                     ×
                   </button>
@@ -163,7 +163,7 @@ export function QuizBuilder({
               <button
                 type="button"
                 onClick={() => updateQuestion(qi, { choices: [...q.choices, ""] })}
-                className="text-sm text-indigo-700 hover:underline"
+                className="text-sm text-amber-300 hover:underline"
               >
                 + Add choice
               </button>

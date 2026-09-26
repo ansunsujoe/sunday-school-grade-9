@@ -34,17 +34,17 @@ async function TeacherQuizzes() {
         {quizList.length === 0 ? (
           <EmptyState>No quizzes yet. Create one to get started.</EmptyState>
         ) : (
-          <ul className="divide-y divide-stone-100">
+          <ul className="divide-y divide-white/5">
             {quizList.map((quiz) => {
               const taken = subs.filter((s) => s.quizId === quiz.id).length;
               return (
                 <li key={quiz.id}>
                   <Link
                     href={`/quizzes/${quiz.id}`}
-                    className="-mx-2 flex flex-wrap items-center justify-between gap-2 rounded-lg px-2 py-3 hover:bg-stone-50"
+                    className="-mx-2 flex flex-wrap items-center justify-between gap-2 rounded-xl px-2 py-3 transition hover:bg-white/5"
                   >
                     <span className="font-medium">{quiz.title}</span>
-                    <span className="flex items-center gap-2 text-sm text-stone-500">
+                    <span className="flex items-center gap-2 text-sm text-slate-400">
                       {quiz.published ? (
                         <>
                           {taken}/{students.length} taken <Badge tone="green">Published</Badge>
@@ -78,7 +78,7 @@ async function StudentQuizzes({ studentId }: { studentId: number }) {
         {quizList.length === 0 ? (
           <EmptyState>No quizzes yet. Check back after class!</EmptyState>
         ) : (
-          <ul className="divide-y divide-stone-100">
+          <ul className="divide-y divide-white/5">
             {quizList.map((quiz) => {
               const sub = mine.get(quiz.id);
               const pct = sub ? percent(sub.score, sub.total) : null;
@@ -86,7 +86,7 @@ async function StudentQuizzes({ studentId }: { studentId: number }) {
                 <li key={quiz.id}>
                   <Link
                     href={`/quizzes/${quiz.id}`}
-                    className="-mx-2 flex flex-wrap items-center justify-between gap-2 rounded-lg px-2 py-3 hover:bg-stone-50"
+                    className="-mx-2 flex flex-wrap items-center justify-between gap-2 rounded-xl px-2 py-3 transition hover:bg-white/5"
                   >
                     <span className="font-medium">{quiz.title}</span>
                     {sub ? (
@@ -94,7 +94,7 @@ async function StudentQuizzes({ studentId }: { studentId: number }) {
                         {sub.score}/{sub.total} · {pct}%
                       </Badge>
                     ) : (
-                      <Badge tone="indigo">Take quiz →</Badge>
+                      <Badge tone="gold">Take quiz →</Badge>
                     )}
                   </Link>
                 </li>

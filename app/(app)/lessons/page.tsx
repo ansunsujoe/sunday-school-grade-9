@@ -1,29 +1,57 @@
 import Link from "next/link";
 import { ActionForm } from "@/components/action-form";
-import { Badge, Card, EmptyState, PageHeader } from "@/components/ui";
+import { Icon } from "@/components/icons";
+import { Card, EmptyState, PageHeader } from "@/components/ui";
 import { createLesson } from "@/lib/actions/lessons";
 import { requireUser } from "@/lib/dal";
-import { formatDate, today } from "@/lib/format";
 import { getLessons } from "@/lib/queries";
 import { LessonFields } from "./lesson-fields";
 
 export default async function LessonsPage() {
   const user = await requireUser();
+  const isTeacher = user.role === "teacher";
   const lessons = await getLessons();
-  const now = today();
-  const upcoming = lessons.filter((l) => l.date >= now);
-  const past = lessons.filter((l) => l.date < now).reverse();
 
   return (
     <>
-      <PageHeader title="Lessons" description="Our class schedule, week by week." />
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-        <div className="space-y-6">
-          <LessonList title="Upcoming" lessons={upcoming} empty="No upcoming lessons scheduled." />
-          <LessonList title="Past" lessons={past} empty="No past lessons yet." />
-        </div>
-        {user.role === "teacher" && (
-          <Card title="Add a lesson" className="h-fit">
+      <PageHeader title="Lessons" description="Tap a lesson to open it." />
+      <div className="grid gap-6 lg:grid-cols-[1fr_320px] lg:items-start">
+        <Card>
+          {lessons.length === 0 ? (
+            <EmptyState>No lessons yet.</EmptyState>
+          ) : (
+            <ul className="divide-y divide-white/5">
+              {lessons.map((lesson) => (
+                <li key={lesson.id} className="flex items-center gap-2">
+                  <a
+                    href={lesson.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="-mx-2 flex min-w-0 flex-1 items-center gap-3 rounded-xl px-2 py-3 transition hover:bg-white/5"
+                  >
+                    <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-amber-400/10 text-amber-300 ring-1 ring-amber-400/20">
+                      <Icon name="book" />
+                    </span>
+                    <span className="min-w-0 flex-1 truncate font-medium text-slate-100">
+                      {lesson.title}
+                    </span>
+                    <Icon name="external" className="size-4 shrink-0 text-slate-500" />
+                  </a>
+                  {isTeacher && (
+                    <Link
+                      href={`/lessons/${lesson.id}`}
+                      className="shrink-0 rounded-lg px-2.5 py-2 text-xs font-medium text-slate-400 transition hover:bg-white/5 hover:text-amber-300"
+                    >
+                      Edit
+                    </Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+        {isTeacher && (
+          <Card title="Add a lesson">
             <ActionForm action={createLesson} submitLabel="Add lesson" resetOnSuccess>
               <LessonFields />
             </ActionForm>
@@ -31,42 +59,5 @@ export default async function LessonsPage() {
         )}
       </div>
     </>
-  );
-}
-
-function LessonList({
-  title,
-  lessons,
-  empty,
-}: {
-  title: string;
-  lessons: Awaited<ReturnType<typeof getLessons>>;
-  empty: string;
-}) {
-  return (
-    <Card title={title}>
-      {lessons.length === 0 ? (
-        <EmptyState>{empty}</EmptyState>
-      ) : (
-        <ul className="divide-y divide-stone-100">
-          {lessons.map((lesson) => (
-            <li key={lesson.id}>
-              <Link
-                href={`/lessons/${lesson.id}`}
-                className="-mx-2 flex flex-wrap items-center justify-between gap-2 rounded-lg px-2 py-3 hover:bg-stone-50"
-              >
-                <div>
-                  <div className="font-medium text-stone-900">{lesson.title}</div>
-                  {lesson.scripture && (
-                    <div className="text-sm text-stone-600">{lesson.scripture}</div>
-                  )}
-                </div>
-                <Badge>{formatDate(lesson.date)}</Badge>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </Card>
   );
 }

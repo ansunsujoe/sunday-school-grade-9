@@ -12,6 +12,7 @@ export function ActionForm({
   pendingLabel = "Saving…",
   resetOnSuccess = false,
   className = "space-y-4",
+  stickyFooter = false,
   children,
 }: {
   action: (state: FormState, formData: FormData) => Promise<FormState>;
@@ -19,6 +20,8 @@ export function ActionForm({
   pendingLabel?: string;
   resetOnSuccess?: boolean;
   className?: string;
+  /** Pins the submit bar to the bottom of the screen, for long forms. */
+  stickyFooter?: boolean;
   children: React.ReactNode;
 }) {
   const [state, formAction, pending] = useActionState(action, undefined);
@@ -39,7 +42,13 @@ export function ActionForm({
       }}
     >
       {children}
-      <div className="flex flex-wrap items-center gap-3">
+      <div
+        className={
+          stickyFooter
+            ? "sticky bottom-[calc(5rem+env(safe-area-inset-bottom))] z-20 flex flex-wrap items-center gap-3 rounded-2xl border border-white/10 bg-night-800/90 p-3 shadow-2xl shadow-black/40 backdrop-blur-xl md:bottom-4"
+            : "flex flex-wrap items-center gap-3"
+        }
+      >
         <button type="submit" disabled={pending} className={buttonClass}>
           {pending ? pendingLabel : submitLabel}
         </button>
@@ -50,7 +59,7 @@ export function ActionForm({
 }
 
 export function FormMessage({ state }: { state: FormState }) {
-  if (state?.error) return <p className="text-sm text-red-700">{state.error}</p>;
-  if (state?.success) return <p className="text-sm text-green-700">{state.success}</p>;
+  if (state?.error) return <p className="text-sm text-rose-300">{state.error}</p>;
+  if (state?.success) return <p className="text-sm text-emerald-300">{state.success}</p>;
   return null;
 }

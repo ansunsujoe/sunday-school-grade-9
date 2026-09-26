@@ -3,8 +3,42 @@
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-fraunces);
+}
+
+/* "Night sky" surfaces, lit by candle-gold accents (Tailwind's amber). */
+@theme {
+  --color-night-950: #060913;
+  --color-night-900: #0b1120;
+  --color-night-800: #121a2e;
+  --color-night-700: #1b2540;
+  --color-night-600: #283456;
+}
+
+:root {
+  color-scheme: dark;
 }
 
 body {
-  @apply bg-stone-50 text-stone-900;
+  @apply bg-night-950 text-slate-200;
+  background-image:
+    radial-gradient(60rem 30rem at 50% -8rem, rgb(251 191 36 / 0.10), transparent 70%),
+    radial-gradient(40rem 30rem at 100% 30%, rgb(99 102 241 / 0.08), transparent 70%),
+    radial-gradient(40rem 30rem at 0% 80%, rgb(56 189 248 / 0.05), transparent 70%);
+  background-attachment: fixed;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  @apply bg-amber-400/30 text-amber-50;
+}
+
+/* Hide number spinners; scores are typed, and spinners crowd small screens. */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
 }

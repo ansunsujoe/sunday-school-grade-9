@@ -1,9 +1,11 @@
 # Grade 9 Sunday School
 
-A small class app for lessons, attendance, quizzes, and grades.
+A small class app for lessons, quizzes, and a Sunday gradebook.
 
-- **Teachers** manage student accounts, schedule lessons, take attendance, write multiple-choice quizzes, and see the full gradebook.
-- **Students** log in to see upcoming lessons, take published quizzes (graded automatically, one attempt), and view their own grades and attendance.
+- **Teachers** manage student accounts, post lessons (a title and a link to the material), write multiple-choice quizzes, and fill in the Sunday gradebook.
+- **Students** log in to open lessons, take published quizzes (graded automatically, one attempt), and view their own grades.
+
+The **gradebook** has a slot for every Sunday of the class year (Jul 26, 2026 – May 16, 2027; see `lib/season.ts`): attendance (P/A), memory verse (/100), quiz (/100), and sermon notes (Y/N). Any slot can be left blank; blanks don't count toward averages.
 
 Built with Next.js, Neon Postgres, and Drizzle ORM.
 

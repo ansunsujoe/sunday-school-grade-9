@@ -25,14 +25,14 @@ export default async function PeoplePage() {
           {people.length === 0 ? (
             <EmptyState>No accounts yet.</EmptyState>
           ) : (
-            <ul className="divide-y divide-stone-100">
+            <ul className="divide-y divide-white/5">
               {people.map((p) => (
                 <li key={p.id} className="py-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
                       <span className="font-medium">{p.name}</span>{" "}
-                      <span className="text-sm text-stone-500">@{p.username}</span>{" "}
-                      {p.role === "teacher" && <Badge tone="indigo">Teacher</Badge>}
+                      <span className="text-sm text-slate-400">@{p.username}</span>{" "}
+                      {p.role === "teacher" && <Badge tone="gold">Teacher</Badge>}
                     </div>
                     {p.role === "student" && (
                       <form action={deleteStudent}>
@@ -43,7 +43,7 @@ export default async function PeoplePage() {
                   </div>
                   {p.id !== me.id && (
                     <details className="mt-2">
-                      <summary className="cursor-pointer text-sm text-stone-500 hover:text-stone-800">
+                      <summary className="cursor-pointer text-sm text-slate-400 hover:text-slate-100">
                         Reset password
                       </summary>
                       <ActionForm

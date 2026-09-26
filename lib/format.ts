@@ -23,3 +23,21 @@ export function percent(numerator: number, denominator: number) {
   if (denominator === 0) return null;
   return Math.round((numerator / denominator) * 100);
 }
+
+/** Formats a YYYY-MM-DD date string as a month and day, e.g. "Sep 28". */
+export function formatShortDate(isoDate: string) {
+  return new Date(`${isoDate}T00:00:00Z`).toLocaleDateString("en-US", {
+    timeZone: "UTC",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+/** Formats a YYYY-MM-DD date string as a month and year, e.g. "September 2026". */
+export function formatMonth(isoDate: string) {
+  return new Date(`${isoDate}T00:00:00Z`).toLocaleDateString("en-US", {
+    timeZone: "UTC",
+    month: "long",
+    year: "numeric",
+  });
+}

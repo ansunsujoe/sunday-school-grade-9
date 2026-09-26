@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,9 +12,21 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   title: "Grade 9 Sunday School",
-  description: "Lessons, attendance, quizzes, and grades for our Grade 9 class.",
+  description: "Lessons, quizzes, and grades for our Grade 9 class.",
+  appleWebApp: { title: "Sunday School", statusBarStyle: "black-translucent" },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#060913",
+  colorScheme: "dark",
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -25,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
