@@ -17,7 +17,7 @@ export default async function HomePage() {
 
   return (
     <div className="space-y-6">
-      <section className="relative overflow-hidden rounded-3xl border border-amber-300/15 bg-linear-to-br from-night-800 via-night-900 to-night-950 p-6 shadow-2xl shadow-black/30 sm:p-10">
+      <section className="relative overflow-hidden rounded-3xl border border-amber-300/15 bg-linear-to-br from-night-800 via-night-900 to-night-950 p-5 shadow-2xl shadow-black/30 sm:p-8">
         <div className="pointer-events-none absolute -top-24 -right-16 size-72 rounded-full bg-amber-400/15 blur-3xl" />
         <Icon
           name="cross"
@@ -26,7 +26,7 @@ export default async function HomePage() {
         <p className="relative text-xs font-semibold tracking-[0.2em] text-amber-300/80 uppercase">
           Welcome, {user.name.split(" ")[0]}
         </p>
-        <blockquote className="relative mt-4 max-w-2xl">
+        <blockquote className="relative mt-4 max-w-5xl">
           <p className="font-display text-2xl leading-snug font-medium text-balance text-slate-50 sm:text-3xl">
             “{verse.text}”
           </p>

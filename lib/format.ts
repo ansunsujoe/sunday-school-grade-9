@@ -41,3 +41,9 @@ export function formatMonth(isoDate: string) {
     year: "numeric",
   });
 }
+
+/** Formats an HH:MM[:SS] time string, e.g. "16:30:00" -> "4:30 PM". */
+export function formatTime(time: string) {
+  const [h, m] = time.split(":").map(Number);
+  return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
+}

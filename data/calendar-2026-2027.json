@@ -1,0 +1,256 @@
+{
+  "source": "2026-2027 SS Calendar.pdf",
+  "title": "2026-2027 New Testament Ministries Dallas Sunday School Calendar",
+  "note": "Revival Meetings and Anniversary dates are tentative and will be updated as per Pastor's guidance.",
+  "schedule": {
+    "staffPrayerAndDevotion": "08:45-08:55",
+    "leadingWorship": "09:00-09:15"
+  },
+  "events": [
+    {
+      "date": "2026-07-26",
+      "title": "Introduction",
+      "audience": "all"
+    },
+    {
+      "date": "2026-08-01",
+      "title": "Staff Prayer",
+      "audience": "teachers",
+      "startTime": "16:30",
+      "endTime": "17:30"
+    },
+    {
+      "date": "2026-09-05",
+      "title": "Staff Prayer",
+      "audience": "teachers",
+      "startTime": "16:30",
+      "endTime": "17:30"
+    },
+    {
+      "date": "2026-09-27",
+      "title": "End of 1st Quarter",
+      "audience": "all"
+    },
+    {
+      "date": "2026-09-27",
+      "title": "9th Grade Devotion",
+      "audience": "all",
+      "startTime": "09:00",
+      "endTime": "09:15"
+    },
+    {
+      "date": "2026-10-03",
+      "title": "Staff Prayer",
+      "audience": "teachers",
+      "startTime": "16:30",
+      "endTime": "17:30"
+    },
+    {
+      "date": "2026-10-31",
+      "title": "Staff Prayer",
+      "audience": "teachers",
+      "startTime": "16:30",
+      "endTime": "17:30"
+    },
+    {
+      "date": "2026-11-22",
+      "title": "No Sunday School - Houston Revivals",
+      "audience": "all"
+    },
+    {
+      "date": "2026-12-05",
+      "title": "Staff Prayer",
+      "audience": "teachers",
+      "startTime": "16:30",
+      "endTime": "17:30"
+    },
+    {
+      "date": "2026-12-13",
+      "title": "Midterm Exam Questions Due",
+      "audience": "teachers"
+    },
+    {
+      "date": "2026-12-13",
+      "title": "End of 2nd Quarter",
+      "audience": "all"
+    },
+    {
+      "date": "2027-01-02",
+      "title": "Staff Prayer",
+      "audience": "teachers",
+      "startTime": "16:30",
+      "endTime": "17:30"
+    },
+    {
+      "date": "2027-01-10",
+      "title": "Midterm Exam",
+      "audience": "all"
+    },
+    {
+      "date": "2027-01-17",
+      "title": "Anniversary Program Title Due",
+      "audience": "all"
+    },
+    {
+      "date": "2027-02-06",
+      "title": "Staff Prayer",
+      "audience": "teachers",
+      "startTime": "16:30",
+      "endTime": "17:30"
+    },
+    {
+      "date": "2027-02-28",
+      "title": "End of 3rd Quarter",
+      "audience": "all"
+    },
+    {
+      "date": "2027-03-06",
+      "title": "Staff Prayer",
+      "audience": "teachers",
+      "startTime": "16:30",
+      "endTime": "17:30"
+    },
+    {
+      "date": "2027-03-27",
+      "title": "Memory Verse Exam",
+      "audience": "all"
+    },
+    {
+      "date": "2027-03-28",
+      "title": "Anniversary Program Scripts Due",
+      "audience": "all"
+    },
+    {
+      "date": "2027-04-03",
+      "title": "Staff Prayer",
+      "audience": "teachers",
+      "startTime": "16:30",
+      "endTime": "17:30"
+    },
+    {
+      "date": "2027-04-11",
+      "title": "9th Grade Devotion",
+      "audience": "all",
+      "startTime": "09:00",
+      "endTime": "09:15"
+    },
+    {
+      "date": "2027-05-01",
+      "title": "Staff Prayer",
+      "audience": "teachers",
+      "startTime": "16:30",
+      "endTime": "17:30"
+    },
+    {
+      "date": "2027-05-16",
+      "title": "End of 4th Quarter",
+      "audience": "all"
+    },
+    {
+      "date": "2027-05-16",
+      "title": "Final Exam Questions Due",
+      "audience": "teachers"
+    },
+    {
+      "date": "2027-05-23",
+      "title": "No Sunday School - Dallas Revivals",
+      "audience": "all"
+    },
+    {
+      "date": "2027-05-30",
+      "title": "Final Exam",
+      "audience": "all"
+    },
+    {
+      "date": "2027-06-04",
+      "title": "Anniversary Program Practice",
+      "audience": "all",
+      "startTime": "19:00",
+      "endTime": "21:00"
+    },
+    {
+      "date": "2027-06-05",
+      "title": "Anniversary Program Practice",
+      "audience": "all",
+      "startTime": "15:30",
+      "endTime": "17:30"
+    },
+    {
+      "date": "2027-06-06",
+      "title": "Anniversary Program Practice",
+      "audience": "all",
+      "startTime": "09:00",
+      "endTime": "10:15"
+    },
+    {
+      "date": "2027-06-11",
+      "title": "Anniversary Program Practice",
+      "audience": "all",
+      "startTime": "19:00",
+      "endTime": "21:00"
+    },
+    {
+      "date": "2027-06-12",
+      "title": "Memory Verse Contest",
+      "audience": "all"
+    },
+    {
+      "date": "2027-06-13",
+      "title": "Anniversary Program Practice",
+      "audience": "all",
+      "startTime": "09:00",
+      "endTime": "10:15"
+    },
+    {
+      "date": "2027-06-18",
+      "title": "Anniversary Program Practice",
+      "audience": "all",
+      "startTime": "19:00",
+      "endTime": "21:00"
+    },
+    {
+      "date": "2027-06-19",
+      "title": "Anniversary Program Practice",
+      "audience": "all",
+      "startTime": "15:30",
+      "endTime": "17:30"
+    },
+    {
+      "date": "2027-06-20",
+      "title": "Anniversary Program Practice",
+      "audience": "all",
+      "startTime": "09:00",
+      "endTime": "10:15"
+    },
+    {
+      "date": "2027-06-20",
+      "title": "Anniversary",
+      "audience": "all"
+    },
+    {
+      "date": "2027-06-27",
+      "title": "No Sunday School - Award Distribution",
+      "audience": "all"
+    },
+    {
+      "date": "2027-07-04",
+      "title": "No Sunday School",
+      "audience": "all"
+    },
+    {
+      "date": "2027-07-11",
+      "title": "No Sunday School - USA Convention",
+      "audience": "all"
+    },
+    {
+      "date": "2027-07-18",
+      "title": "No Sunday School",
+      "audience": "all"
+    },
+    {
+      "date": "2027-07-25",
+      "title": "New Sunday School Year",
+      "audience": "all"
+    }
+  ]
+}

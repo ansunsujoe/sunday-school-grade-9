@@ -8,6 +8,7 @@ import {
   primaryKey,
   serial,
   text,
+  time,
   timestamp,
   unique,
 } from "drizzle-orm/pg-core";
@@ -94,5 +95,23 @@ export const weeklyGrades = pgTable(
   },
   (t) => [primaryKey({ columns: [t.studentId, t.date] })],
 );
+
+export const EVENT_AUDIENCES = ["all", "teachers"] as const;
+export type EventAudience = (typeof EVENT_AUDIENCES)[number];
+
+// Calendar events. "all" events are seen by teachers and students; "teachers"
+// events only by teachers. Times are optional, for all-day events.
+export const events = pgTable("events", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  date: date("date").notNull(),
+  startTime: time("start_time"),
+  endTime: time("end_time"),
+  audience: text("audience").$type<EventAudience>().notNull().default("all"),
+  noSundaySchool: boolean("no_sunday_school").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export type CalendarEvent = typeof events.$inferSelect;
 
 export type Role = (typeof roleEnum.enumValues)[number];

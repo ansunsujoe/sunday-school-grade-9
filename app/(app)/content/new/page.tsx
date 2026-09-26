@@ -20,7 +20,7 @@ export default async function NewContentPage() {
         title="New content"
         description="Link to a document, write the page here, or both."
       />
-      <Card className="max-w-4xl">
+      <Card>
         <ActionForm action={createContent} submitLabel="Create">
           <ContentFields />
         </ActionForm>

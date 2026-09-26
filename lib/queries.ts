@@ -1,7 +1,7 @@
 import "server-only";
-import { asc, desc, eq } from "drizzle-orm";
+import { and, asc, desc, eq, gte, lte, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { lessons, quizzes, users, weeklyGrades } from "@/lib/db/schema";
+import { events, lessons, quizzes, users, weeklyGrades, type Role } from "@/lib/db/schema";
 
 export function getStudents() {
   return db
@@ -31,4 +31,20 @@ export function getWeeklyGrades(studentId?: number) {
     .from(weeklyGrades)
     .where(studentId === undefined ? undefined : eq(weeklyGrades.studentId, studentId))
     .orderBy(asc(weeklyGrades.date));
+}
+
+/** Calendar events between two YYYY-MM-DD dates (inclusive) that `role` may see. */
+export function getEvents(role: Role, from: string, to: string) {
+  return db
+    .select()
+    .from(events)
+    .where(
+      and(
+        gte(events.date, from),
+        lte(events.date, to),
+        role === "teacher" ? undefined : eq(events.audience, "all"),
+      ),
+    )
+    // All-day events first, then by start time.
+    .orderBy(asc(events.date), sql`${events.startTime} asc nulls first`, asc(events.id));
 }

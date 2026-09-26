@@ -36,7 +36,7 @@ export function PageHeader({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-4 sm:mb-8">
+    <div className="mb-5 flex flex-wrap items-end justify-between gap-4 sm:mb-6">
       <div className="min-w-0">
         {eyebrow && (
           <p className="mb-1 text-xs font-semibold tracking-[0.2em] text-amber-300/80 uppercase">
@@ -64,7 +64,7 @@ export function Card({
 }) {
   return (
     <section
-      className={`rounded-2xl border border-white/[0.07] bg-night-900/70 p-4 shadow-xl shadow-black/20 backdrop-blur-sm sm:p-6 ${className}`}
+      className={`rounded-2xl border border-white/[0.07] bg-night-900/70 p-4 shadow-xl shadow-black/20 backdrop-blur-sm sm:p-5 ${className}`}
     >
       {title && <h2 className="mb-4 text-base font-semibold text-slate-100">{title}</h2>}
       {children}

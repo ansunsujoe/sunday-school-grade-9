@@ -7,6 +7,7 @@ import { requireUser } from "@/lib/dal";
 const TEACHER_LINKS = [
   { href: "/", label: "Home", icon: "home" },
   { href: "/content", label: "Content", icon: "book" },
+  { href: "/calendar", label: "Calendar", icon: "calendar" },
   { href: "/quizzes", label: "Quizzes", icon: "quiz" },
   { href: "/grades", label: "Gradebook", icon: "grades" },
   { href: "/people", label: "People", icon: "people" },
@@ -15,6 +16,7 @@ const TEACHER_LINKS = [
 const STUDENT_LINKS = [
   { href: "/", label: "Home", icon: "home" },
   { href: "/content", label: "Content", icon: "book" },
+  { href: "/calendar", label: "Calendar", icon: "calendar" },
   { href: "/quizzes", label: "Quizzes", icon: "quiz" },
   { href: "/grades", label: "My grades", icon: "grades" },
 ] as const;
@@ -35,7 +37,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex min-h-full flex-1 flex-col">
       <header className="sticky top-0 z-30 border-b border-white/[0.06] bg-night-950/75 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
-        <div className="mx-auto flex max-w-[100rem] items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-10">
+        <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-5 lg:px-6">
           <div className="flex min-w-0 items-center gap-6">
             <Link href="/" className="flex min-w-0 items-center gap-2.5">
               <LogoMark />
@@ -73,7 +75,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-[100rem] flex-1 px-4 pt-6 sm:px-6 lg:px-10 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:pt-10 md:pb-12">
+      <main className="w-full flex-1 px-4 pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-5 sm:pt-8 md:pb-10 lg:px-6">
         {children}
       </main>
       <TabBar links={links} />

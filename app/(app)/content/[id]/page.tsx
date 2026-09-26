@@ -56,10 +56,8 @@ export default async function ContentItemPage({ params }: { params: Promise<{ id
       />
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
         {item.body ? (
-          <article className="min-w-0 rounded-2xl border border-white/[0.07] bg-night-900/70 p-5 sm:p-10">
-            <div className="mx-auto max-w-3xl">
-              <Markdown>{item.body}</Markdown>
-            </div>
+          <article className="min-w-0 rounded-2xl border border-white/[0.07] bg-night-900/70 p-4 sm:p-6">
+            <Markdown>{item.body}</Markdown>
           </article>
         ) : (
           <Card>
