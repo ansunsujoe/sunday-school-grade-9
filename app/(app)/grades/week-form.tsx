@@ -23,17 +23,17 @@ export function StudentWeek({
           School year →
         </Link>
       </div>
-      <div className="grid grid-cols-2 gap-x-3 gap-y-4 sm:grid-cols-4 xl:flex-1">
+      <div className="group/week grid grid-cols-2 gap-x-3 gap-y-4 sm:grid-cols-4 xl:flex-1">
         <Slot label="Attendance">
           <Toggle name={`present-${id}`} value={grade?.present ?? null} yes="P" no="A" />
         </Slot>
-        <Slot label="Memory verse">
+        <Slot label="Memory verse" dimWhenAbsent>
           <ScoreInput name={`memoryVerse-${id}`} value={grade?.memoryVerse ?? null} label={`${student.name} memory verse`} />
         </Slot>
-        <Slot label="Quiz">
+        <Slot label="Quiz" dimWhenAbsent>
           <ScoreInput name={`quiz-${id}`} value={grade?.quiz ?? null} label={`${student.name} quiz`} />
         </Slot>
-        <Slot label="Sermon notes">
+        <Slot label="Sermon notes" dimWhenAbsent>
           <Toggle name={`sermonNotes-${id}`} value={grade?.sermonNotes ?? null} yes="Y" no="N" />
         </Slot>
       </div>
@@ -41,9 +41,24 @@ export function StudentWeek({
   );
 }
 
-function Slot({ label, children }: { label: string; children: React.ReactNode }) {
+function Slot({
+  label,
+  dimWhenAbsent = false,
+  children,
+}: {
+  label: string;
+  /** Greys the slot out while the student is marked absent (A). */
+  dimWhenAbsent?: boolean;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="min-w-0 space-y-1.5">
+    <div
+      className={`min-w-0 space-y-1.5 transition ${
+        dimWhenAbsent
+          ? "group-has-[[name^=present-][value=N]:checked]/week:pointer-events-none group-has-[[name^=present-][value=N]:checked]/week:opacity-25"
+          : ""
+      }`}
+    >
       <div className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase">{label}</div>
       {children}
     </div>
@@ -126,10 +141,9 @@ export function Overview({
                 {student.name}
                 <Icon name="chevronRight" className="size-4 text-slate-600" />
               </div>
-              <div className="mt-1.5 grid grid-cols-4 gap-1 text-center text-[11px] text-slate-500">
+              <div className="mt-1.5 grid grid-cols-3 gap-1 text-center text-[11px] text-slate-500">
                 {[
                   ["Att.", pct(summary.attendance)],
-                  ["Verse", pct(summary.memoryVerse, "")],
                   ["Quiz", pct(summary.quiz, "")],
                   ["Notes", pct(summary.sermonNotes)],
                 ].map(([label, value]) => (

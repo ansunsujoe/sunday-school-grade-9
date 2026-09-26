@@ -24,27 +24,12 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const CONTENT_KINDS = ["lesson", "supplementary"] as const;
-export type ContentKind = (typeof CONTENT_KINDS)[number];
-
-// Shown in the app as "Content". Each item is a page written on the site
-// (`body`, in Markdown), a link to material elsewhere (`url`), or both.
-export const lessons = pgTable("lessons", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  kind: text("kind").$type<ContentKind>().notNull().default("lesson"),
-  url: text("url"),
-  body: text("body"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
-
 export const quizzes = pgTable("quizzes", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   description: text("description"),
-  lessonId: integer("lesson_id").references(() => lessons.id, {
-    onDelete: "set null",
-  }),
+  // Slug of the content item this quiz goes with (see lib/content.ts).
+  lessonSlug: text("lesson_slug"),
   published: boolean("published").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
@@ -113,5 +98,30 @@ export const events = pgTable("events", {
 });
 
 export type CalendarEvent = typeof events.$inferSelect;
+
+// Posted by teachers, read by everyone. `body` is Markdown.
+export const announcements = pgTable("announcements", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  body: text("body").notNull(),
+  authorId: integer("author_id").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at"),
+});
+
+// One row per user per announcement they have seen; no row means unread.
+export const announcementReads = pgTable(
+  "announcement_reads",
+  {
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    announcementId: integer("announcement_id")
+      .notNull()
+      .references(() => announcements.id, { onDelete: "cascade" }),
+    readAt: timestamp("read_at").notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.announcementId] })],
+);
 
 export type Role = (typeof roleEnum.enumValues)[number];

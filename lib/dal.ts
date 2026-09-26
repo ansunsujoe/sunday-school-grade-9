@@ -19,6 +19,7 @@ export const getCurrentUser = cache(async () => {
       name: users.name,
       username: users.username,
       role: users.role,
+      createdAt: users.createdAt,
     })
     .from(users)
     .where(eq(users.id, session.userId));

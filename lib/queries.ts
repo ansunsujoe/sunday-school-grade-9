@@ -1,7 +1,15 @@
 import "server-only";
-import { and, asc, desc, eq, gte, lte, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, gte, isNull, lte, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { events, lessons, quizzes, users, weeklyGrades, type Role } from "@/lib/db/schema";
+import {
+  announcementReads,
+  announcements,
+  events,
+  quizzes,
+  users,
+  weeklyGrades,
+  type Role,
+} from "@/lib/db/schema";
 
 export function getStudents() {
   return db
@@ -9,11 +17,6 @@ export function getStudents() {
     .from(users)
     .where(eq(users.role, "student"))
     .orderBy(asc(users.name));
-}
-
-/** Lessons and supplementary material, newest first. */
-export function getContent() {
-  return db.select().from(lessons).orderBy(desc(lessons.createdAt));
 }
 
 export function getPublishedQuizzes() {
@@ -47,4 +50,46 @@ export function getEvents(role: Role, from: string, to: string) {
     )
     // All-day events first, then by start time.
     .orderBy(asc(events.date), sql`${events.startTime} asc nulls first`, asc(events.id));
+}
+
+type Reader = { id: number; createdAt: Date };
+
+// Announcements from before someone's account existed never count as unread.
+const unreadBy = (user: Reader) =>
+  and(isNull(announcementReads.userId), gte(announcements.createdAt, user.createdAt));
+
+/** Announcements newest first, with the author's name and whether `user` hasn't seen it. */
+export function getAnnouncements(user: Reader, limit?: number) {
+  const query = db
+    .select({
+      id: announcements.id,
+      title: announcements.title,
+      body: announcements.body,
+      createdAt: announcements.createdAt,
+      updatedAt: announcements.updatedAt,
+      author: users.name,
+      unread: sql<boolean>`coalesce(${unreadBy(user)}, false)`,
+    })
+    .from(announcements)
+    .leftJoin(users, eq(announcements.authorId, users.id))
+    .leftJoin(
+      announcementReads,
+      and(eq(announcementReads.announcementId, announcements.id), eq(announcementReads.userId, user.id)),
+    )
+    .orderBy(desc(announcements.createdAt), desc(announcements.id));
+  return limit ? query.limit(limit) : query;
+}
+
+export type AnnouncementItem = Awaited<ReturnType<typeof getAnnouncements>>[number];
+
+export async function getUnreadAnnouncementCount(user: Reader) {
+  const [{ n }] = await db
+    .select({ n: count() })
+    .from(announcements)
+    .leftJoin(
+      announcementReads,
+      and(eq(announcementReads.announcementId, announcements.id), eq(announcementReads.userId, user.id)),
+    )
+    .where(unreadBy(user));
+  return n;
 }

@@ -1,15 +1,10 @@
 import Link from "next/link";
 import { Icon } from "@/components/icons";
-import { Card, EmptyState, PageHeader, buttonClass } from "@/components/ui";
-import { requireUser } from "@/lib/dal";
-import { getContent } from "@/lib/queries";
+import { Card, EmptyState, PageHeader } from "@/components/ui";
+import { CONTENT, contentHref, type ContentItem } from "@/lib/content";
 
-type Item = Awaited<ReturnType<typeof getContent>>[number];
-
-export default async function ContentPage() {
-  const user = await requireUser();
-  const isTeacher = user.role === "teacher";
-  const items = await getContent();
+export default function ContentListPage() {
+  const items = CONTENT;
   const sections = [
     { title: "Lessons", items: items.filter((i) => i.kind === "lesson") },
     { title: "Supplementary", items: items.filter((i) => i.kind === "supplementary") },
@@ -20,13 +15,6 @@ export default async function ContentPage() {
       <PageHeader
         title="Content"
         description="Lessons and extra material for class."
-        action={
-          isTeacher && (
-            <Link href="/content/new" className={buttonClass}>
-              New content
-            </Link>
-          )
-        }
       />
       {items.length === 0 ? (
         <Card>
@@ -43,8 +31,8 @@ export default async function ContentPage() {
                 </h2>
                 <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {section.items.map((item) => (
-                    <li key={item.id}>
-                      <ContentCard item={item} isTeacher={isTeacher} />
+                    <li key={item.slug}>
+                      <ContentCard item={item} />
                     </li>
                   ))}
                 </ul>
@@ -56,9 +44,9 @@ export default async function ContentPage() {
   );
 }
 
-function ContentCard({ item, isTeacher }: { item: Item; isTeacher: boolean }) {
+function ContentCard({ item }: { item: ContentItem }) {
   // Link-only items open straight to the material; everything else has a page here.
-  const external = !item.body && item.url;
+  const external = !item.page;
   const cardClass =
     "group flex h-full items-center gap-4 rounded-2xl border border-white/[0.07] bg-night-900/70 p-4 transition hover:border-amber-400/30 hover:bg-night-800/70 sm:p-5";
   const inner = (
@@ -71,7 +59,7 @@ function ContentCard({ item, isTeacher }: { item: Item; isTeacher: boolean }) {
           {item.title}
         </span>
         <span className="mt-0.5 block text-sm text-slate-400">
-          {external ? "Opens link" : item.url ? "Read here · has a link" : "Read here"}
+          {item.summary ?? (external ? "Opens link" : "Read here")}
         </span>
       </span>
       <Icon
@@ -81,25 +69,13 @@ function ContentCard({ item, isTeacher }: { item: Item; isTeacher: boolean }) {
     </>
   );
 
-  return (
-    <div className="relative h-full">
-      {external ? (
-        <a href={item.url!} target="_blank" rel="noopener noreferrer" className={cardClass}>
-          {inner}
-        </a>
-      ) : (
-        <Link href={`/content/${item.id}`} className={cardClass}>
-          {inner}
-        </Link>
-      )}
-      {isTeacher && external && (
-        <Link
-          href={`/content/${item.id}`}
-          className="absolute top-2 right-2 rounded-lg px-2 py-1 text-xs font-medium text-slate-500 hover:bg-white/5 hover:text-amber-300"
-        >
-          Edit
-        </Link>
-      )}
-    </div>
+  return external ? (
+    <a href={contentHref(item)} target="_blank" rel="noopener noreferrer" className={cardClass}>
+      {inner}
+    </a>
+  ) : (
+    <Link href={contentHref(item)} className={cardClass}>
+      {inner}
+    </Link>
   );
 }

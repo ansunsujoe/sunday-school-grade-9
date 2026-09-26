@@ -5,7 +5,7 @@ import { updateQuiz } from "@/lib/actions/quizzes";
 import { requireTeacher } from "@/lib/dal";
 import { db } from "@/lib/db";
 import { questions, quizzes, submissions } from "@/lib/db/schema";
-import { getContent } from "@/lib/queries";
+import { CONTENT } from "@/lib/content";
 import { QuizBuilder } from "../../quiz-builder";
 
 export default async function EditQuizPage({ params }: { params: Promise<{ id: string }> }) {
@@ -13,11 +13,10 @@ export default async function EditQuizPage({ params }: { params: Promise<{ id: s
   const id = Number((await params).id);
   if (!Number.isInteger(id)) notFound();
 
-  const [[quiz], quizQuestions, [taken], lessons] = await Promise.all([
+  const [[quiz], quizQuestions, [taken]] = await Promise.all([
     db.select().from(quizzes).where(eq(quizzes.id, id)),
     db.select().from(questions).where(eq(questions.quizId, id)).orderBy(asc(questions.position)),
     db.select({ id: submissions.id }).from(submissions).where(eq(submissions.quizId, id)).limit(1),
-    getContent(),
   ]);
   if (!quiz) notFound();
   if (taken) redirect(`/quizzes/${id}`);
@@ -27,12 +26,12 @@ export default async function EditQuizPage({ params }: { params: Promise<{ id: s
       <PageHeader title="Edit quiz" />
       <QuizBuilder
         action={updateQuiz}
-        lessons={lessons}
+        lessons={CONTENT}
         quizId={id}
         initial={{
           title: quiz.title,
           description: quiz.description ?? "",
-          lessonId: quiz.lessonId,
+          lessonSlug: quiz.lessonSlug,
           questions: quizQuestions.map(({ prompt, choices, correctIndex }) => ({
             prompt,
             choices,

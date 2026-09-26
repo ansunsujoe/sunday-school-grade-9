@@ -5,13 +5,14 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { questions, quizzes, submissions } from "@/lib/db/schema";
+import { getContentItem } from "@/lib/content";
 import { requireStudent, requireTeacher } from "@/lib/dal";
 import type { FormState } from "./types";
 
 export type QuizDraft = {
   title: string;
   description: string;
-  lessonId: number | null;
+  lessonSlug: string | null;
   questions: { prompt: string; choices: string[]; correctIndex: number }[];
 };
 
@@ -25,6 +26,7 @@ function parseDraft(formData: FormData): QuizDraft | string {
 
   draft.title = draft.title?.trim() ?? "";
   if (!draft.title) return "Give the quiz a title.";
+  if (draft.lessonSlug && !getContentItem(draft.lessonSlug)) draft.lessonSlug = null;
   if (!draft.questions?.length) return "Add at least one question.";
 
   for (const [i, q] of draft.questions.entries()) {
@@ -55,7 +57,7 @@ export async function createQuiz(_: FormState, formData: FormData): Promise<Form
     .values({
       title: draft.title,
       description: draft.description.trim() || null,
-      lessonId: draft.lessonId,
+      lessonSlug: draft.lessonSlug,
     })
     .returning({ id: quizzes.id });
   await db.insert(questions).values(questionRows(quiz.id, draft));
@@ -85,7 +87,7 @@ export async function updateQuiz(_: FormState, formData: FormData): Promise<Form
       .set({
         title: draft.title,
         description: draft.description.trim() || null,
-        lessonId: draft.lessonId,
+        lessonSlug: draft.lessonSlug,
       })
       .where(eq(quizzes.id, quizId)),
     db.delete(questions).where(eq(questions.quizId, quizId)),

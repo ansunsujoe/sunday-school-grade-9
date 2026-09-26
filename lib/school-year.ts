@@ -36,7 +36,6 @@ export function summarize(grades: WeeklyGrade[]) {
     present,
     absent: marked.length - present,
     attendance: percent(present, marked.length),
-    memoryVerse: average(grades.flatMap((g) => g.memoryVerse ?? [])),
     quiz: average(grades.flatMap((g) => g.quiz ?? [])),
     sermonNotes: percent(notes.filter((g) => g.sermonNotes).length, notes.length),
   };

@@ -47,3 +47,29 @@ export function formatTime(time: string) {
   const [h, m] = time.split(":").map(Number);
   return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
 }
+
+/** A moment in the class's time zone, e.g. "Sun, Sep 27, 2026 at 9:14 AM". */
+export function formatDateTime(date: Date) {
+  return date.toLocaleString("en-US", {
+    timeZone: TIME_ZONE,
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+/** How long ago `date` was, e.g. "just now", "3 hr ago", "2 days ago", or "Sep 2" past a week. */
+export function timeAgo(date: Date, now = new Date()) {
+  const minutes = Math.floor((now.getTime() - date.getTime()) / 60_000);
+  if (minutes < 1) return "just now";
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hr ago`;
+  const days = Math.floor(hours / 24);
+  if (days === 1) return "yesterday";
+  if (days < 7) return `${days} days ago`;
+  return date.toLocaleDateString("en-US", { timeZone: TIME_ZONE, month: "short", day: "numeric" });
+}

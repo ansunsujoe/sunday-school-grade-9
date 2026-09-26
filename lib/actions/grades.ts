@@ -31,6 +31,13 @@ export async function saveWeek(_: FormState, formData: FormData): Promise<FormSt
   const studentIds = formData.getAll("studentId").map(Number).filter(Number.isInteger);
   const rows: (typeof weeklyGrades.$inferInsert)[] = [];
   for (const studentId of studentIds) {
+    const present = yesNo(formData.get(`present-${studentId}`));
+    // Absent students have nothing else to grade that Sunday, so anything
+    // still typed in their other slots is ignored.
+    if (present === false) {
+      rows.push({ studentId, date, present, memoryVerse: null, quiz: null, sermonNotes: null });
+      continue;
+    }
     const memoryVerse = score(formData.get(`memoryVerse-${studentId}`));
     const quiz = score(formData.get(`quiz-${studentId}`));
     if (memoryVerse === undefined || quiz === undefined) {
@@ -39,7 +46,7 @@ export async function saveWeek(_: FormState, formData: FormData): Promise<FormSt
     const row = {
       studentId,
       date,
-      present: yesNo(formData.get(`present-${studentId}`)),
+      present,
       memoryVerse,
       quiz,
       sermonNotes: yesNo(formData.get(`sermonNotes-${studentId}`)),

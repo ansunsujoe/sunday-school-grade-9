@@ -23,12 +23,12 @@ export function QuizBuilder({
   initial,
 }: {
   action: (state: FormState, formData: FormData) => Promise<FormState>;
-  lessons: { id: number; title: string }[];
+  lessons: { slug: string; title: string }[];
   quizId?: number;
   initial?: QuizDraft;
 }) {
   const [draft, setDraft] = useState<QuizDraft>(
-    initial ?? { title: "", description: "", lessonId: null, questions: [blankQuestion()] },
+    initial ?? { title: "", description: "", lessonSlug: null, questions: [blankQuestion()] },
   );
   const [state, formAction, pending] = useActionState(action, undefined);
 
@@ -75,15 +75,13 @@ export function QuizBuilder({
           <Field label="Content (optional)" htmlFor="lesson">
             <select
               id="lesson"
-              value={draft.lessonId ?? ""}
-              onChange={(e) =>
-                setDraft({ ...draft, lessonId: e.target.value ? Number(e.target.value) : null })
-              }
+              value={draft.lessonSlug ?? ""}
+              onChange={(e) => setDraft({ ...draft, lessonSlug: e.target.value || null })}
               className={inputClass}
             >
               <option value="">None</option>
               {lessons.map((l) => (
-                <option key={l.id} value={l.id}>
+                <option key={l.slug} value={l.slug}>
                   {l.title}
                 </option>
               ))}

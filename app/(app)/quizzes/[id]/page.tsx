@@ -20,7 +20,8 @@ import {
 } from "@/lib/actions/quizzes";
 import { requireUser } from "@/lib/dal";
 import { db } from "@/lib/db";
-import { lessons, questions, quizzes, submissions } from "@/lib/db/schema";
+import { getContentItem } from "@/lib/content";
+import { questions, quizzes, submissions } from "@/lib/db/schema";
 import { percent } from "@/lib/format";
 import { getStudents } from "@/lib/queries";
 
@@ -32,14 +33,11 @@ export default async function QuizPage({ params }: { params: Promise<{ id: strin
   if (!Number.isInteger(id)) notFound();
 
   const [[quiz], quizQuestions] = await Promise.all([
-    db
-      .select({ quiz: quizzes, lesson: lessons })
-      .from(quizzes)
-      .leftJoin(lessons, eq(quizzes.lessonId, lessons.id))
-      .where(eq(quizzes.id, id)),
+    db.select().from(quizzes).where(eq(quizzes.id, id)),
     db.select().from(questions).where(eq(questions.quizId, id)).orderBy(asc(questions.position)),
   ]);
-  if (!quiz || (user.role === "student" && !quiz.quiz.published)) notFound();
+  if (!quiz || (user.role === "student" && !quiz.published)) notFound();
+  const lesson = quiz.lessonSlug ? getContentItem(quiz.lessonSlug) : undefined;
 
   return (
     <>
@@ -47,24 +45,24 @@ export default async function QuizPage({ params }: { params: Promise<{ id: strin
         ← All quizzes
       </Link>
       <PageHeader
-        title={quiz.quiz.title}
+        title={quiz.title}
         description={
           <>
             {quizQuestions.length} question{quizQuestions.length === 1 ? "" : "s"}
-            {quiz.lesson && (
+            {lesson?.page && (
               <>
                 {" · "}
-                <TextLink href={`/content/${quiz.lesson.id}`}>{quiz.lesson.title}</TextLink>
+                <TextLink href={`/content/${lesson.slug}`}>{lesson.title}</TextLink>
               </>
             )}
           </>
         }
       />
-      {quiz.quiz.description && (
-        <p className="-mt-2 mb-6 whitespace-pre-wrap text-sm text-slate-300">{quiz.quiz.description}</p>
+      {quiz.description && (
+        <p className="-mt-2 mb-6 whitespace-pre-wrap text-sm text-slate-300">{quiz.description}</p>
       )}
       {user.role === "teacher" ? (
-        <TeacherView quiz={quiz.quiz} questions={quizQuestions} />
+        <TeacherView quiz={quiz} questions={quizQuestions} />
       ) : (
         <StudentView quizId={id} studentId={user.id} questions={quizQuestions} />
       )}

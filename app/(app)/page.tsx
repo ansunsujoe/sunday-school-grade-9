@@ -2,17 +2,24 @@ import { desc, eq } from "drizzle-orm";
 import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { Badge, Card, EmptyState, Stat, TextLink, scoreTone } from "@/components/ui";
+import { CONTENT, contentHref, type ContentItem } from "@/lib/content";
 import { requireUser, type CurrentUser } from "@/lib/dal";
 import { db } from "@/lib/db";
 import { quizzes, submissions, users } from "@/lib/db/schema";
-import { percent, today } from "@/lib/format";
-import { getContent, getPublishedQuizzes, getWeeklyGrades } from "@/lib/queries";
+import { percent, timeAgo, today } from "@/lib/format";
+import {
+  getAnnouncements,
+  getPublishedQuizzes,
+  getWeeklyGrades,
+  type AnnouncementItem,
+} from "@/lib/queries";
 import { currentSunday, summarize } from "@/lib/school-year";
 import { verseForWeek } from "@/lib/verses";
 
 export default async function HomePage() {
   const user = await requireUser();
-  const [latest] = await getContent();
+  const [latest] = CONTENT;
+  const announcements = await getAnnouncements(user, 3);
   const verse = verseForWeek(currentSunday(today()));
 
   return (
@@ -36,6 +43,8 @@ export default async function HomePage() {
         </blockquote>
       </section>
 
+      <LatestAnnouncements items={announcements} />
+
       <div className="grid gap-6 md:grid-cols-2">
         <Card title="Latest in Content">
           {latest ? (
@@ -51,7 +60,7 @@ export default async function HomePage() {
                   {latest.kind === "lesson" ? "Lesson" : "Supplementary"}
                 </span>
               </span>
-              <Icon name={latest.body ? "chevronRight" : "external"} className="size-4 shrink-0 text-slate-500" />
+              <Icon name={latest.page ? "chevronRight" : "external"} className="size-4 shrink-0 text-slate-500" />
             </ContentLink>
           ) : (
             <EmptyState>Nothing posted yet.</EmptyState>
@@ -63,25 +72,75 @@ export default async function HomePage() {
   );
 }
 
+/** Markdown reduced to a line of plain text, for previews. */
+function plainText(markdown: string) {
+  return markdown
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/[#>*_`~]|^\s*[-+]\s+|^\s*\d+\.\s+/gm, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function LatestAnnouncements({ items }: { items: AnnouncementItem[] }) {
+  const unread = items.filter((a) => a.unread).length;
+  return (
+    <Card
+      title={
+        <span className="flex items-center justify-between gap-3">
+          <span className="flex items-center gap-2">
+            Announcements
+            {unread > 0 && <Badge tone="gold">{unread} new</Badge>}
+          </span>
+          <TextLink href="/announcements">See all →</TextLink>
+        </span>
+      }
+    >
+      {items.length === 0 ? (
+        <EmptyState>No announcements yet.</EmptyState>
+      ) : (
+        <ul className="-mx-2 divide-y divide-white/5">
+          {items.map((a) => (
+            <li key={a.id}>
+              <Link
+                href={`/announcements#a-${a.id}`}
+                className="flex items-start gap-3 rounded-xl px-2 py-3 transition hover:bg-white/5"
+              >
+                <span
+                  className={`mt-2 size-2 shrink-0 rounded-full ${
+                    a.unread ? "bg-amber-400 shadow-[0_0_8px] shadow-amber-400/70" : "bg-white/10"
+                  }`}
+                />
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-baseline justify-between gap-3">
+                    <span className={`truncate ${a.unread ? "font-semibold text-slate-50" : "font-medium text-slate-200"}`}>
+                      {a.title}
+                    </span>
+                    <span className="shrink-0 text-xs text-slate-500">{timeAgo(a.createdAt)}</span>
+                  </span>
+                  <span className="mt-0.5 line-clamp-1 text-sm text-slate-400">{plainText(a.body)}</span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Card>
+  );
+}
+
 const contentLinkClass = "-m-2 flex items-center gap-4 rounded-xl p-2 transition hover:bg-white/5";
 
 /** Link-only content opens the material directly; pages open on the site. */
-function ContentLink({
-  item,
-  children,
-}: {
-  item: { id: number; url: string | null; body: string | null };
-  children: React.ReactNode;
-}) {
-  if (!item.body && item.url) {
+function ContentLink({ item, children }: { item: ContentItem; children: React.ReactNode }) {
+  if (!item.page) {
     return (
-      <a href={item.url} target="_blank" rel="noopener noreferrer" className={contentLinkClass}>
+      <a href={contentHref(item)} target="_blank" rel="noopener noreferrer" className={contentLinkClass}>
         {children}
       </a>
     );
   }
   return (
-    <Link href={`/content/${item.id}`} className={contentLinkClass}>
+    <Link href={contentHref(item)} className={contentLinkClass}>
       {children}
     </Link>
   );
@@ -152,9 +211,8 @@ async function StudentHome({ user }: { user: CurrentUser }) {
         )}
       </Card>
       <Card title="My year at a glance" className="md:col-span-2">
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="grid grid-cols-3 gap-3">
           <Stat label="Attendance" value={summary.attendance} />
-          <Stat label="Memory verse avg" value={summary.memoryVerse} suffix="" />
           <Stat label="Quiz avg" value={summary.quiz} suffix="" />
           <Stat label="Sermon notes" value={summary.sermonNotes} />
         </div>

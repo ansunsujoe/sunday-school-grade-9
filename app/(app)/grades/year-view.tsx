@@ -31,9 +31,8 @@ export function YearView({ grades }: { grades: WeeklyGrade[] }) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:items-start">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:sticky lg:top-24 lg:grid-cols-1">
+      <div className="grid grid-cols-3 gap-3 lg:sticky lg:top-24 lg:grid-cols-1">
         <Stat label="Attendance" value={summary.attendance} />
-        <Stat label="Memory verse avg" value={summary.memoryVerse} suffix="" />
         <Stat label="Quiz avg" value={summary.quiz} suffix="" />
         <Stat label="Sermon notes" value={summary.sermonNotes} />
       </div>
