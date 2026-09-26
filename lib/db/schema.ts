@@ -124,6 +124,14 @@ export const announcementReads = pgTable(
   (t) => [primaryKey({ columns: [t.userId, t.announcementId] })],
 );
 
+// Anonymous questions from students to teachers. Nothing about who asked is
+// stored, on purpose; teachers remove questions once they've been answered.
+export const questionBox = pgTable("question_box", {
+  id: serial("id").primaryKey(),
+  body: text("body").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export type Role = (typeof roleEnum.enumValues)[number];
 
 // ---------------------------------------------------------------------------

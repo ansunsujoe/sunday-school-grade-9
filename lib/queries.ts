@@ -5,6 +5,7 @@ import {
   announcementReads,
   announcements,
   events,
+  questionBox,
   quizzes,
   users,
   weeklyGrades,
@@ -91,5 +92,11 @@ export async function getUnreadAnnouncementCount(user: Reader) {
       and(eq(announcementReads.announcementId, announcements.id), eq(announcementReads.userId, user.id)),
     )
     .where(unreadBy(user));
+  return n;
+}
+
+/** How many anonymous questions are waiting for the teachers. */
+export async function getQuestionBoxCount() {
+  const [{ n }] = await db.select({ n: count() }).from(questionBox);
   return n;
 }

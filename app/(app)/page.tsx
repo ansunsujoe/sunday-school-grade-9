@@ -211,6 +211,21 @@ async function StudentHome({ user }: { user: CurrentUser }) {
           <TextLink href="/grades">See every Sunday →</TextLink>
         </p>
       </Card>
+      <Card title="Have a question?" className="md:col-span-2">
+        <Link
+          href="/questions"
+          className="-m-2 flex items-center gap-4 rounded-xl p-2 transition hover:bg-white/5"
+        >
+          <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-emerald-400/10 text-emerald-300 ring-1 ring-emerald-400/20">
+            <Icon name="question" className="size-6" />
+          </span>
+          <span className="min-w-0 flex-1 text-sm text-slate-300">
+            Ask your teachers anything in the question box. It&apos;s anonymous: your name is never
+            saved.
+          </span>
+          <Icon name="chevronRight" className="size-4 shrink-0 text-slate-500" />
+        </Link>
+      </Card>
     </>
   );
 }

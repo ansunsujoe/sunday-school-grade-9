@@ -3,7 +3,7 @@ import { Icon, LogoMark } from "@/components/icons";
 import { NavLinks, TabBar } from "@/components/nav-links";
 import { logout } from "@/lib/actions/auth";
 import { requireUser } from "@/lib/dal";
-import { getUnreadAnnouncementCount } from "@/lib/queries";
+import { getQuestionBoxCount, getUnreadAnnouncementCount } from "@/lib/queries";
 
 const TEACHER_LINKS = [
   { href: "/", label: "Home", icon: "home" },
@@ -35,8 +35,12 @@ function initials(name: string) {
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
-  const links = [...(user.role === "teacher" ? TEACHER_LINKS : STUDENT_LINKS)];
-  const unread = await getUnreadAnnouncementCount(user);
+  const isTeacher = user.role === "teacher";
+  const links = [...(isTeacher ? TEACHER_LINKS : STUDENT_LINKS)];
+  const [unread, questions] = await Promise.all([
+    getUnreadAnnouncementCount(user),
+    isTeacher ? getQuestionBoxCount() : 0,
+  ]);
 
   return (
     <div className="flex min-h-full flex-1 flex-col">
@@ -57,6 +61,25 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <NavLinks links={links} />
           </div>
           <div className="flex items-center gap-1">
+            <Link
+              href="/questions"
+              className="relative grid size-10 place-items-center rounded-full text-slate-400 transition hover:bg-white/5 hover:text-slate-100"
+              title={isTeacher ? "Question box" : "Ask a question"}
+              aria-label={
+                isTeacher
+                  ? questions
+                    ? `Question box, ${questions} questions`
+                    : "Question box"
+                  : "Ask a question anonymously"
+              }
+            >
+              <Icon name="question" className={questions ? "size-5 text-amber-200" : "size-5"} />
+              {questions > 0 && (
+                <span className="absolute top-1 right-1 grid h-4 min-w-4 place-items-center rounded-full bg-amber-400 px-1 text-[10px] leading-none font-bold text-night-950 shadow-[0_0_10px] shadow-amber-400/60 ring-2 ring-night-950">
+                  {questions > 9 ? "9+" : questions}
+                </span>
+              )}
+            </Link>
             <Link
               href="/announcements"
               className="relative grid size-10 place-items-center rounded-full text-slate-400 transition hover:bg-white/5 hover:text-slate-100"
