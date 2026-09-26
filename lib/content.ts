@@ -24,6 +24,14 @@ export type ContentItem = {
 
 const ITEMS: ContentItem[] = [
   {
+    slug: "lesson-5",
+    title: "Lesson 5: Rebellion in the Wilderness",
+    kind: "lesson",
+    summary: "Journey of the Israelites, Numbers 10–20.",
+    page: true,
+    added: "2026-09-26",
+  },
+  {
     slug: "journey-of-the-israelites",
     title: "Journey of the Israelites",
     kind: "lesson",
