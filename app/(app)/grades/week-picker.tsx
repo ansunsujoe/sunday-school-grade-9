@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Icon } from "@/components/icons";
 
 const arrowClass =
-  "grid size-11 shrink-0 place-items-center rounded-xl border border-line bg-wash text-slate-300 transition hover:bg-wash-hover hover:text-slate-50 active:scale-95";
+  "grid size-9 shrink-0 place-items-center rounded-lg border border-line bg-wash text-slate-300 transition hover:bg-wash-hover hover:text-slate-50 active:scale-95";
 
 /** Previous / next arrows around a native select, which is easy to spin on phones. */
 export function WeekPicker({
@@ -39,7 +39,7 @@ export function WeekPicker({
           aria-label="Sunday"
           value={value}
           onChange={(e) => router.push(href(e.target.value))}
-          className="h-11 w-full appearance-none rounded-xl border border-amber-400/30 bg-night-800 pr-10 pl-4 text-center text-base font-semibold text-amber-100 focus:ring-2 focus:ring-amber-400/30 focus:outline-none"
+          className="h-9 w-full appearance-none rounded-lg border border-line bg-night-800 pr-9 pl-3 text-center text-base font-semibold sm:text-sm text-amber-100 focus:ring-2 focus:ring-amber-400/30 focus:outline-none"
         >
           {weeks.map((w) => (
             <option key={w.value} value={w.value}>

@@ -4,9 +4,9 @@ import { saveWeek } from "@/lib/actions/grades";
 import { requireUser } from "@/lib/dal";
 import { formatDate, formatShortDate, today } from "@/lib/format";
 import { getStudents, getWeeklyGrades } from "@/lib/queries";
-import { YEAR_END, YEAR_START, SUNDAYS, currentSunday, summarize } from "@/lib/school-year";
+import { SUNDAYS, currentSunday, summarize } from "@/lib/school-year";
 import { YearView } from "./year-view";
-import { Overview, StudentWeek } from "./week-form";
+import { WeekSheet } from "./week-form";
 import { WeekPicker } from "./week-picker";
 
 export default async function GradesPage({
@@ -38,11 +38,21 @@ export default async function GradesPage({
 
   return (
     <>
-      <PageHeader
-        eyebrow="Gradebook"
-        title={formatDate(date)}
-        description={`Week ${SUNDAYS.indexOf(date) + 1} of ${SUNDAYS.length} · ${formatShortDate(YEAR_START)}, 2026 – ${formatShortDate(YEAR_END)}, 2027`}
-      />
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
+        <div>
+          <h1 className="font-display text-2xl font-semibold text-slate-50">Gradebook</h1>
+          <p className="text-xs text-slate-500">
+            Week {SUNDAYS.indexOf(date) + 1} of {SUNDAYS.length} · {formatDate(date)}
+          </p>
+        </div>
+        <div className="w-full sm:w-72">
+          <WeekPicker
+            weeks={SUNDAYS.map((s) => ({ value: s, label: formatShortDate(s) }))}
+            value={date}
+            current={thisWeek}
+          />
+        </div>
+      </div>
       {students.length === 0 ? (
         <Card>
           <EmptyState>
@@ -50,30 +60,20 @@ export default async function GradesPage({
           </EmptyState>
         </Card>
       ) : (
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
-          <div className="space-y-4">
-            <WeekPicker
-              weeks={SUNDAYS.map((s) => ({ value: s, label: formatShortDate(s) }))}
-              value={date}
-              current={thisWeek}
-            />
-            {/* Keyed by date so switching weeks resets the uncontrolled inputs. */}
-            <ActionForm key={date} action={saveWeek} submitLabel="Save this Sunday" stickyFooter>
-              <input type="hidden" name="date" value={date} />
-              <ul className="space-y-3">
-                {students.map((s) => (
-                  <StudentWeek key={s.id} student={s} grade={forDate.get(s.id)} />
-                ))}
-              </ul>
-            </ActionForm>
-          </div>
-          <Overview
+        // Keyed by date so switching weeks resets the cells.
+        <ActionForm key={date} action={saveWeek} submitLabel="Save" className="space-y-3">
+          <input type="hidden" name="date" value={date} />
+          <WeekSheet
             rows={students.map((s) => ({
               student: s,
+              grade: forDate.get(s.id),
               summary: summarize(grades.filter((g) => g.studentId === s.id)),
             }))}
           />
-        </div>
+          <p className="text-xs text-slate-500">
+            Tap Att. and Notes cells to cycle them. Tap a name for that student&apos;s whole year.
+          </p>
+        </ActionForm>
       )}
     </>
   );

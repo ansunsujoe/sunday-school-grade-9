@@ -45,7 +45,7 @@ export function ActionForm({
       <div
         className={
           stickyFooter
-            ? "sticky bottom-[calc(5rem+env(safe-area-inset-bottom))] z-20 flex flex-wrap items-center gap-3 rounded-2xl border border-line bg-night-800/90 p-3 shadow-2xl shadow-black/40 backdrop-blur-xl md:bottom-4"
+            ? "sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-20 flex flex-wrap items-center gap-3 rounded-xl border border-line bg-night-800/95 p-2 shadow-lg shadow-black/30 backdrop-blur-xl md:bottom-4"
             : "flex flex-wrap items-center gap-3"
         }
       >

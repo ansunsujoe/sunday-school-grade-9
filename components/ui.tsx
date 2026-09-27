@@ -17,13 +17,6 @@ export const dangerButtonClass =
 export const segmentClass =
   "grid min-h-10 min-w-9 place-items-center rounded-lg px-2 text-sm font-semibold text-slate-400 transition hover:text-slate-100 peer-checked:shadow peer-focus-visible:ring-2 peer-focus-visible:ring-amber-300";
 
-export const segmentTones = {
-  gold: "peer-checked:bg-amber-400 peer-checked:text-ink",
-  yes: "peer-checked:bg-emerald-400 peer-checked:text-ink",
-  no: "peer-checked:bg-rose-400 peer-checked:text-ink",
-  blank: "peer-checked:bg-night-600 peer-checked:text-slate-200",
-};
-
 export function PageHeader({
   title,
   eyebrow,
@@ -39,7 +32,7 @@ export function PageHeader({
     <div className="mb-5 flex flex-wrap items-end justify-between gap-4 sm:mb-6">
       <div className="min-w-0">
         {eyebrow && (
-          <p className="mb-1 text-xs font-semibold tracking-[0.2em] text-amber-300/80 uppercase">
+          <p className="mb-1 text-sm text-amber-300/80">
             {eyebrow}
           </p>
         )}
@@ -64,7 +57,7 @@ export function Card({
 }) {
   return (
     <section
-      className={`rounded-2xl border border-line bg-night-900/70 p-4 shadow-xl shadow-black/20 backdrop-blur-sm sm:p-5 ${className}`}
+      className={`rounded-xl border border-line-subtle bg-night-900/60 p-4 sm:p-5 ${className}`}
     >
       {title && <h2 className="mb-4 text-base font-semibold text-slate-100">{title}</h2>}
       {children}
@@ -147,11 +140,11 @@ export function Stat({
   suffix?: string;
 }) {
   return (
-    <div className="rounded-xl border border-line-subtle bg-wash p-3 sm:p-4">
-      <div className="font-display text-2xl font-semibold text-slate-50 sm:text-3xl">
+    <div>
+      <div className="font-display text-2xl font-semibold text-slate-50 tabular-nums sm:text-3xl">
         {value == null ? "—" : `${value}${suffix}`}
       </div>
-      <div className="mt-0.5 text-xs text-slate-400 sm:text-sm">{label}</div>
+      <div className="text-xs text-slate-500 sm:text-sm">{label}</div>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { desc, eq } from "drizzle-orm";
 import Link from "next/link";
 import { Icon } from "@/components/icons";
-import { Badge, Card, EmptyState, Stat, TextLink, scoreTone } from "@/components/ui";
+import { Badge, EmptyState, Stat, TextLink, scoreTone } from "@/components/ui";
 import { CONTENT, contentHref, type ContentItem } from "@/lib/content";
 import { requireUser, type CurrentUser } from "@/lib/dal";
 import { db } from "@/lib/db";
@@ -23,7 +23,7 @@ export default async function HomePage() {
   const verse = verseForWeek(currentSunday(today()));
 
   return (
-    <div className="space-y-6">
+    <div>
       <section className="relative overflow-hidden rounded-3xl border border-amber-300/15 bg-linear-to-br from-night-800 via-night-900 to-night-950 p-5 shadow-2xl shadow-black/30 sm:p-8">
         <div className="pointer-events-none absolute -top-24 -right-16 size-72 rounded-full bg-amber-400/15 blur-3xl" />
         <Icon
@@ -43,20 +43,14 @@ export default async function HomePage() {
         </blockquote>
       </section>
 
-      <LatestAnnouncements items={announcements} />
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card title="Latest in Content">
+      <div className="mt-8 grid gap-x-10 gap-y-8 md:grid-cols-2">
+        <LatestAnnouncements items={announcements} />
+        <Section title="Latest lesson">
           {latest ? (
             <ContentLink item={latest}>
-              <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-amber-400/10 text-amber-300 ring-1 ring-amber-400/20">
-                <Icon name={latest.kind === "lesson" ? "book" : "sparkle"} className="size-6" />
-              </span>
               <span className="min-w-0 flex-1">
-                <span className="block truncate font-display text-lg font-semibold text-slate-50">
-                  {latest.title}
-                </span>
-                <span className="block text-sm text-slate-400">
+                <span className="block truncate font-medium text-slate-100">{latest.title}</span>
+                <span className="block text-sm text-slate-500">
                   {latest.kind === "lesson" ? "Lesson" : "Supplementary"}
                 </span>
               </span>
@@ -65,45 +59,67 @@ export default async function HomePage() {
           ) : (
             <EmptyState>Nothing posted yet.</EmptyState>
           )}
-        </Card>
+        </Section>
         {user.role === "teacher" ? <TeacherHome /> : <StudentHome user={user} />}
       </div>
     </div>
   );
 }
 
+/** A titled block of the home page: a heading over a hairline, no box. */
+function Section({
+  title,
+  action,
+  className = "",
+  children,
+}: {
+  title: React.ReactNode;
+  action?: React.ReactNode;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className={className}>
+      <div className="flex items-baseline justify-between gap-3 border-b border-line pb-2">
+        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-slate-100">{title}</h2>
+        {action && <span className="text-sm">{action}</span>}
+      </div>
+      {children}
+    </section>
+  );
+}
+
 function LatestAnnouncements({ items }: { items: AnnouncementItem[] }) {
   const unread = items.filter((a) => a.unread).length;
   return (
-    <Card
+    <Section
       title={
-        <span className="flex items-center justify-between gap-3">
-          <span className="flex items-center gap-2">
-            Announcements
-            {unread > 0 && <Badge tone="gold">{unread} new</Badge>}
-          </span>
-          <TextLink href="/announcements">See all →</TextLink>
-        </span>
+        <>
+          Announcements
+          {unread > 0 && <Badge tone="gold">{unread} new</Badge>}
+        </>
       }
+      action={<TextLink href="/announcements">See all</TextLink>}
+      className="md:row-span-2"
     >
       {items.length === 0 ? (
         <EmptyState>No announcements yet.</EmptyState>
       ) : (
-        <ul className="-mx-2 divide-y divide-white/5">
+        <ul className="divide-y divide-line-faint">
           {items.map((a) => (
             <li key={a.id}>
               <Link
                 href={`/announcements#a-${a.id}`}
-                className="flex items-start gap-3 rounded-xl px-2 py-3 transition hover:bg-wash"
+                className="group flex items-start gap-3 py-3"
               >
                 <span
                   className={`mt-2 size-2 shrink-0 rounded-full ${
-                    a.unread ? "bg-amber-400 shadow-[0_0_8px] shadow-amber-400/70" : "bg-wash-hover"
+                    a.unread ? "bg-amber-400" : "bg-wash-hover"
                   }`}
                 />
                 <span className="min-w-0 flex-1">
                   <span className="flex items-baseline justify-between gap-3">
-                    <span className={`truncate ${a.unread ? "font-semibold text-slate-50" : "font-medium text-slate-200"}`}>
+                    <span className={`truncate group-hover:text-amber-200 ${a.unread ? "font-semibold text-slate-50" : "font-medium text-slate-200"}`}>
                       {a.title}
                     </span>
                     <span className="shrink-0 text-xs text-slate-500">{timeAgo(a.createdAt)}</span>
@@ -115,11 +131,11 @@ function LatestAnnouncements({ items }: { items: AnnouncementItem[] }) {
           ))}
         </ul>
       )}
-    </Card>
+    </Section>
   );
 }
 
-const contentLinkClass = "-m-2 flex items-center gap-4 rounded-xl p-2 transition hover:bg-wash";
+const contentLinkClass = "flex items-center gap-4 py-3 transition hover:text-amber-200";
 
 /** Link-only content opens the material directly; pages open on the site. */
 function ContentLink({ item, children }: { item: ContentItem; children: React.ReactNode }) {
@@ -154,27 +170,37 @@ async function TeacherHome() {
     .limit(8);
 
   return (
-    <Card title="Recent quiz submissions">
+    <Section title="Recent quiz submissions" action={<TextLink href="/quizzes">Quizzes</TextLink>}>
       {recent.length === 0 ? (
         <EmptyState>No submissions yet.</EmptyState>
       ) : (
-        <ul className="divide-y divide-white/5 text-sm">
+        <ul className="divide-y divide-line-faint text-sm">
           {recent.map((r) => {
             const pct = percent(r.score, r.total);
             return (
-              <li key={r.id} className="flex items-center justify-between gap-2 py-2.5">
-                <span className="min-w-0">
-                  {r.student} · <TextLink href={`/quizzes/${r.quizId}`}>{r.quiz}</TextLink>
-                </span>
-                <Badge tone={scoreTone(pct)}>{pct}%</Badge>
+              <li key={r.id}>
+                <Link href={`/quizzes/${r.quizId}`} className="group flex items-baseline gap-3 py-2.5">
+                  <span className="min-w-0 flex-1 truncate">
+                    <span className="text-slate-200 group-hover:text-amber-200">{r.student}</span>
+                    <span className="text-slate-500"> · {r.quiz}</span>
+                  </span>
+                  <span className={`font-semibold tabular-nums ${SCORE_TEXT[scoreTone(pct)]}`}>{pct}%</span>
+                </Link>
               </li>
             );
           })}
         </ul>
       )}
-    </Card>
+    </Section>
   );
 }
+
+const SCORE_TEXT = {
+  slate: "text-slate-400",
+  green: "text-emerald-300",
+  amber: "text-orange-300",
+  red: "text-rose-300",
+} as const;
 
 async function StudentHome({ user }: { user: CurrentUser }) {
   const [quizList, mine, grades] = await Promise.all([
@@ -188,44 +214,33 @@ async function StudentHome({ user }: { user: CurrentUser }) {
 
   return (
     <>
-      <Card title="Quizzes to take">
+      <Section title="Quizzes to take">
         {todo.length === 0 ? (
-          <EmptyState>You&apos;re all caught up! 🙌</EmptyState>
+          <p className="py-3 text-sm text-slate-500">You&apos;re all caught up.</p>
         ) : (
-          <ul className="space-y-2">
+          <ul className="divide-y divide-line-faint">
             {todo.map((q) => (
               <li key={q.id}>
-                <TextLink href={`/quizzes/${q.id}`}>{q.title} →</TextLink>
+                <Link href={`/quizzes/${q.id}`} className="flex items-center justify-between gap-3 py-2.5 text-slate-200 hover:text-amber-200">
+                  <span className="truncate">{q.title}</span>
+                  <Icon name="chevronRight" className="size-4 shrink-0 text-slate-500" />
+                </Link>
               </li>
             ))}
           </ul>
         )}
-      </Card>
-      <Card title="My year at a glance" className="md:col-span-2">
-        <div className="grid grid-cols-3 gap-3">
+      </Section>
+      <Section title="My year so far" action={<TextLink href="/grades">Every Sunday</TextLink>}>
+        <div className="grid grid-cols-3 gap-4 pt-4">
           <Stat label="Attendance" value={summary.attendance} />
           <Stat label="Quiz avg" value={summary.quiz} suffix="" />
           <Stat label="Sermon notes" value={summary.sermonNotes} />
         </div>
-        <p className="mt-4 text-center text-sm">
-          <TextLink href="/grades">See every Sunday →</TextLink>
-        </p>
-      </Card>
-      <Card title="Have a question?" className="md:col-span-2">
-        <Link
-          href="/questions"
-          className="-m-2 flex items-center gap-4 rounded-xl p-2 transition hover:bg-wash"
-        >
-          <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-emerald-400/10 text-emerald-300 ring-1 ring-emerald-400/20">
-            <Icon name="question" className="size-6" />
-          </span>
-          <span className="min-w-0 flex-1 text-sm text-slate-300">
-            Ask your teachers anything in the question box. It&apos;s anonymous: your name is never
-            saved.
-          </span>
-          <Icon name="chevronRight" className="size-4 shrink-0 text-slate-500" />
-        </Link>
-      </Card>
+      </Section>
+      <p className="text-sm text-slate-400 md:col-span-2">
+        Have a question? <TextLink href="/questions">Ask it in the question box</TextLink>. It&apos;s
+        anonymous: your name is never saved.
+      </p>
     </>
   );
 }

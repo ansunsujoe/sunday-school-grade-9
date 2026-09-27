@@ -5,23 +5,24 @@ import { logout } from "@/lib/actions/auth";
 import { requireUser } from "@/lib/dal";
 import { getQuestionBoxCount, getUnreadAnnouncementCount } from "@/lib/queries";
 
+// Links marked `more` sit behind the "More" tab on phones.
 const TEACHER_LINKS = [
   { href: "/", label: "Home", icon: "home" },
   { href: "/content", label: "Content", icon: "book" },
-  { href: "/calendar", label: "Calendar", icon: "calendar" },
+  { href: "/calendar", label: "Calendar", icon: "calendar", more: true },
   { href: "/exodus", label: "Exodus", icon: "tent" },
-  { href: "/quizzes", label: "Quizzes", icon: "quiz" },
+  { href: "/quizzes", label: "Quizzes", icon: "quiz", more: true },
   { href: "/grades", label: "Gradebook", icon: "grades" },
-  { href: "/people", label: "People", icon: "people" },
+  { href: "/people", label: "People", icon: "people", more: true },
 ] as const;
 
 const STUDENT_LINKS = [
   { href: "/", label: "Home", icon: "home" },
   { href: "/content", label: "Content", icon: "book" },
-  { href: "/calendar", label: "Calendar", icon: "calendar" },
+  { href: "/calendar", label: "Calendar", icon: "calendar", more: true },
   { href: "/exodus", label: "Exodus", icon: "tent" },
   { href: "/quizzes", label: "Quizzes", icon: "quiz" },
-  { href: "/grades", label: "My grades", icon: "grades" },
+  { href: "/grades", label: "My grades", icon: "grades", more: true },
 ] as const;
 
 function initials(name: string) {
