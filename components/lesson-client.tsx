@@ -36,10 +36,10 @@ export function SectionTracker({ title, stops }: { title: string; stops: Stop[] 
   const activeIndex = stops.findIndex((s) => s.id === active);
 
   return (
-    <nav className="rounded-2xl border border-white/[0.07] bg-night-900/70 p-4 shadow-xl shadow-black/20 backdrop-blur-sm sm:p-5">
+    <nav className="rounded-2xl border border-line bg-night-900/70 p-4 shadow-xl shadow-black/20 backdrop-blur-sm sm:p-5">
       <h2 className="mb-3 text-base font-semibold text-slate-100">{title}</h2>
       <ol className="relative space-y-0.5">
-        <span className="absolute top-3 bottom-3 left-[13px] w-px bg-white/10" aria-hidden />
+        <span className="absolute top-3 bottom-3 left-[13px] w-px bg-wash-hover" aria-hidden />
         {stops.map((s, i) => {
           const isActive = i === activeIndex;
           const isPast = i < activeIndex;
@@ -55,7 +55,7 @@ export function SectionTracker({ title, stops }: { title: string; stops: Stop[] 
                 <span
                   className={`relative z-10 mt-0.5 grid size-[27px] shrink-0 place-items-center rounded-full text-[11px] font-bold ring-4 ring-night-900 transition ${
                     isActive
-                      ? "bg-amber-400 text-night-950 shadow-[0_0_14px] shadow-amber-400/60"
+                      ? "bg-amber-400 text-ink shadow-[0_0_14px] shadow-amber-400/60"
                       : isPast
                         ? "bg-amber-400/25 text-amber-100"
                         : "bg-night-700 text-slate-400"
@@ -114,7 +114,7 @@ export function DailyJournal({ storageKey, prompt }: { storageKey: string; promp
             {DAYS.map((d, i) => (
               <span
                 key={d}
-                className={`size-2 rounded-full transition ${entries[i].trim() ? "bg-emerald-400 shadow-[0_0_6px] shadow-emerald-400/70" : "bg-white/10"}`}
+                className={`size-2 rounded-full transition ${entries[i].trim() ? "bg-emerald-400 shadow-[0_0_6px] shadow-emerald-400/70" : "bg-wash-hover"}`}
               />
             ))}
           </span>
@@ -128,7 +128,7 @@ export function DailyJournal({ storageKey, prompt }: { storageKey: string; promp
             <li key={day} className="flex items-center gap-3">
               <span
                 className={`grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold transition ${
-                  filled ? "bg-emerald-400 text-night-950" : "bg-white/5 text-slate-500 ring-1 ring-white/10"
+                  filled ? "bg-emerald-400 text-ink" : "bg-wash text-slate-500 ring-1 ring-line"
                 }`}
                 aria-hidden
               >
@@ -139,7 +139,7 @@ export function DailyJournal({ storageKey, prompt }: { storageKey: string; promp
                 onChange={(e) => update(i, e.target.value)}
                 aria-label={`${day}: ${prompt}`}
                 placeholder={`${day}…`}
-                className="min-w-0 flex-1 rounded-xl border border-white/10 bg-night-800/80 px-3 py-2 text-base text-slate-100 placeholder:text-slate-500 focus:border-emerald-400/50 focus:ring-2 focus:ring-emerald-400/20 focus:outline-none sm:text-sm"
+                className="min-w-0 flex-1 rounded-xl border border-line bg-night-800/80 px-3 py-2 text-base text-slate-100 placeholder:text-slate-500 focus:border-emerald-400/50 focus:ring-2 focus:ring-emerald-400/20 focus:outline-none sm:text-sm"
               />
             </li>
           );

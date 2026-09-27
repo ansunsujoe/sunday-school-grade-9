@@ -20,7 +20,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
   return (
     <div>
       <BackLink href="/exodus/news">Camp News</BackLink>
-      <header className="mb-6 border-b border-white/[0.07] pb-6">
+      <header className="mb-6 border-b border-line pb-6">
         <p className="text-xs font-bold tracking-[0.22em] text-amber-300 uppercase">Camp News</p>
         <h1 className="mt-2 max-w-5xl font-display text-4xl leading-tight font-semibold tracking-tight text-balance text-slate-50 sm:text-5xl">
           {article.title}
@@ -36,7 +36,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
       </header>
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
-        <article className="h-fit rounded-2xl border border-white/[0.07] bg-night-900/70 p-5 shadow-xl shadow-black/20 sm:p-8">
+        <article className="h-fit rounded-2xl border border-line bg-night-900/70 p-5 shadow-xl shadow-black/20 sm:p-8">
           <Markdown>{article.content}</Markdown>
           {article.updatedAt && <p className="mt-6 text-xs text-slate-500">Updated {timeAgo(article.updatedAt)}</p>}
         </article>

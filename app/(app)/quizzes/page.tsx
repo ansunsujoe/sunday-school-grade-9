@@ -41,7 +41,7 @@ async function TeacherQuizzes() {
                 <li key={quiz.id}>
                   <Link
                     href={`/quizzes/${quiz.id}`}
-                    className="-mx-2 flex flex-wrap items-center justify-between gap-2 rounded-xl px-2 py-3 transition hover:bg-white/5"
+                    className="-mx-2 flex flex-wrap items-center justify-between gap-2 rounded-xl px-2 py-3 transition hover:bg-wash"
                   >
                     <span className="font-medium">{quiz.title}</span>
                     <span className="flex items-center gap-2 text-sm text-slate-400">
@@ -86,7 +86,7 @@ async function StudentQuizzes({ studentId }: { studentId: number }) {
                 <li key={quiz.id}>
                   <Link
                     href={`/quizzes/${quiz.id}`}
-                    className="-mx-2 flex flex-wrap items-center justify-between gap-2 rounded-xl px-2 py-3 transition hover:bg-white/5"
+                    className="-mx-2 flex flex-wrap items-center justify-between gap-2 rounded-xl px-2 py-3 transition hover:bg-wash"
                   >
                     <span className="font-medium">{quiz.title}</span>
                     {sub ? (

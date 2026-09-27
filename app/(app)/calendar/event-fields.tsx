@@ -3,8 +3,8 @@ import type { CalendarEvent } from "@/lib/db/schema";
 import { TONES } from "./event-tone";
 
 const AUDIENCE_OPTIONS = [
-  { value: "all", label: "Teachers & students", tone: "peer-checked:bg-sky-400 peer-checked:text-night-950" },
-  { value: "teachers", label: "Teachers only", tone: "peer-checked:bg-violet-400 peer-checked:text-night-950" },
+  { value: "all", label: "Teachers & students", tone: "peer-checked:bg-sky-400 peer-checked:text-ink" },
+  { value: "teachers", label: "Teachers only", tone: "peer-checked:bg-violet-400 peer-checked:text-ink" },
 ] as const;
 
 type EventValues = Pick<CalendarEvent, "title" | "date" | "startTime" | "endTime" | "audience" | "noSundaySchool">;
@@ -34,7 +34,7 @@ export function EventFields({ event, defaultDate }: { event?: EventValues; defau
             type="date"
             required
             defaultValue={event?.date ?? defaultDate}
-            className={`${inputClass} [color-scheme:dark]`}
+            className={`${inputClass} scheme-adaptive`}
           />
         </Field>
         <Field label="Start time (optional)" htmlFor="startTime">
@@ -43,7 +43,7 @@ export function EventFields({ event, defaultDate }: { event?: EventValues; defau
             name="startTime"
             type="time"
             defaultValue={hhmm(event?.startTime)}
-            className={`${inputClass} [color-scheme:dark]`}
+            className={`${inputClass} scheme-adaptive`}
           />
         </Field>
         <Field label="End time (optional)" htmlFor="endTime">
@@ -52,7 +52,7 @@ export function EventFields({ event, defaultDate }: { event?: EventValues; defau
             name="endTime"
             type="time"
             defaultValue={hhmm(event?.endTime)}
-            className={`${inputClass} [color-scheme:dark]`}
+            className={`${inputClass} scheme-adaptive`}
           />
         </Field>
       </div>
@@ -60,7 +60,7 @@ export function EventFields({ event, defaultDate }: { event?: EventValues; defau
 
       <fieldset className="space-y-1.5">
         <legend className="mb-1.5 text-sm font-medium text-slate-300">Who sees it</legend>
-        <div className="inline-flex flex-wrap gap-1 rounded-xl border border-white/10 bg-night-800/80 p-1">
+        <div className="inline-flex flex-wrap gap-1 rounded-xl border border-line bg-night-800/80 p-1">
           {AUDIENCE_OPTIONS.map((o) => (
             <label key={o.value}>
               <input
@@ -76,7 +76,7 @@ export function EventFields({ event, defaultDate }: { event?: EventValues; defau
         </div>
       </fieldset>
 
-      <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] p-3 transition hover:bg-white/[0.04]">
+      <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-line bg-wash p-3 transition hover:bg-wash">
         <input
           type="checkbox"
           name="noSundaySchool"

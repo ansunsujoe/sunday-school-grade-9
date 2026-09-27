@@ -48,7 +48,7 @@ export async function ContentPage({
         description={item.summary}
       />
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
-        <article className="min-w-0 rounded-2xl border border-white/[0.07] bg-night-900/70 p-4 sm:p-8">
+        <article className="min-w-0 rounded-2xl border border-line bg-night-900/70 p-4 sm:p-8">
           {children}
         </article>
         <aside className="space-y-6 lg:sticky lg:top-24">

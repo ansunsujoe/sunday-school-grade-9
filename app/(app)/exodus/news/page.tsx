@@ -63,13 +63,13 @@ export default async function NewsPage() {
                   <li key={a.id}>
                     <Link
                       href={`/exodus/news/${a.id}`}
-                      className="group flex h-full flex-col rounded-2xl border border-white/[0.07] bg-night-900/70 p-5 shadow-xl shadow-black/20 transition hover:-translate-y-0.5 hover:border-white/15 hover:bg-night-800/70"
+                      className="group flex h-full flex-col rounded-2xl border border-line bg-night-900/70 p-5 shadow-xl shadow-black/20 transition hover:-translate-y-0.5 hover:border-line-strong hover:bg-night-800/70"
                     >
                       <h3 className="font-display text-xl leading-snug font-semibold text-balance text-slate-50 group-hover:text-amber-50">
                         {a.title}
                       </h3>
                       <p className="mt-2 line-clamp-3 flex-1 text-sm leading-6 text-slate-400">{plainText(a.content)}</p>
-                      <div className="mt-5 border-t border-white/[0.06] pt-4">
+                      <div className="mt-5 border-t border-line-subtle pt-4">
                         <Byline date={a.createdAt} minutes={readingMinutes(a.content)} size="sm" />
                       </div>
                     </Link>

@@ -12,7 +12,7 @@ export function StudentWeek({
 }) {
   const id = student.id;
   return (
-    <li className="rounded-2xl border border-white/[0.07] bg-night-900/70 p-4 backdrop-blur-sm xl:flex xl:items-center xl:gap-6 xl:px-5">
+    <li className="rounded-2xl border border-line bg-night-900/70 p-4 backdrop-blur-sm xl:flex xl:items-center xl:gap-6 xl:px-5">
       <input type="hidden" name="studentId" value={id} />
       <div className="mb-3 flex items-center justify-between gap-2 xl:mb-0 xl:w-44 xl:shrink-0 xl:flex-col xl:items-start xl:gap-0.5">
         <span className="truncate font-semibold text-slate-100 xl:max-w-full">{student.name}</span>
@@ -83,7 +83,7 @@ function Toggle({
     { submit: "", label: "–", checked: value === null, tone: segmentTones.blank },
   ];
   return (
-    <div className="flex gap-1 rounded-xl bg-night-800/80 p-1 ring-1 ring-white/10">
+    <div className="flex gap-1 rounded-xl bg-night-800/80 p-1 ring-1 ring-line">
       {options.map((o) => (
         <label key={o.submit} className="flex-1 cursor-pointer" title={o.submit ? undefined : "Leave blank"}>
           <input
@@ -135,7 +135,7 @@ export function Overview({
           <li key={student.id}>
             <Link
               href={`/grades/students/${student.id}`}
-              className="block rounded-xl px-2 py-2.5 transition hover:bg-white/5"
+              className="block rounded-xl px-2 py-2.5 transition hover:bg-wash"
             >
               <div className="flex items-center justify-between text-sm font-medium text-slate-200">
                 {student.name}
@@ -147,7 +147,7 @@ export function Overview({
                   ["Quiz", pct(summary.quiz, "")],
                   ["Notes", pct(summary.sermonNotes)],
                 ].map(([label, value]) => (
-                  <div key={label} className="rounded-lg bg-white/[0.03] py-1">
+                  <div key={label} className="rounded-lg bg-wash py-1">
                     <div className="text-sm font-semibold text-slate-200 tabular-nums">{value}</div>
                     {label}
                   </div>

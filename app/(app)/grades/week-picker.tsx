@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Icon } from "@/components/icons";
 
 const arrowClass =
-  "grid size-11 shrink-0 place-items-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition hover:bg-white/10 hover:text-white active:scale-95";
+  "grid size-11 shrink-0 place-items-center rounded-xl border border-line bg-wash text-slate-300 transition hover:bg-wash-hover hover:text-slate-50 active:scale-95";
 
 /** Previous / next arrows around a native select, which is easy to spin on phones. */
 export function WeekPicker({

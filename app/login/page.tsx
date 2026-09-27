@@ -12,7 +12,7 @@ export default function LoginPage() {
           </h1>
           <p className="mt-2 text-sm text-slate-400">Sign in with the account your teacher gave you.</p>
         </div>
-        <div className="rounded-2xl border border-white/[0.08] bg-night-900/70 p-6 shadow-2xl shadow-black/40 backdrop-blur-sm">
+        <div className="rounded-2xl border border-line bg-night-900/70 p-6 shadow-2xl shadow-black/40 backdrop-blur-sm">
           <LoginForm />
         </div>
         <figure className="mt-10 text-center">

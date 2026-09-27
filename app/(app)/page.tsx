@@ -94,11 +94,11 @@ function LatestAnnouncements({ items }: { items: AnnouncementItem[] }) {
             <li key={a.id}>
               <Link
                 href={`/announcements#a-${a.id}`}
-                className="flex items-start gap-3 rounded-xl px-2 py-3 transition hover:bg-white/5"
+                className="flex items-start gap-3 rounded-xl px-2 py-3 transition hover:bg-wash"
               >
                 <span
                   className={`mt-2 size-2 shrink-0 rounded-full ${
-                    a.unread ? "bg-amber-400 shadow-[0_0_8px] shadow-amber-400/70" : "bg-white/10"
+                    a.unread ? "bg-amber-400 shadow-[0_0_8px] shadow-amber-400/70" : "bg-wash-hover"
                   }`}
                 />
                 <span className="min-w-0 flex-1">
@@ -119,7 +119,7 @@ function LatestAnnouncements({ items }: { items: AnnouncementItem[] }) {
   );
 }
 
-const contentLinkClass = "-m-2 flex items-center gap-4 rounded-xl p-2 transition hover:bg-white/5";
+const contentLinkClass = "-m-2 flex items-center gap-4 rounded-xl p-2 transition hover:bg-wash";
 
 /** Link-only content opens the material directly; pages open on the site. */
 function ContentLink({ item, children }: { item: ContentItem; children: React.ReactNode }) {
@@ -214,7 +214,7 @@ async function StudentHome({ user }: { user: CurrentUser }) {
       <Card title="Have a question?" className="md:col-span-2">
         <Link
           href="/questions"
-          className="-m-2 flex items-center gap-4 rounded-xl p-2 transition hover:bg-white/5"
+          className="-m-2 flex items-center gap-4 rounded-xl p-2 transition hover:bg-wash"
         >
           <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-emerald-400/10 text-emerald-300 ring-1 ring-emerald-400/20">
             <Icon name="question" className="size-6" />

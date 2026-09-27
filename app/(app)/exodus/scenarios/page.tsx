@@ -33,7 +33,7 @@ export default async function ScenariosPage() {
             <li key={s.id}>
               <Link
                 href={`/exodus/scenarios/${s.id}`}
-                className="flex items-center gap-3 rounded-2xl border border-white/[0.07] bg-night-900/70 p-4 transition hover:border-white/15 hover:bg-night-800/70"
+                className="flex items-center gap-3 rounded-2xl border border-line bg-night-900/70 p-4 transition hover:border-line-strong hover:bg-night-800/70"
               >
                 <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-amber-400/10 text-amber-300 ring-1 ring-amber-400/20">
                   <Icon name="scroll" className="size-5" />

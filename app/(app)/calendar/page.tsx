@@ -81,9 +81,9 @@ export default async function CalendarPage({
       />
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
-        <section className="overflow-hidden rounded-2xl border border-white/[0.07] bg-night-900/70 shadow-xl shadow-black/20 backdrop-blur-sm">
+        <section className="overflow-hidden rounded-2xl border border-line bg-night-900/70 shadow-xl shadow-black/20 backdrop-blur-sm">
           {/* Month switcher and legend */}
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.06] p-3 sm:p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line-subtle p-3 sm:p-4">
             <div className="flex items-center gap-2">
               <MonthArrow href={monthHref(addMonths(month, -1))} label="Previous month" icon="chevronLeft" />
               <h2 className="min-w-44 text-center font-display text-xl font-semibold text-slate-50 sm:text-2xl">
@@ -110,7 +110,7 @@ export default async function CalendarPage({
           </div>
 
           {/* Month grid */}
-          <div className="grid grid-cols-7 border-b border-white/[0.06] text-center text-[11px] font-semibold tracking-[0.15em] uppercase">
+          <div className="grid grid-cols-7 border-b border-line-subtle text-center text-[11px] font-semibold tracking-[0.15em] uppercase">
             {WEEKDAYS.map((d, i) => (
               <div key={d} className={`py-2 ${i === 0 ? "text-amber-300/90" : "text-slate-500"}`}>
                 {d}
@@ -191,7 +191,7 @@ function MonthArrow({
     <Link
       href={href}
       aria-label={label}
-      className="grid size-10 shrink-0 place-items-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition hover:bg-white/10 hover:text-white active:scale-95"
+      className="grid size-10 shrink-0 place-items-center rounded-xl border border-line bg-wash text-slate-300 transition hover:bg-wash-hover hover:text-slate-50 active:scale-95"
     >
       <Icon name={icon} />
     </Link>
@@ -220,7 +220,7 @@ function DayCell({
 
   return (
     <div
-      className={`group relative min-h-14 border-r border-b border-white/[0.05] p-1 nth-[7n]:border-r-0 md:min-h-30 md:p-1.5 ${
+      className={`group relative min-h-14 border-r border-b border-line-faint p-1 nth-[7n]:border-r-0 md:min-h-30 md:p-1.5 ${
         closed
           ? "bg-[repeating-linear-gradient(135deg,rgb(251_113_133/0.07)_0_6px,transparent_6px_12px)]"
           : isSunday
@@ -237,7 +237,7 @@ function DayCell({
         <span
           className={`grid size-7 place-items-center rounded-full text-xs font-semibold ${
             isToday
-              ? "bg-amber-400 text-night-950 shadow-lg shadow-amber-400/30"
+              ? "bg-amber-400 text-ink shadow-lg shadow-amber-400/30"
               : isPast
                 ? "text-slate-500"
                 : "text-slate-200"
@@ -249,7 +249,7 @@ function DayCell({
           <Link
             href={`/calendar/new?date=${day}`}
             aria-label={`Add event on ${day}`}
-            className="hidden size-6 place-items-center rounded-md text-slate-500 opacity-0 transition group-hover:opacity-100 hover:bg-white/10 hover:text-amber-200 md:grid"
+            className="hidden size-6 place-items-center rounded-md text-slate-500 opacity-0 transition group-hover:opacity-100 hover:bg-wash-hover hover:text-amber-200 md:grid"
           >
             <Icon name="plus" className="size-3.5" />
           </Link>
@@ -305,7 +305,7 @@ function DateTile({ date, isToday }: { date: string; isToday: boolean }) {
   return (
     <div
       className={`flex w-12 shrink-0 flex-col items-center rounded-xl py-1.5 ring-1 ${
-        isToday ? "bg-amber-400/15 ring-amber-400/40" : "bg-white/[0.03] ring-white/[0.07]"
+        isToday ? "bg-amber-400/15 ring-amber-400/40" : "bg-wash ring-line"
       }`}
     >
       <span className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase">
@@ -356,9 +356,9 @@ function EventRow({
     </>
   );
 
-  const rowClass = "flex gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5";
+  const rowClass = "flex gap-3 rounded-xl border border-line-subtle bg-wash p-2.5";
   return isTeacher ? (
-    <Link href={`/calendar/${event.id}/edit`} className={`${rowClass} transition hover:border-white/15 hover:bg-white/[0.05]`}>
+    <Link href={`/calendar/${event.id}/edit`} className={`${rowClass} transition hover:border-line-strong hover:bg-wash-hover`}>
       {body}
     </Link>
   ) : (

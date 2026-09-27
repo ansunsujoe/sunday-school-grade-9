@@ -58,7 +58,7 @@ export function YearView({ grades }: { grades: WeeklyGrade[] }) {
                   <tr key={`${sunday}-month`}>
                     <th
                       colSpan={5}
-                      className="border-t border-white/[0.06] bg-white/[0.02] py-2 pl-4 text-left font-display text-xs font-semibold tracking-wide text-amber-200/80 sm:pl-6"
+                      className="border-t border-line-subtle bg-wash py-2 pl-4 text-left font-display text-xs font-semibold tracking-wide text-amber-200/80 sm:pl-6"
                     >
                       {formatMonth(sunday)}
                     </th>
@@ -66,7 +66,7 @@ export function YearView({ grades }: { grades: WeeklyGrade[] }) {
                 ),
                 <tr
                   key={sunday}
-                  className={`border-t border-white/[0.04] text-center ${
+                  className={`border-t border-line-faint text-center ${
                     isThisWeek ? "bg-amber-400/[0.07]" : sunday > thisWeek ? "opacity-45" : ""
                   }`}
                 >

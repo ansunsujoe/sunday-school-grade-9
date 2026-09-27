@@ -48,7 +48,7 @@ function ContentCard({ item }: { item: ContentItem }) {
   // Link-only items open straight to the material; everything else has a page here.
   const external = !item.page;
   const cardClass =
-    "group flex h-full items-center gap-4 rounded-2xl border border-white/[0.07] bg-night-900/70 p-4 transition hover:border-amber-400/30 hover:bg-night-800/70 sm:p-5";
+    "group flex h-full items-center gap-4 rounded-2xl border border-line bg-night-900/70 p-4 transition hover:border-amber-400/30 hover:bg-night-800/70 sm:p-5";
   const inner = (
     <>
       <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-amber-400/10 text-amber-300 ring-1 ring-amber-400/20">

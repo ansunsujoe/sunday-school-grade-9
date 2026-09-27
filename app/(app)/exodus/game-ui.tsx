@@ -49,7 +49,7 @@ export function ClanHero({
   children?: React.ReactNode;
 }) {
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-linear-to-br from-night-800 via-night-900 to-night-950 p-5 shadow-2xl shadow-black/30 sm:p-7">
+    <section className="relative overflow-hidden rounded-3xl border border-line bg-linear-to-br from-night-800 via-night-900 to-night-950 p-5 shadow-2xl shadow-black/30 sm:p-7">
       <div className={`pointer-events-none absolute -top-24 -left-16 size-72 rounded-full blur-3xl ${clan.accent.glow}`} />
       <div className="relative flex flex-wrap items-center gap-4 sm:gap-6">
         <ClanLogo clan={clan} className="size-20 sm:size-28" />
@@ -81,7 +81,7 @@ function supplyTone(days: number | null) {
 /** A thin bar filled to `pct` percent. */
 function Meter({ pct, className }: { pct: number; className: string }) {
   return (
-    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
+    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-wash">
       <div className={`h-full rounded-full ${className}`} style={{ width: `${Math.max(2, Math.min(100, pct))}%` }} />
     </div>
   );
@@ -92,7 +92,7 @@ function ResourceTile({ r, amount, people }: { r: ResourceInfo; amount: number; 
   const days = r.key === "food" || r.key === "water" ? daysOfSupply(amount, people) : undefined;
   const tone = supplyTone(days ?? null);
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.03] p-3 sm:p-4" title={r.hint}>
+    <div className="rounded-xl border border-line-subtle bg-wash p-3 sm:p-4" title={r.hint}>
       <div className="flex items-start justify-between gap-2">
         <span className="text-sm text-slate-400">{r.label}</span>
         <span className="text-xl leading-none" aria-hidden>
@@ -151,7 +151,7 @@ export function ResourceSummary({ resources, people }: { resources: Resources; p
     { emoji: "🔥", label: "Morale", value: `${resources.morale}` },
   ];
   return (
-    <dl className="grid grid-cols-5 gap-1 rounded-xl bg-white/[0.03] p-2 text-center">
+    <dl className="grid grid-cols-5 gap-1 rounded-xl bg-wash p-2 text-center">
       {items.map((i) => (
         <div key={i.label} title={i.label}>
           <dt className="text-base leading-none" aria-label={i.label}>

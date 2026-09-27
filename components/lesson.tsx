@@ -72,7 +72,7 @@ export function LessonSection({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="scroll-mt-24 border-t border-white/[0.07] pt-8 first:border-t-0 first:pt-0">
+    <section id={id} className="scroll-mt-24 border-t border-line pt-8 first:border-t-0 first:pt-0">
       <header className="not-prose mb-5 flex items-start gap-4">
         {number !== undefined && (
           <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-amber-400/10 font-display text-xl font-semibold text-amber-200 ring-1 ring-amber-400/25">
@@ -84,7 +84,7 @@ export function LessonSection({
             {title}
           </h2>
           {read && (
-            <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-white/5 px-2.5 py-0.5 text-xs font-medium text-slate-300 ring-1 ring-white/10">
+            <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-wash px-2.5 py-0.5 text-xs font-medium text-slate-300 ring-1 ring-line">
               Read: {read}
             </p>
           )}

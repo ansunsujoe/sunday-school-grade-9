@@ -22,7 +22,7 @@ export function NavLinks({ links }: { links: NavLink[] }) {
           className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
             isActive(pathname, href)
               ? "bg-amber-400/10 text-amber-200"
-              : "text-slate-400 hover:bg-white/5 hover:text-slate-100"
+              : "text-slate-400 hover:bg-wash hover:text-slate-100"
           }`}
         >
           {label}
@@ -36,7 +36,7 @@ export function NavLinks({ links }: { links: NavLink[] }) {
 export function TabBar({ links }: { links: NavLink[] }) {
   const pathname = usePathname();
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-white/[0.08] bg-night-950/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-night-950/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden">
       <div className="mx-auto flex max-w-md">
         {links.map(({ href, label, icon }) => {
           const active = isActive(pathname, href);

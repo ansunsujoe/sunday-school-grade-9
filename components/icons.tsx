@@ -50,7 +50,7 @@ export function Icon({ name, className = "size-5" }: { name: IconName; className
 export function LogoMark({ className = "size-9" }: { className?: string }) {
   return (
     <span
-      className={`grid shrink-0 place-items-center rounded-xl bg-linear-to-br from-amber-300 to-amber-500 text-night-950 shadow-lg shadow-amber-500/20 ${className}`}
+      className={`grid shrink-0 place-items-center rounded-xl bg-linear-to-br from-amber-400 to-amber-500 text-ink shadow-lg shadow-amber-500/20 ${className}`}
     >
       <Icon name="cross" className="size-[55%]" />
     </span>

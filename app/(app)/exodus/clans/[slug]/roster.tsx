@@ -84,7 +84,7 @@ export function Roster({
       ) : (
         <ul className="grid gap-x-6 sm:grid-cols-2 2xl:grid-cols-3">
           {shown.map((m) => (
-            <li key={m.id} className="flex min-h-12 items-center gap-2 border-b border-white/5 py-1.5">
+            <li key={m.id} className="flex min-h-12 items-center gap-2 border-b border-line-faint py-1.5">
               <span className="min-w-0 flex-1 truncate text-sm text-slate-100" title={m.name}>
                 {m.name}
               </span>
@@ -93,7 +93,7 @@ export function Roster({
                   value={roleOf(m)}
                   onChange={(e) => changeRole(m.id, e.target.value)}
                   aria-label={`Role for ${m.name}`}
-                  className="min-h-9 w-36 shrink-0 rounded-lg border border-white/10 bg-night-800/80 px-2 text-sm text-slate-200 focus:border-amber-400/60 focus:outline-none"
+                  className="min-h-9 w-36 shrink-0 rounded-lg border border-line bg-night-800/80 px-2 text-sm text-slate-200 focus:border-amber-400/60 focus:outline-none"
                 >
                   {CLAN_ROLES.map((r) => (
                     <option key={r.name} value={r.name}>
@@ -126,6 +126,6 @@ function chip(active: boolean) {
   return `rounded-full px-3 py-1.5 text-xs font-medium ring-1 transition ${
     active
       ? "bg-amber-400/15 text-amber-200 ring-amber-400/30"
-      : "bg-white/[0.03] text-slate-300 ring-white/10 hover:bg-white/[0.07]"
+      : "bg-wash text-slate-300 ring-line hover:bg-wash-hover"
   }`;
 }

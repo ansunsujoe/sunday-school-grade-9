@@ -41,8 +41,8 @@ export default function Lesson1Page() {
       <h2 className="mt-8 mb-4 font-display text-2xl font-semibold text-slate-50 sm:text-3xl">
         Their journey, our journey
       </h2>
-      <div className="mb-10 overflow-hidden rounded-2xl border border-white/[0.07]">
-        <div className="grid grid-cols-2 bg-white/[0.03] text-xs font-semibold tracking-[0.15em] uppercase">
+      <div className="mb-10 overflow-hidden rounded-2xl border border-line">
+        <div className="grid grid-cols-2 bg-wash text-xs font-semibold tracking-[0.15em] uppercase">
           <p className="px-4 py-2.5 text-amber-300/80">For Israel</p>
           <p className="px-4 py-2.5 text-violet-300/90">For us</p>
         </div>
@@ -50,7 +50,7 @@ export default function Lesson1Page() {
           {TYPES.map((t) => (
             <li key={t.israel} className="grid grid-cols-2 text-base sm:text-lg">
               <span className="px-4 py-3 text-slate-300">{t.israel}</span>
-              <span className="border-l border-white/[0.06] px-4 py-3 font-medium text-slate-50">{t.us}</span>
+              <span className="border-l border-line-subtle px-4 py-3 font-medium text-slate-50">{t.us}</span>
             </li>
           ))}
         </ul>

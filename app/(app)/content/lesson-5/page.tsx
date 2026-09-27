@@ -43,9 +43,9 @@ export default function Lesson5Page() {
           <li key={s.id}>
             <a
               href={`#${s.id}`}
-              className="group flex h-full items-start gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] p-3 transition hover:border-amber-400/30 hover:bg-amber-400/[0.04]"
+              className="group flex h-full items-start gap-3 rounded-xl border border-line bg-wash p-3 transition hover:border-amber-400/30 hover:bg-amber-400/[0.04]"
             >
-              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-night-700 text-sm font-bold text-amber-200 ring-1 ring-amber-400/20 transition group-hover:bg-amber-400 group-hover:text-night-950">
+              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-night-700 text-sm font-bold text-amber-200 ring-1 ring-amber-400/20 transition group-hover:bg-amber-400 group-hover:text-ink">
                 {i + 1}
               </span>
               <span className="min-w-0">

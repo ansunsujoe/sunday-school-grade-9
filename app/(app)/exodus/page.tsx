@@ -73,7 +73,7 @@ async function TeacherCamp() {
             <Link
               key={row.slug}
               href={`/exodus/clans/${row.slug}`}
-              className="group relative overflow-hidden rounded-2xl border border-white/[0.07] bg-night-900/70 p-4 shadow-xl shadow-black/20 transition hover:border-white/15 hover:bg-night-800/70 sm:p-5"
+              className="group relative overflow-hidden rounded-2xl border border-line bg-night-900/70 p-4 shadow-xl shadow-black/20 transition hover:border-line-strong hover:bg-night-800/70 sm:p-5"
             >
               <div className={`pointer-events-none absolute -top-16 -left-10 size-40 rounded-full blur-3xl ${clan.accent.glow}`} />
               <div className="relative flex items-center gap-3.5">

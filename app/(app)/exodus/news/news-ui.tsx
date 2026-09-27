@@ -12,7 +12,7 @@ export function Byline({ date, minutes, size = "md" }: { date: Date; minutes?: n
   return (
     <div className="flex items-center gap-2.5">
       <span
-        className={`grid shrink-0 place-items-center rounded-full bg-linear-to-br from-amber-300 to-amber-500 font-semibold text-night-950 ${
+        className={`grid shrink-0 place-items-center rounded-full bg-linear-to-br from-amber-400 to-amber-500 font-semibold text-ink ${
           size === "sm" ? "size-7 text-[10px]" : "size-9 text-xs"
         }`}
         aria-hidden

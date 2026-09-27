@@ -68,7 +68,7 @@ export default async function AnnouncementsPage() {
                   <div className="mt-4 flex justify-end">
                     <Link
                       href={`/announcements/${a.id}/edit`}
-                      className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-400 transition hover:bg-white/5 hover:text-amber-200"
+                      className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-400 transition hover:bg-wash hover:text-amber-200"
                     >
                       <Icon name="pencil" className="size-3.5" /> Edit
                     </Link>

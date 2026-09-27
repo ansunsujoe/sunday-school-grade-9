@@ -203,7 +203,7 @@ async function StudentView({
                 {q.choices.map((choice, ci) => (
                   <label
                     key={ci}
-                    className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 px-3.5 py-3 text-sm transition hover:bg-white/5 has-[:checked]:border-amber-400/60 has-[:checked]:bg-amber-400/10"
+                    className="flex cursor-pointer items-center gap-3 rounded-xl border border-line px-3.5 py-3 text-sm transition hover:bg-wash has-[:checked]:border-amber-400/60 has-[:checked]:bg-amber-400/10"
                   >
                     <input type="radio" name={`q-${q.id}`} value={ci} required className="accent-amber-400" />
                     {choice}

@@ -2,13 +2,13 @@ import Link from "next/link";
 
 // text-base on phones keeps iOS from zooming in when an input is focused.
 export const inputClass =
-  "w-full rounded-xl border border-white/10 bg-night-800/80 px-3.5 py-2.5 text-base text-slate-100 placeholder:text-slate-500 transition focus:border-amber-400/60 focus:outline-none focus:ring-2 focus:ring-amber-400/20 sm:text-sm";
+  "w-full rounded-xl border border-line bg-night-800/80 px-3.5 py-2.5 text-base text-slate-100 placeholder:text-slate-500 transition focus:border-amber-400/60 focus:outline-none focus:ring-2 focus:ring-amber-400/20 sm:text-sm";
 
 export const buttonClass =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-linear-to-b from-amber-300 to-amber-400 px-5 py-2 text-sm font-semibold text-night-950 shadow-lg shadow-amber-500/15 transition hover:from-amber-200 hover:to-amber-300 active:scale-[0.98] disabled:opacity-50";
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-linear-to-b from-amber-400 to-amber-500 px-5 py-2 text-sm font-semibold text-ink shadow-lg shadow-amber-500/15 transition hover:brightness-110 active:scale-[0.98] disabled:opacity-50";
 
 export const secondaryButtonClass =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-2 text-sm font-medium text-slate-200 transition hover:bg-white/10 active:scale-[0.98] disabled:opacity-50";
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-line bg-wash px-5 py-2 text-sm font-medium text-slate-200 transition hover:bg-wash-hover active:scale-[0.98] disabled:opacity-50";
 
 export const dangerButtonClass =
   "inline-flex min-h-10 items-center justify-center rounded-xl border border-rose-400/25 bg-rose-400/5 px-3.5 py-1.5 text-sm font-medium text-rose-300 transition hover:bg-rose-400/15";
@@ -18,9 +18,9 @@ export const segmentClass =
   "grid min-h-10 min-w-9 place-items-center rounded-lg px-2 text-sm font-semibold text-slate-400 transition hover:text-slate-100 peer-checked:shadow peer-focus-visible:ring-2 peer-focus-visible:ring-amber-300";
 
 export const segmentTones = {
-  gold: "peer-checked:bg-amber-400 peer-checked:text-night-950",
-  yes: "peer-checked:bg-emerald-400 peer-checked:text-night-950",
-  no: "peer-checked:bg-rose-400 peer-checked:text-night-950",
+  gold: "peer-checked:bg-amber-400 peer-checked:text-ink",
+  yes: "peer-checked:bg-emerald-400 peer-checked:text-ink",
+  no: "peer-checked:bg-rose-400 peer-checked:text-ink",
   blank: "peer-checked:bg-night-600 peer-checked:text-slate-200",
 };
 
@@ -64,7 +64,7 @@ export function Card({
 }) {
   return (
     <section
-      className={`rounded-2xl border border-white/[0.07] bg-night-900/70 p-4 shadow-xl shadow-black/20 backdrop-blur-sm sm:p-5 ${className}`}
+      className={`rounded-2xl border border-line bg-night-900/70 p-4 shadow-xl shadow-black/20 backdrop-blur-sm sm:p-5 ${className}`}
     >
       {title && <h2 className="mb-4 text-base font-semibold text-slate-100">{title}</h2>}
       {children}
@@ -103,7 +103,7 @@ export function Badge({
   children: React.ReactNode;
 }) {
   const tones = {
-    slate: "bg-white/5 text-slate-300 ring-white/10",
+    slate: "bg-wash text-slate-300 ring-line",
     green: "bg-emerald-400/10 text-emerald-300 ring-emerald-400/20",
     amber: "bg-orange-400/10 text-orange-300 ring-orange-400/20",
     red: "bg-rose-400/10 text-rose-300 ring-rose-400/20",
@@ -147,7 +147,7 @@ export function Stat({
   suffix?: string;
 }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.03] p-3 sm:p-4">
+    <div className="rounded-xl border border-line-subtle bg-wash p-3 sm:p-4">
       <div className="font-display text-2xl font-semibold text-slate-50 sm:text-3xl">
         {value == null ? "—" : `${value}${suffix}`}
       </div>

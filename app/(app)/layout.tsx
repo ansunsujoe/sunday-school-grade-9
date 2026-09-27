@@ -44,7 +44,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex min-h-full flex-1 flex-col">
-      <header className="sticky top-0 z-30 border-b border-white/[0.06] bg-night-950/75 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
+      <header className="sticky top-0 z-30 border-b border-line-subtle bg-night-950/75 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
         <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-5 lg:px-6">
           <div className="flex min-w-0 items-center gap-6">
             <Link href="/" className="flex min-w-0 items-center gap-2.5">
@@ -63,7 +63,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-1">
             <Link
               href="/questions"
-              className="relative grid size-10 place-items-center rounded-full text-slate-400 transition hover:bg-white/5 hover:text-slate-100"
+              className="relative grid size-10 place-items-center rounded-full text-slate-400 transition hover:bg-wash hover:text-slate-100"
               title={isTeacher ? "Question box" : "Ask a question"}
               aria-label={
                 isTeacher
@@ -75,27 +75,27 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             >
               <Icon name="question" className={questions ? "size-5 text-amber-200" : "size-5"} />
               {questions > 0 && (
-                <span className="absolute top-1 right-1 grid h-4 min-w-4 place-items-center rounded-full bg-amber-400 px-1 text-[10px] leading-none font-bold text-night-950 shadow-[0_0_10px] shadow-amber-400/60 ring-2 ring-night-950">
+                <span className="absolute top-1 right-1 grid h-4 min-w-4 place-items-center rounded-full bg-amber-400 px-1 text-[10px] leading-none font-bold text-ink shadow-[0_0_10px] shadow-amber-400/60 ring-2 ring-night-950">
                   {questions > 9 ? "9+" : questions}
                 </span>
               )}
             </Link>
             <Link
               href="/announcements"
-              className="relative grid size-10 place-items-center rounded-full text-slate-400 transition hover:bg-white/5 hover:text-slate-100"
+              className="relative grid size-10 place-items-center rounded-full text-slate-400 transition hover:bg-wash hover:text-slate-100"
               title="Announcements"
               aria-label={unread ? `Announcements, ${unread} unread` : "Announcements"}
             >
               <Icon name="bell" className={unread ? "size-5 text-amber-200" : "size-5"} />
               {unread > 0 && (
-                <span className="absolute top-1 right-1 grid h-4 min-w-4 place-items-center rounded-full bg-amber-400 px-1 text-[10px] leading-none font-bold text-night-950 shadow-[0_0_10px] shadow-amber-400/60 ring-2 ring-night-950">
+                <span className="absolute top-1 right-1 grid h-4 min-w-4 place-items-center rounded-full bg-amber-400 px-1 text-[10px] leading-none font-bold text-ink shadow-[0_0_10px] shadow-amber-400/60 ring-2 ring-night-950">
                   {unread > 9 ? "9+" : unread}
                 </span>
               )}
             </Link>
             <Link
               href="/account"
-              className="flex items-center gap-2 rounded-full py-1 pr-1 pl-1 text-sm text-slate-300 transition hover:bg-white/5 sm:pr-3"
+              className="flex items-center gap-2 rounded-full py-1 pr-1 pl-1 text-sm text-slate-300 transition hover:bg-wash sm:pr-3"
               title="My account"
             >
               <span className="grid size-8 place-items-center rounded-full bg-night-700 text-xs font-semibold text-amber-200 ring-1 ring-amber-400/30">
@@ -105,7 +105,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             </Link>
             <form action={logout}>
               <button
-                className="grid size-10 place-items-center rounded-full text-slate-400 transition hover:bg-white/5 hover:text-slate-100"
+                className="grid size-10 place-items-center rounded-full text-slate-400 transition hover:bg-wash hover:text-slate-100"
                 title="Log out"
                 aria-label="Log out"
               >
