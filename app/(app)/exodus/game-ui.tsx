@@ -67,7 +67,7 @@ export function ClanHero({
             <span>{leader ? `Led by ${leader}` : "No leader yet"}</span>
             <span className="inline-flex items-center gap-1.5">
               <Glyph name="people" className="size-4 text-[var(--ex-gold)]" />
-              {people.toLocaleString()} {people === 1 ? "soul" : "souls"}
+              {people.toLocaleString()} {people === 1 ? "person" : "people"}
             </span>
           </p>
         </div>

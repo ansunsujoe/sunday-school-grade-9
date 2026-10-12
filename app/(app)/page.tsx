@@ -121,7 +121,7 @@ async function ExodusToday() {
       }
       action={<TextLink href="/exodus/council">Council</TextLink>}
     >
-      <ThreadList threads={threads} showClan={false} emptyText="No one has come to your tent yet." />
+      <ThreadList threads={threads} emptyText="No one has come to your tent yet." />
     </Section>
   );
 }

@@ -1,10 +1,8 @@
 import Link from "next/link";
-import { clanInfo } from "@/lib/exodus/clans";
 import { describeChanges } from "@/lib/exodus/resources";
 import { MANNA_TIME_ZONE } from "@/lib/exodus/manna";
 import type { ThreadListItem } from "@/lib/exodus/queries";
 import { timeAgo } from "@/lib/format";
-import { ClanLogo } from "../game-ui";
 import { PersonaSeal } from "./persona-seal";
 
 export { PersonaSeal };
@@ -18,12 +16,13 @@ export function campTime(date: Date) {
 export function ThreadList({
   threads,
   activeId,
-  showClan,
+  asTeacher = false,
   emptyText,
 }: {
   threads: ThreadListItem[];
   activeId?: number;
-  showClan: boolean;
+  /** Teachers read the leader's replies; leaders read their own. */
+  asTeacher?: boolean;
   emptyText: string;
 }) {
   if (threads.length === 0) {
@@ -51,15 +50,9 @@ export function ThreadList({
                   </span>
                   <span className="shrink-0 text-[11px] text-slate-500">{timeAgo(t.lastMessageAt)}</span>
                 </span>
-                {showClan && (
-                  <span className="mt-0.5 flex items-center gap-1.5 text-xs text-slate-500">
-                    <ClanLogo clan={clanInfo(t.clanSlug)} className="size-4 ring-1" />
-                    {clanInfo(t.clanSlug).name}
-                  </span>
-                )}
                 <span className="mt-0.5 flex items-center gap-2">
                   <span className={`line-clamp-1 flex-1 text-sm ${unread ? "text-slate-200" : "text-slate-500"}`}>
-                    {t.lastFromLeader && <span className="text-slate-500">{showClan ? "Leader: " : "You: "}</span>}
+                    {t.lastFromLeader && <span className="text-slate-500">{asTeacher ? "Leader: " : "You: "}</span>}
                     {/* Supply changes lead the preview, e.g. "+50 Gold, −20 Goats · Quail at evening". */}
                     {t.lastChanges ? `${describeChanges(t.lastChanges)} · ${t.lastBody}` : t.lastBody}
                   </span>

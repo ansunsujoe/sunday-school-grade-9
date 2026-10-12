@@ -70,7 +70,7 @@ async function TeacherCamp() {
     <div className="space-y-8">
       <dl className="grid grid-cols-3 border-y border-[var(--ex-rule)] py-3 text-center sm:max-w-xl">
         {[
-          { label: "Souls in the camp", value: total.toLocaleString() },
+          { label: "People in the camp", value: total.toLocaleString() },
           { label: "Clans", value: clans.length },
           { label: "Gathered manna today", value: `${fed} of ${clans.length}` },
         ].map((s) => (
@@ -98,7 +98,7 @@ async function TeacherCamp() {
                     <h2 className="font-display text-xl font-semibold text-slate-50">{clan.name}</h2>
                     <p className="text-sm text-slate-400">
                       {row.leaderName ?? <span className="text-orange-300">No leader</span>} ·{" "}
-                      {row.people.toLocaleString()} souls
+                      {row.people.toLocaleString()} people
                     </p>
                   </div>
                   <Icon name="chevronRight" className="size-5 text-slate-600 transition group-hover:text-[var(--ex-gold)]" />
@@ -182,7 +182,7 @@ async function LeaderCamp({ player, slug }: { player: Player; slug: ClanSlug }) 
         }
       >
         <div className="-mx-4 -mb-4 sm:-mx-6 sm:-mb-6">
-          <ThreadList threads={threads} showClan={false} emptyText="No one has come to your tent yet." />
+          <ThreadList threads={threads} emptyText="No one has come to your tent yet." />
         </div>
       </Panel>
 
