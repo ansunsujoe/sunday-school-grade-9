@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { Icon } from "@/components/icons";
-import { Card, EmptyState, buttonClass } from "@/components/ui";
+import { EmptyState, buttonClass } from "@/components/ui";
 import { getNews, getPlayer } from "@/lib/exodus/queries";
 import { plainText } from "@/lib/format";
 import { Byline, readingMinutes } from "./news-ui";
+import { Dunes, ExHeading, Glyph, Panel } from "../ornaments";
 
 export default async function NewsPage() {
   const player = await getPlayer();
@@ -14,7 +15,7 @@ export default async function NewsPage() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-display text-3xl font-semibold tracking-tight text-slate-50 sm:text-4xl">Camp News</h1>
-          <p className="mt-1 text-sm text-slate-400">What&apos;s happening across the camp of Israel.</p>
+          <p className="mt-1 text-sm text-slate-400">Word from across the camp of Israel, as Joshua tells it.</p>
         </div>
         {player.isTeacher && (
           <Link href="/exodus/news/new" className={buttonClass}>
@@ -24,23 +25,26 @@ export default async function NewsPage() {
       </div>
 
       {!featured ? (
-        <Card>
+        <Panel>
           <EmptyState>No news yet.</EmptyState>
-        </Card>
+        </Panel>
       ) : (
         <>
           <Link
             href={`/exodus/news/${featured.id}`}
-            className="group relative block overflow-hidden rounded-3xl border border-amber-300/15 bg-linear-to-br from-night-800 via-night-900 to-night-950 p-6 shadow-2xl shadow-black/30 transition hover:border-amber-300/30 sm:p-10"
+            className="ex-panel group block overflow-hidden transition hover:border-[var(--ex-gold-soft)]"
           >
-            <div className="pointer-events-none absolute -top-32 -right-24 size-96 rounded-full bg-amber-400/15 blur-3xl" />
-            <Icon
-              name="news"
-              className="pointer-events-none absolute -right-10 -bottom-12 hidden size-72 text-amber-200/[0.04] md:block"
+            <div className="pointer-events-none absolute -top-32 -right-24 size-96 rounded-full bg-amber-400/10 blur-3xl" />
+            <Glyph
+              name="shofar"
+              className="pointer-events-none absolute -right-8 -bottom-10 hidden size-72 text-[var(--ex-gold)] opacity-[0.07] md:block"
             />
-            <div className="relative max-w-4xl">
-              <p className="text-xs font-bold tracking-[0.22em] text-amber-300 uppercase">Latest</p>
-              <h2 className="mt-3 font-display text-3xl leading-tight font-semibold text-balance text-slate-50 transition group-hover:text-amber-50 sm:text-5xl">
+            <Dunes />
+            <div className="relative max-w-4xl p-6 sm:p-10">
+              <p className="font-display text-xs font-semibold tracking-[0.25em] text-[var(--ex-gold)] uppercase">
+                Hear, O Israel · The latest
+              </p>
+              <h2 className="mt-3 font-display text-3xl leading-tight font-semibold text-balance text-slate-50 transition group-hover:text-[var(--ex-gold)] sm:text-5xl">
                 {featured.title}
               </h2>
               <p className="mt-4 line-clamp-3 max-w-3xl text-base leading-7 text-slate-300 sm:text-lg">
@@ -48,7 +52,7 @@ export default async function NewsPage() {
               </p>
               <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
                 <Byline date={featured.createdAt} minutes={readingMinutes(featured.content)} />
-                <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-amber-300 group-hover:text-amber-200">
+                <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--ex-gold)]">
                   Read the story <Icon name="chevronRight" className="size-4 transition group-hover:translate-x-0.5" />
                 </span>
               </div>
@@ -57,15 +61,15 @@ export default async function NewsPage() {
 
           {rest.length > 0 && (
             <section>
-              <h2 className="mb-3 text-xs font-semibold tracking-[0.18em] text-slate-500 uppercase">Earlier</h2>
+              <ExHeading>Earlier</ExHeading>
               <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                 {rest.map((a) => (
                   <li key={a.id}>
                     <Link
                       href={`/exodus/news/${a.id}`}
-                      className="group flex h-full flex-col rounded-2xl border border-line bg-night-900/70 p-5 shadow-xl shadow-black/20 transition hover:-translate-y-0.5 hover:border-line-strong hover:bg-night-800/70"
+                      className="ex-panel group flex h-full flex-col p-5 transition hover:border-[var(--ex-gold-soft)]"
                     >
-                      <h3 className="font-display text-xl leading-snug font-semibold text-balance text-slate-50 group-hover:text-amber-50">
+                      <h3 className="font-display text-xl leading-snug font-semibold text-balance text-slate-50 group-hover:text-[var(--ex-gold)]">
                         {a.title}
                       </h3>
                       <p className="mt-2 line-clamp-3 flex-1 text-sm leading-6 text-slate-400">{plainText(a.content)}</p>

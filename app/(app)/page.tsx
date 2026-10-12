@@ -6,6 +6,7 @@ import { CONTENT, contentHref, type ContentItem } from "@/lib/content";
 import { requireUser, type CurrentUser } from "@/lib/dal";
 import { db } from "@/lib/db";
 import { quizzes, submissions, users } from "@/lib/db/schema";
+import { getCouncilUnread, getPlayer, getThreads } from "@/lib/exodus/queries";
 import { percent, plainText, timeAgo, today } from "@/lib/format";
 import {
   getAnnouncements,
@@ -15,6 +16,7 @@ import {
 } from "@/lib/queries";
 import { currentSunday, summarize } from "@/lib/school-year";
 import { verseForWeek } from "@/lib/verses";
+import { ThreadList } from "./exodus/council/council-ui";
 
 export default async function HomePage() {
   const user = await requireUser();
@@ -42,6 +44,8 @@ export default async function HomePage() {
           </footer>
         </blockquote>
       </section>
+
+      {user.role === "student" && <ExodusToday />}
 
       <div className="mt-8 grid gap-x-10 gap-y-8 md:grid-cols-2">
         <LatestAnnouncements items={announcements} />
@@ -86,6 +90,28 @@ function Section({
       </div>
       {children}
     </section>
+  );
+}
+
+/** Who is waiting at a clan leader's tent (the baker comes each morning about the manna), so no one is missed. */
+async function ExodusToday() {
+  const player = await getPlayer();
+  if (!player.clan) return null;
+  const [threads, unread] = await Promise.all([getThreads(player, { limit: 3 }), getCouncilUnread(player)]);
+
+  return (
+    <Section
+      className="mt-8"
+      title={
+        <>
+          At your tent
+          {unread > 0 && <Badge tone="gold">{unread} new</Badge>}
+        </>
+      }
+      action={<TextLink href="/exodus/council">Council</TextLink>}
+    >
+      <ThreadList threads={threads} showClan={false} emptyText="No one has come to your tent yet." />
+    </Section>
   );
 }
 

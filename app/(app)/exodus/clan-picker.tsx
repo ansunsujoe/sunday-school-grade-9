@@ -8,17 +8,29 @@ import type { ClanInfo } from "@/lib/exodus/clans";
  * Checkboxes named "clans", one per clan, with a shortcut to pick them all.
  * Starts with every clan picked unless `initial` says otherwise.
  */
-export function ClanPicker({ clans, initial }: { clans: ClanInfo[]; initial?: string[] }) {
-  const [picked, setPicked] = useState(() => new Set(initial ?? clans.map((c) => c.slug)));
+export function ClanPicker({
+  clans,
+  initial,
+  onChange,
+}: {
+  clans: ClanInfo[];
+  initial?: string[];
+  /** Told the picked slugs whenever they change. */
+  onChange?: (picked: string[]) => void;
+}) {
+  const [picked, setPickedState] = useState(() => new Set(initial ?? clans.map((c) => c.slug)));
   const all = picked.size === clans.length;
 
-  const toggle = (slug: string) =>
-    setPicked((prev) => {
-      const next = new Set(prev);
-      if (next.has(slug)) next.delete(slug);
-      else next.add(slug);
-      return next;
-    });
+  const setPicked = (next: Set<string>) => {
+    setPickedState(next);
+    onChange?.([...next]);
+  };
+  const toggle = (slug: string) => {
+    const next = new Set(picked);
+    if (next.has(slug)) next.delete(slug);
+    else next.add(slug);
+    setPicked(next);
+  };
 
   return (
     <fieldset className="space-y-2">
@@ -27,7 +39,7 @@ export function ClanPicker({ clans, initial }: { clans: ClanInfo[]; initial?: st
         <button
           type="button"
           onClick={() => setPicked(all ? new Set() : new Set(clans.map((c) => c.slug)))}
-          className="rounded-lg px-2 py-1 text-xs font-medium text-amber-300 hover:bg-wash hover:text-amber-200"
+          className="px-2 py-1 text-xs font-medium text-[var(--ex-gold)] hover:underline"
         >
           {all ? "Clear all" : "All clans"}
         </button>
@@ -38,10 +50,10 @@ export function ClanPicker({ clans, initial }: { clans: ClanInfo[]; initial?: st
           return (
             <label
               key={clan.slug}
-              className={`flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border px-2.5 py-2 text-sm transition ${
+              className={`flex min-h-11 cursor-pointer items-center gap-2 border px-2.5 py-2 text-sm transition ${
                 on
-                  ? "border-amber-400/40 bg-amber-400/[0.07] text-slate-50"
-                  : "border-line bg-wash text-slate-400 hover:bg-wash"
+                  ? "border-[var(--ex-gold-soft)] bg-amber-400/[0.07] text-slate-50"
+                  : "border-line-subtle text-slate-400 hover:border-line-strong"
               }`}
             >
               <input
@@ -55,7 +67,7 @@ export function ClanPicker({ clans, initial }: { clans: ClanInfo[]; initial?: st
               <span className="relative size-7 shrink-0 overflow-hidden rounded-full">
                 <Image src={clan.logo} alt="" fill sizes="28px" className={`scale-[1.04] object-cover ${on ? "" : "opacity-50 grayscale"}`} />
               </span>
-              <span className="truncate font-medium">{clan.name}</span>
+              <span className="truncate font-display font-semibold">{clan.name}</span>
             </label>
           );
         })}

@@ -2,13 +2,14 @@ import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { ActionForm } from "@/components/action-form";
 import { ConfirmButton } from "@/components/confirm-button";
-import { Card } from "@/components/ui";
+
 import { deleteNews, updateNews } from "@/lib/actions/exodus";
 import { requireTeacher } from "@/lib/dal";
 import { db } from "@/lib/db";
 import { gameNews } from "@/lib/db/schema";
 import { BackLink } from "../../../game-ui";
 import { NewsFields } from "../../news-fields";
+import { Panel } from "../../../ornaments";
 
 export default async function EditNewsPage({ params }: { params: Promise<{ id: string }> }) {
   await requireTeacher();
@@ -23,12 +24,12 @@ export default async function EditNewsPage({ params }: { params: Promise<{ id: s
         <BackLink href={`/exodus/news/${id}`}>Article</BackLink>
         <h1 className="font-display text-3xl font-semibold text-slate-50">Edit article</h1>
       </div>
-      <Card>
+      <Panel>
         <ActionForm action={updateNews} submitLabel="Save changes">
           <input type="hidden" name="id" value={id} />
           <NewsFields article={article} />
         </ActionForm>
-      </Card>
+      </Panel>
       <form action={deleteNews}>
         <input type="hidden" name="id" value={id} />
         <ConfirmButton label="Delete article" confirmLabel="Click again to delete" />

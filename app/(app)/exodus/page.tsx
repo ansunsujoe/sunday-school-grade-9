@@ -1,53 +1,56 @@
 import Link from "next/link";
 import { ActionForm } from "@/components/action-form";
 import { Icon } from "@/components/icons";
-import { Card, EmptyState, Field, buttonClass, inputClass } from "@/components/ui";
+import { EmptyState, Field, buttonClass, inputClass } from "@/components/ui";
 import { adjustResources, setUpGame } from "@/lib/actions/exodus";
 import { CLANS, clanInfo, type ClanSlug } from "@/lib/exodus/clans";
 import {
   getClan,
   getClans,
   getNews,
-  getNotifications,
   getPlayer,
-  getScenarios,
+  getRoleHolders,
+  getThreads,
   type Player,
 } from "@/lib/exodus/queries";
+import { mannaStatus } from "@/lib/exodus/manna";
 import { RESOURCES, STARTING_DAYS } from "@/lib/exodus/resources";
 import { timeAgo } from "@/lib/format";
-import { ClanPicker } from "./clan-picker";
+import { ClansAndSpeaker } from "./council/speaker-fields";
 import { ClanHero, ClanLogo, ResourcePanel, ResourceSummary } from "./game-ui";
-import { NotificationList } from "./notifications/notification-list";
+import { MannaSupply } from "./manna";
+import { ThreadList } from "./council/council-ui";
+import { Divider, Glyph, GlyphSeal, Panel, type GlyphName } from "./ornaments";
 
 export default async function ExodusPage() {
   const player = await getPlayer();
   if (player.isTeacher) return <TeacherCamp />;
   if (!player.clan) {
     return (
-      <Card>
+      <Panel>
         <EmptyState>
           You haven&apos;t been given a clan yet. Ask your teacher to make you a clan leader.
         </EmptyState>
-      </Card>
+      </Panel>
     );
   }
   return <LeaderCamp player={player} slug={player.clan} />;
 }
 
 async function TeacherCamp() {
-  const clans = await getClans();
+  const [clans, holders] = await Promise.all([getClans(), getRoleHolders()]);
 
   if (clans.length < CLANS.length) {
     const missing = CLANS.length - clans.length;
     return (
-      <Card className="max-w-2xl">
-        <h2 className="font-display text-2xl font-semibold text-slate-50">
+      <Panel className="max-w-2xl">
+        <h2 className="font-display text-3xl font-semibold text-slate-50">
           {clans.length === 0 ? "Start the journey" : "Some clans are missing"}
         </h2>
-        <p className="mt-2 text-sm text-slate-400">
-          {`This creates ${missing === CLANS.length ? "the six clans" : `the ${missing} missing clans`} with their people (everyone starts as a Villager) and ${STARTING_DAYS} days of food and water. Students whose first name matches a clan (Caleb, Jennifer, Jessica, Keren, Riya, Noah) become its leader; you can change leaders on each clan's page.`}
+        <p className="mt-2 text-sm leading-6 text-slate-400">
+          {`This creates ${missing === CLANS.length ? "the six clans" : `the ${missing} missing clans`} with their people (everyone starts as a Villager) and ${STARTING_DAYS} days of water. Food is manna: each clan's leader gathers it once a day. Students whose first name matches a clan (Caleb, Jennifer, Jessica, Keren, Riya, Noah) become its leader; you can change leaders on each clan's page.`}
         </p>
-        <div className="mt-5 flex flex-wrap gap-3">
+        <div className="mt-6 flex flex-wrap gap-4">
           {CLANS.map((c) => (
             <ClanLogo key={c.slug} clan={c} className="size-12" />
           ))}
@@ -55,56 +58,79 @@ async function TeacherCamp() {
         <form action={setUpGame} className="mt-6">
           <button className={buttonClass}>Found the clans</button>
         </form>
-      </Card>
+      </Panel>
     );
   }
 
   const total = clans.reduce((sum, c) => sum + c.people, 0);
+  const manna = new Map(clans.map((c) => [c.slug, mannaStatus(c.fedThrough, c.people)]));
+  const fed = [...manna.values()].filter((m) => m.fed).length;
 
   return (
-    <div className="space-y-6">
-      <p className="text-sm text-slate-400">
-        {total.toLocaleString()} people in {clans.length} clans. Open a clan to see its people or change its leader.
-      </p>
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <div className="space-y-8">
+      <dl className="grid grid-cols-3 border-y border-[var(--ex-rule)] py-3 text-center sm:max-w-xl">
+        {[
+          { label: "Souls in the camp", value: total.toLocaleString() },
+          { label: "Clans", value: clans.length },
+          { label: "Gathered manna today", value: `${fed} of ${clans.length}` },
+        ].map((s) => (
+          <div key={s.label} className="flex flex-col-reverse border-line-subtle not-first:border-l">
+            <dt className="mt-0.5 px-1 text-[11px] tracking-[0.14em] text-slate-500 uppercase">{s.label}</dt>
+            <dd className="font-display text-2xl font-semibold text-slate-50 tabular-nums">{s.value}</dd>
+          </div>
+        ))}
+      </dl>
+
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {clans.map((row) => {
           const clan = clanInfo(row.slug);
           return (
             <Link
               key={row.slug}
               href={`/exodus/clans/${row.slug}`}
-              className="group relative overflow-hidden rounded-2xl border border-line bg-night-900/70 p-4 shadow-xl shadow-black/20 transition hover:border-line-strong hover:bg-night-800/70 sm:p-5"
+              className="ex-panel group block overflow-hidden transition hover:border-[var(--ex-gold-soft)]"
             >
               <div className={`pointer-events-none absolute -top-16 -left-10 size-40 rounded-full blur-3xl ${clan.accent.glow}`} />
-              <div className="relative flex items-center gap-3.5">
-                <ClanLogo clan={clan} className="size-16" />
-                <div className="min-w-0 flex-1">
-                  <h2 className="font-display text-xl font-semibold text-slate-50">{clan.name}</h2>
-                  <p className="text-sm text-slate-400">
-                    {row.leaderName ?? <span className="text-orange-300">No leader</span>} ·{" "}
-                    {row.people.toLocaleString()} people
-                  </p>
+              <div className="relative p-4 sm:p-5">
+                <div className="flex items-center gap-3.5">
+                  <ClanLogo clan={clan} className="size-14" />
+                  <div className="min-w-0 flex-1">
+                    <h2 className="font-display text-xl font-semibold text-slate-50">{clan.name}</h2>
+                    <p className="text-sm text-slate-400">
+                      {row.leaderName ?? <span className="text-orange-300">No leader</span>} ·{" "}
+                      {row.people.toLocaleString()} souls
+                    </p>
+                  </div>
+                  <Icon name="chevronRight" className="size-5 text-slate-600 transition group-hover:text-[var(--ex-gold)]" />
                 </div>
-                <Icon name="chevronRight" className="size-5 text-slate-600 transition group-hover:text-slate-300" />
-              </div>
-              <div className="relative mt-4">
-                <ResourceSummary resources={row.resources} people={row.people} />
+                <div className="mt-4">
+                  <ResourceSummary resources={row.resources} people={row.people} manna={manna.get(row.slug)!} />
+                </div>
               </div>
             </Link>
           );
         })}
       </div>
 
-      <Card title="Give or take supplies" className="max-w-4xl">
-        <p className="-mt-2 mb-4 text-sm text-slate-400">
-          Enter how much to add (or a minus sign to take away) and leave the rest blank. Each clan gets a
-          notification with your reason.
+      <Panel title="Give or take supplies" className="max-w-4xl">
+        <p className="-mt-1 mb-5 text-sm text-slate-400">
+          Enter how much to add (or a minus sign to take away) and leave the rest blank. Whoever delivers it tells
+          each clan in the council; the Scribe also records every change.
         </p>
         <ActionForm action={adjustResources} submitLabel="Apply changes" resetOnSuccess>
-          <ClanPicker clans={CLANS} />
+          <ClansAndSpeaker
+            holders={holders}
+            legend="Who delivers it"
+            initialClans={CLANS.map((c) => c.slug)}
+            withScribe
+          />
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {RESOURCES.map((r) => (
-              <Field key={r.key} label={`${r.emoji} ${r.label}`} htmlFor={`d_${r.key}`}>
+              <div key={r.key} className="space-y-1.5">
+                <label htmlFor={`d_${r.key}`} className="flex items-center gap-1.5 text-sm font-medium text-slate-300">
+                  <Glyph name={r.key as GlyphName} className="size-4 text-[var(--ex-gold)]" />
+                  {r.label}
+                </label>
                 <input
                   id={`d_${r.key}`}
                   name={`d_${r.key}`}
@@ -113,93 +139,82 @@ async function TeacherCamp() {
                   placeholder="+0"
                   className={inputClass}
                 />
-              </Field>
+              </div>
             ))}
           </div>
-          <Field label="Reason" htmlFor="reason">
-            <input
+          <Field label="What they say" htmlFor="reason">
+            <textarea
               id="reason"
               name="reason"
-              placeholder="e.g. Quail covered the camp in the evening (Exodus 16:13)"
-              className={inputClass}
+              rows={3}
+              placeholder="e.g. At evening quail came up and covered the camp (Exodus 16:13). The Lord has given you meat."
+              className={`${inputClass} leading-6`}
             />
+            <p className="text-xs text-slate-500">
+              Optional for the Scribe. The clan sees the changes as a ledger above these words.
+            </p>
           </Field>
         </ActionForm>
-      </Card>
+      </Panel>
     </div>
   );
 }
 
 async function LeaderCamp({ player, slug }: { player: Player; slug: ClanSlug }) {
-  const [row, scenarios, news, notifications] = await Promise.all([
-    getClan(player, slug),
-    getScenarios(player),
-    getNews(2),
-    getNotifications(player, 5),
-  ]);
+  const [row, threads, news] = await Promise.all([getClan(player, slug), getThreads(player, { limit: 4 }), getNews(2)]);
   const clan = clanInfo(row.slug);
-  const waiting = scenarios.filter((s) => !s.closed && !s.answeredByMe);
+  const waiting = threads.reduce((sum, t) => sum + t.unread, 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <ClanHero clan={clan} leader={row.leaderName} people={row.people}>
         <Link href={`/exodus/clans/${row.slug}`} className={buttonClass}>
           My people <Icon name="chevronRight" className="size-4" />
         </Link>
       </ClanHero>
 
-      {waiting.length > 0 && (
-        <section className="rounded-2xl border border-amber-400/35 bg-linear-to-br from-amber-400/[0.08] to-night-900/80 p-4 sm:p-5">
-          <h2 className="flex items-center gap-2 text-base font-semibold text-amber-100">
-            <Icon name="scroll" className="size-5 text-amber-300" />
-            {waiting.length === 1 ? "A scenario needs your answer" : `${waiting.length} scenarios need your answer`}
-          </h2>
-          <ul className="mt-3 space-y-2">
-            {waiting.map((s) => (
-              <li key={s.id}>
-                <Link
-                  href={`/exodus/scenarios/${s.id}`}
-                  className="flex items-center justify-between gap-3 rounded-xl bg-night-950/40 px-3.5 py-3 transition hover:bg-night-950/70"
-                >
-                  <span className="font-medium text-slate-50">{s.title}</span>
-                  <span className="shrink-0 text-xs text-slate-400">{timeAgo(s.createdAt)}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+      <Panel
+        title={waiting > 0 ? `At your tent · ${waiting} waiting` : "At your tent"}
+        action={
+          <Link href="/exodus/council" className="text-[var(--ex-gold)] hover:underline">
+            Council →
+          </Link>
+        }
+      >
+        <div className="-mx-4 -mb-4 sm:-mx-6 sm:-mb-6">
+          <ThreadList threads={threads} showClan={false} emptyText="No one has come to your tent yet." />
+        </div>
+      </Panel>
 
-      <Card title="Supplies">
+      <Panel title="The scribe's tally" id="supplies">
+        <MannaSupply slug={row.slug} status={mannaStatus(row.fedThrough, row.people)} people={row.people} as="leader" />
         <ResourcePanel resources={row.resources} people={row.people} />
-      </Card>
+      </Panel>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card title="Camp news">
+      <Divider />
+
+      <div>
+        <Panel title="Camp news">
           {news.length === 0 ? (
             <EmptyState>No news yet.</EmptyState>
           ) : (
-            <ul className="divide-y divide-white/5">
+            <ul className="divide-y divide-line-faint">
               {news.map((n) => (
                 <li key={n.id}>
-                  <Link href={`/exodus/news/${n.id}`} className="block py-3 hover:text-amber-100">
-                    <span className="block font-display text-lg font-semibold text-slate-50">{n.title}</span>
-                    <span className="text-xs text-slate-500">{timeAgo(n.createdAt)}</span>
+                  <Link href={`/exodus/news/${n.id}`} className="group flex items-center gap-3 py-2.5">
+                    <GlyphSeal name="shofar" />
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-display text-lg font-semibold text-slate-50 group-hover:text-[var(--ex-gold)]">
+                        {n.title}
+                      </span>
+                      <span className="text-xs text-slate-500">{timeAgo(n.createdAt)}</span>
+                    </span>
                   </Link>
                 </li>
               ))}
             </ul>
           )}
-        </Card>
-        <Card title="Latest notifications">
-          <NotificationList items={notifications} compact />
-          <Link
-            href="/exodus/notifications"
-            className="mt-3 inline-block text-sm font-medium text-amber-300 hover:text-amber-200"
-          >
-            All notifications →
-          </Link>
-        </Card>
+        </Panel>
       </div>
     </div>
   );

@@ -4,13 +4,13 @@ import { useMemo, useState, useTransition } from "react";
 import { ConfirmButton } from "@/components/confirm-button";
 import { inputClass } from "@/components/ui";
 import { removeMember, setMemberRole } from "@/lib/actions/exodus";
-import { CLAN_ROLES } from "@/lib/exodus/roles";
+import { CLAN_ROLES, DEFAULT_ROLE, MAX_ROLE_LENGTH, cleanRole } from "@/lib/exodus/roles";
 
 type Member = { id: number; name: string; role: string };
 
 /**
- * A clan's people: counts by role, a search box, and (for the leader and
- * teachers) a role picker on every row. Teachers can also remove people.
+ * A clan's people: counts by role, a search box, and (for teachers) a role
+ * field on every row that takes any text. Teachers can also remove people.
  */
 export function Roster({
   members,
@@ -35,7 +35,13 @@ export function Roster({
       const role = roles[m.id] ?? m.role;
       byRole.set(role, (byRole.get(role) ?? 0) + 1);
     }
-    return CLAN_ROLES.map((r) => ({ role: r.name, n: byRole.get(r.name) ?? 0 })).filter((r) => r.n > 0);
+    // Most common roles first, Villager always leading.
+    return [...byRole]
+      .map(([role, n]) => ({ role, n }))
+      .sort(
+        (a, b) =>
+          +(b.role === DEFAULT_ROLE) - +(a.role === DEFAULT_ROLE) || b.n - a.n || a.role.localeCompare(b.role),
+      );
   }, [members, roles]);
 
   const q = query.trim().toLowerCase();
@@ -43,9 +49,11 @@ export function Roster({
     (m) => (!q || m.name.toLowerCase().includes(q)) && (!roleFilter || roleOf(m) === roleFilter),
   );
 
-  const changeRole = (id: number, role: string) => {
-    setRoles((prev) => ({ ...prev, [id]: role }));
-    startTransition(() => setMemberRole(id, role));
+  const changeRole = (m: Member, typed: string) => {
+    const role = cleanRole(typed);
+    if (role === roleOf(m)) return;
+    setRoles((prev) => ({ ...prev, [m.id]: role }));
+    startTransition(() => setMemberRole(m.id, role));
   };
 
   return (
@@ -79,6 +87,16 @@ export function Roster({
         className={`${inputClass} mb-3`}
       />
 
+      {canEdit && (
+        <datalist id="clan-roles">
+          {CLAN_ROLES.map((r) => (
+            <option key={r.name} value={r.name}>
+              {r.description}
+            </option>
+          ))}
+        </datalist>
+      )}
+
       {shown.length === 0 ? (
         <p className="py-8 text-center text-sm text-slate-500">No one matches.</p>
       ) : (
@@ -89,18 +107,23 @@ export function Roster({
                 {m.name}
               </span>
               {canEdit ? (
-                <select
-                  value={roleOf(m)}
-                  onChange={(e) => changeRole(m.id, e.target.value)}
+                <input
+                  // Remount when the saved role changes, so the field shows the cleaned-up text.
+                  key={roleOf(m)}
+                  defaultValue={roleOf(m)}
+                  list="clan-roles"
+                  maxLength={MAX_ROLE_LENGTH}
+                  onBlur={(e) => changeRole(m, e.currentTarget.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") e.currentTarget.blur();
+                    if (e.key === "Escape") {
+                      e.currentTarget.value = roleOf(m);
+                      e.currentTarget.blur();
+                    }
+                  }}
                   aria-label={`Role for ${m.name}`}
-                  className="min-h-9 w-36 shrink-0 rounded-lg border border-line bg-night-800/80 px-2 text-sm text-slate-200 focus:border-amber-400/60 focus:outline-none"
-                >
-                  {CLAN_ROLES.map((r) => (
-                    <option key={r.name} value={r.name}>
-                      {r.name}
-                    </option>
-                  ))}
-                </select>
+                  className="min-h-9 w-40 shrink-0 border border-transparent bg-transparent px-2 text-right text-sm text-slate-300 transition hover:border-line focus:border-amber-400/60 focus:bg-night-800/80 focus:text-left focus:text-slate-100 focus:outline-none"
+                />
               ) : (
                 <span className="shrink-0 text-sm text-slate-400">{roleOf(m)}</span>
               )}
@@ -110,7 +133,7 @@ export function Roster({
                   <ConfirmButton
                     label="✕"
                     confirmLabel="Remove?"
-                    className="grid min-h-9 min-w-9 place-items-center rounded-lg px-2 text-xs text-slate-500 transition hover:bg-rose-400/10 hover:text-rose-300"
+                    className="grid min-h-9 min-w-9 place-items-center px-2 text-xs text-slate-500 transition hover:bg-rose-400/10 hover:text-rose-300"
                   />
                 </form>
               )}
@@ -123,9 +146,9 @@ export function Roster({
 }
 
 function chip(active: boolean) {
-  return `rounded-full px-3 py-1.5 text-xs font-medium ring-1 transition ${
+  return `border px-3 py-1.5 font-display text-xs font-semibold tracking-wide transition ${
     active
-      ? "bg-amber-400/15 text-amber-200 ring-amber-400/30"
-      : "bg-wash text-slate-300 ring-line hover:bg-wash-hover"
+      ? "border-[var(--ex-gold-soft)] bg-amber-400/10 text-[var(--ex-gold)]"
+      : "border-line-subtle text-slate-300 hover:border-line-strong"
   }`;
 }

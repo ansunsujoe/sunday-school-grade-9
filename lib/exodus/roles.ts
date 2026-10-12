@@ -1,7 +1,10 @@
-// Jobs a clan member can hold. Everyone starts as a Villager; the clan leader
-// (or a teacher) gives out the rest.
+// Jobs a clan member can hold. Everyone starts as a Villager; teachers write in
+// the rest. A role can be anything; CLAN_ROLES are only suggestions.
 
 export const DEFAULT_ROLE = "Villager";
+
+/** Each clan has one; they come to the leader's tent about the manna (see lib/exodus/baker.ts). */
+export const BAKER_ROLE = "Baker";
 
 export const CLAN_ROLES = [
   { name: "Villager", description: "Helps wherever the clan needs hands." },
@@ -10,6 +13,7 @@ export const CLAN_ROLES = [
   { name: "Levite", description: "Cares for holy things and teaches the Law." },
   { name: "Shepherd", description: "Tends the sheep and goats." },
   { name: "Herdsman", description: "Looks after the cattle and donkeys." },
+  { name: "Baker", description: "Grinds and bakes the manna into cakes (Numbers 11:8)." },
   { name: "Gatherer", description: "Collects manna each morning and finds food." },
   { name: "Water Bearer", description: "Draws water and digs wells." },
   { name: "Warrior", description: "Guards the camp and fights raiders." },
@@ -21,8 +25,11 @@ export const CLAN_ROLES = [
   { name: "Trader", description: "Bargains with other clans and merchants." },
 ] as const;
 
-export type ClanRole = (typeof CLAN_ROLES)[number]["name"];
+/** Longest role a teacher can type. */
+export const MAX_ROLE_LENGTH = 40;
 
-export function isClanRole(value: unknown): value is ClanRole {
-  return CLAN_ROLES.some((r) => r.name === value);
+/** A typed role tidied up: trimmed, single-spaced, cut to length. Blank means Villager. */
+export function cleanRole(value: unknown) {
+  const role = String(value ?? "").trim().replace(/\s+/g, " ").slice(0, MAX_ROLE_LENGTH);
+  return role || DEFAULT_ROLE;
 }

@@ -3,7 +3,9 @@ import { Icon, LogoMark } from "@/components/icons";
 import { NavLinks, TabBar } from "@/components/nav-links";
 import { logout } from "@/lib/actions/auth";
 import { requireUser } from "@/lib/dal";
+import { getCouncilUnread, getPlayer } from "@/lib/exodus/queries";
 import { getQuestionBoxCount, getUnreadAnnouncementCount } from "@/lib/queries";
+import { TentAlert } from "./tent-alert";
 
 // Links marked `more` sit behind the "More" tab on phones.
 const TEACHER_LINKS = [
@@ -37,11 +39,15 @@ function initials(name: string) {
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
   const isTeacher = user.role === "teacher";
-  const links = [...(isTeacher ? TEACHER_LINKS : STUDENT_LINKS)];
-  const [unread, questions] = await Promise.all([
+  const [unread, questions, council] = await Promise.all([
     getUnreadAnnouncementCount(user),
     isTeacher ? getQuestionBoxCount() : 0,
+    getPlayer().then(getCouncilUnread),
   ]);
+  // The Exodus link carries a live count of messages waiting in the council.
+  const links = (isTeacher ? TEACHER_LINKS : STUDENT_LINKS).map((l) =>
+    l.href === "/exodus" ? { ...l, badge: council } : l,
+  );
 
   return (
     <div className="flex min-h-full flex-1 flex-col">
@@ -116,6 +122,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
         </div>
       </header>
+      <TentAlert />
       <main className="w-full flex-1 px-4 pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-5 sm:pt-8 md:pb-10 lg:px-6">
         {children}
       </main>

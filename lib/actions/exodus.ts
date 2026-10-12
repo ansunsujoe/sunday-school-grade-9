@@ -1,45 +1,39 @@
 "use server";
 
-import { and, eq, inArray, isNull, lte, sql } from "drizzle-orm";
+import { and, eq, inArray, isNull, lt, or } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import rosters from "@/data/exodus-rosters.json";
 import { requireTeacher } from "@/lib/dal";
 import { db } from "@/lib/db";
-import {
-  clanMembers,
-  clans,
-  gameNews,
-  gameNotifications,
-  scenarioRecipients,
-  scenarios,
-  users,
-  type NotificationKind,
-} from "@/lib/db/schema";
+import { clanMembers, clans, councilMessages, councilThreads, gameNews, users } from "@/lib/db/schema";
 import { CLANS, CLAN_SLUGS, clanInfo, isClanSlug, type ClanSlug } from "@/lib/exodus/clans";
+import { addDays, formatGameDay, gameDay, portionDays } from "@/lib/exodus/manna";
+import {
+  JOSHUA,
+  MAX_WORD_LENGTH,
+  MOSES,
+  NOTABLES,
+  SCRIBE,
+  SCRIBE_DEFAULT_WORDS,
+  memberTitle,
+  type Persona,
+} from "@/lib/exodus/council";
 import { canSeeClan, getPlayer } from "@/lib/exodus/queries";
 import {
   RESOURCES,
   applyChanges,
-  describeChanges,
   startingResources,
   withDefaults,
   type Resources,
 } from "@/lib/exodus/resources";
-import { DEFAULT_ROLE, isClanRole } from "@/lib/exodus/roles";
+import { DEFAULT_ROLE, cleanRole } from "@/lib/exodus/roles";
+import { getBaker } from "@/lib/exodus/baker";
+import { say } from "@/lib/exodus/say";
 import type { FormState } from "./types";
 
-// The notification badge lives in the game's layout, so refresh the whole game.
+// The council's unread badge lives in the game's layout, so refresh the whole game.
 const revalidateGame = () => revalidatePath("/exodus", "layout");
-
-type Notice = { kind: NotificationKind; title: string; body?: string; href?: string };
-
-/** Sends a notification to each clan in `to`, or to the teachers' inbox when `to` is "teachers". */
-async function notify(to: readonly ClanSlug[] | "teachers", notice: Notice) {
-  const rows =
-    to === "teachers" ? [{ ...notice, clanSlug: null }] : to.map((clanSlug) => ({ ...notice, clanSlug }));
-  if (rows.length > 0) await db.insert(gameNotifications).values(rows);
-}
 
 /** Clan slugs picked in a form's "clans" checkboxes, in CLANS order. */
 function readClans(formData: FormData) {
@@ -63,7 +57,10 @@ export async function setUpGame() {
   const have = new Set(await existingClans());
   const missing = CLANS.filter((c) => !have.has(c.slug));
   if (missing.length > 0) {
-    const students = await db.select({ id: users.id, name: users.name }).from(users).where(eq(users.role, "student"));
+    const students = await db
+      .select({ id: users.id, name: users.name })
+      .from(users)
+      .where(eq(users.role, "student"));
     const taken = new Set(
       (await db.select({ id: clans.leaderId }).from(clans)).map((c) => c.id).filter((id) => id !== null),
     );
@@ -81,12 +78,13 @@ export async function setUpGame() {
       (rosters as Record<string, string[]>)[c.slug].map((name) => ({ clanSlug: c.slug, name, role: DEFAULT_ROLE })),
     );
     if (people.length > 0) await db.insert(clanMembers).values(people);
-    await notify(
+    // Each clan needs a baker to come to the leader about the manna.
+    for (const c of missing) await getBaker(c.slug);
+    await say(
       missing.map((c) => c.slug),
+      MOSES,
       {
-        kind: "message",
-        title: "Your clan sets out from Egypt",
-        body: "You lead your clan now. Look after your people, keep them fed and watered, and answer the scenarios the elders send you.",
+        body: "Your clan sets out from Egypt, and you lead it now. Look after your people and keep them fed and watered. Many will come to your tent with matters to settle; hear them out, and answer them well.",
       },
     );
   }
@@ -109,28 +107,25 @@ export async function setClanLeader(formData: FormData) {
 
 // --- Clan members ----------------------------------------------------------
 
-/** Changes a member's role. The clan's leader or a teacher may do this. */
+/** Changes a member's role to whatever the teacher typed. Only teachers may do this. */
 export async function setMemberRole(memberId: number, role: string) {
-  const player = await getPlayer();
-  if (!isClanRole(role) || !Number.isInteger(memberId)) return;
+  await requireTeacher();
+  if (!Number.isInteger(memberId)) return;
   const [member] = await db
-    .select({ clanSlug: clanMembers.clanSlug })
-    .from(clanMembers)
-    .where(eq(clanMembers.id, memberId));
-  if (!member || !canSeeClan(player, member.clanSlug)) return;
-
-  await db.update(clanMembers).set({ role }).where(eq(clanMembers.id, memberId));
-  revalidatePath(`/exodus/clans/${member.clanSlug}`);
+    .update(clanMembers)
+    .set({ role: cleanRole(role) })
+    .where(eq(clanMembers.id, memberId))
+    .returning({ clanSlug: clanMembers.clanSlug });
+  if (member) revalidatePath(`/exodus/clans/${member.clanSlug}`);
 }
 
 export async function addMember(_: FormState, formData: FormData): Promise<FormState> {
   await requireTeacher();
   const slug = String(formData.get("slug"));
   const name = String(formData.get("name") ?? "").trim();
-  const role = String(formData.get("role") ?? DEFAULT_ROLE);
+  const role = cleanRole(formData.get("role"));
   if (!isClanSlug(slug)) return { error: "Unknown clan." };
   if (!name) return { error: "Enter a name." };
-  if (!isClanRole(role)) return { error: "Pick a role." };
 
   await db.insert(clanMembers).values({ clanSlug: slug, name, role });
   revalidateGame();
@@ -150,11 +145,17 @@ export async function removeMember(formData: FormData) {
 
 // --- Resources -------------------------------------------------------------
 
-/** Adds to or takes from resources for one or more clans, and tells each clan why. */
+/**
+ * Adds to or takes from resources for one or more clans. Someone tells each
+ * clan about it in the council: the Scribe by default, or whoever the teacher
+ * picked to deliver it (in which case the Scribe still records it, so the
+ * Scribe's conversation stays a complete record of the books). Each clan is
+ * told what actually changed for it, since nothing goes below zero.
+ */
 export async function adjustResources(_: FormState, formData: FormData): Promise<FormState> {
-  await requireTeacher();
+  const user = await requireTeacher();
   const targets = readClans(formData);
-  const reason = String(formData.get("reason") ?? "").trim();
+  const words = String(formData.get("reason") ?? "").trim().slice(0, MAX_WORD_LENGTH);
 
   const changes: Resources = {};
   for (const r of RESOURCES) {
@@ -167,96 +168,167 @@ export async function adjustResources(_: FormState, formData: FormData): Promise
 
   if (targets.length === 0) return { error: "Pick at least one clan." };
   if (Object.keys(changes).length === 0) return { error: "Enter at least one change." };
+  const speaker = await readSpeaker(String(formData.get("speaker") ?? "scribe:"), targets);
+  if (!speaker) return { error: "Pick who delivers it. Someone from a clan can only speak to their own clan." };
+  const byScribe = speaker.name === SCRIBE.name;
+  if (!byScribe && !words) return { error: `Write what ${speaker.name} says.` };
 
   const rows = await db.select().from(clans).where(inArray(clans.slug, targets));
   for (const row of rows) {
-    await db
-      .update(clans)
-      .set({ resources: applyChanges(withDefaults(row.resources), changes) })
-      .where(eq(clans.slug, row.slug));
+    if (!isClanSlug(row.slug)) continue;
+    const before = withDefaults(row.resources);
+    const after = applyChanges(before, changes);
+    await db.update(clans).set({ resources: after }).where(eq(clans.slug, row.slug));
+
+    const actual = Object.fromEntries(
+      Object.keys(changes)
+        .map((key) => [key, after[key] - before[key]] as const)
+        .filter(([, delta]) => delta !== 0),
+    );
+    if (Object.keys(actual).length === 0) continue;
+    if (!byScribe) await say([row.slug], speaker, { body: words, changes: actual, authorId: user.id });
+    await say([row.slug], SCRIBE, {
+      kind: "notice",
+      body: byScribe ? words || SCRIBE_DEFAULT_WORDS : `Delivered by ${speaker.name}.`,
+      changes: actual,
+      href: "/exodus#supplies",
+    });
   }
-  await notify(
-    rows.map((r) => r.slug).filter(isClanSlug),
-    { kind: "resources", title: describeChanges(changes), body: reason || undefined, href: "/exodus" },
-  );
   revalidateGame();
   const who = rows.length === CLAN_SLUGS.length ? "every clan" : rows.map((r) => clanInfo(r.slug).name).join(", ");
-  return { success: `Updated ${who}.` };
+  return { success: `Updated ${who}${byScribe ? "" : `; ${speaker.name} told them`}.` };
 }
 
-// --- Scenarios -------------------------------------------------------------
+// --- Manna -----------------------------------------------------------------
 
-export async function createScenario(_: FormState, formData: FormData): Promise<FormState> {
+/**
+ * Gathers today's manna for a clan: one day's food for everyone, or two on
+ * Saturday. A leader gathers for their own clan; a teacher can gather for any
+ * clan (e.g. when its leader is away), even on the Sabbath, and the clan is told.
+ */
+export async function gatherManna(formData: FormData) {
+  const player = await getPlayer();
+  const slug = player.isTeacher ? String(formData.get("slug")) : player.clan;
+  if (!isClanSlug(slug)) return;
+
+  const today = gameDay();
+  // No manna falls on the Sabbath, but a teacher can still feed a clan that missed Saturday.
+  const days = portionDays(today) || (player.isTeacher ? 1 : 0);
+  if (days === 0) return;
+  const fedThrough = addDays(today, days - 1);
+  const [gathered] = await db
+    .update(clans)
+    .set({ fedThrough })
+    .where(and(eq(clans.slug, slug), or(isNull(clans.fedThrough), lt(clans.fedThrough, today))))
+    .returning({ slug: clans.slug });
+
+  // The baker answers: thanks to the leader, or word that the elders stepped in.
+  const baker = gathered ? await getBaker(slug) : null;
+  if (baker) {
+    await say([slug], baker, {
+      kind: player.isTeacher ? "notice" : "word",
+      body: player.isTeacher
+        ? `The elders collected the manna for us. There is bread through ${formatGameDay(fedThrough)}.`
+        : days === 2
+          ? "Thank you, my lord. Two days' manna is in, and I will bake for today and the Sabbath."
+          : "Thank you, my lord. The manna is in, and the bread will be ready by evening.",
+    });
+  }
+  revalidatePath("/", "layout");
+}
+
+// --- Council ---------------------------------------------------------------
+
+/**
+ * Works out who a teacher picked to speak: the Scribe ("scribe:"), one of the
+ * leaders of Israel ("notable:Moses"), or someone with a role in the one clan
+ * the message goes to ("member:42"). Null if the pick isn't allowed.
+ */
+async function readSpeaker(raw: string, targets: ClanSlug[]): Promise<Persona | null> {
+  const [kind, value] = [raw.slice(0, raw.indexOf(":")), raw.slice(raw.indexOf(":") + 1)];
+  if (kind === "scribe") return SCRIBE;
+  if (kind === "notable") return NOTABLES.find((p) => p.name === value) ?? null;
+  if (kind !== "member" || targets.length !== 1) return null;
+  const [member] = await db
+    .select({ name: clanMembers.name, role: clanMembers.role })
+    .from(clanMembers)
+    .where(and(eq(clanMembers.id, Number(value)), eq(clanMembers.clanSlug, targets[0])));
+  if (!member || member.role === DEFAULT_ROLE) return null;
+  return { name: member.name, title: memberTitle(member.role) };
+}
+
+/**
+ * A teacher, speaking as one of the leaders of Israel or someone from the
+ * clan, raises a matter. Each clan's leader gets it in that person's thread.
+ */
+export async function raiseMatter(_: FormState, formData: FormData): Promise<FormState> {
   const user = await requireTeacher();
-  const title = String(formData.get("title") ?? "").trim();
-  const prompt = String(formData.get("prompt") ?? "").trim();
   const available = new Set(await existingClans());
   const targets = readClans(formData).filter((slug) => available.has(slug));
+  const body = String(formData.get("body") ?? "").trim().slice(0, MAX_WORD_LENGTH);
 
-  if (!title) return { error: "Give the scenario a title." };
-  if (!prompt) return { error: "Describe the scenario." };
-  if (targets.length === 0) return { error: "Send it to at least one clan." };
+  if (targets.length === 0) return { error: "Pick at least one clan." };
+  const speaker = await readSpeaker(String(formData.get("speaker") ?? ""), targets);
+  if (!speaker) {
+    return {
+      error:
+        targets.length === 1
+          ? "Pick who is speaking."
+          : "Pick who is speaking. Only the leaders of Israel can speak to more than one clan.",
+    };
+  }
+  if (!body) return { error: "Write what they say." };
 
-  const [{ id }] = await db
-    .insert(scenarios)
-    .values({ title, prompt, authorId: user.id })
-    .returning({ id: scenarios.id });
-  await db.insert(scenarioRecipients).values(targets.map((clanSlug) => ({ scenarioId: id, clanSlug })));
-  await notify(targets, {
-    kind: "scenario",
-    title: `New scenario: ${title}`,
-    body: "Your clan must decide. Read it and send your answer.",
-    href: `/exodus/scenarios/${id}`,
-  });
+  const ids = await say(targets, speaker, { body, authorId: user.id });
   revalidateGame();
-  redirect(`/exodus/scenarios/${id}`);
+  redirect(ids.length === 1 ? `/exodus/council/${ids[0]}` : "/exodus/council");
 }
 
-/** Opens a closed scenario or closes an open one. Closed scenarios can't be answered. */
-export async function toggleScenarioClosed(formData: FormData) {
-  await requireTeacher();
-  const id = Number(formData.get("id"));
-  await db
-    .update(scenarios)
-    .set({ closed: sql`not ${scenarios.closed}` })
-    .where(eq(scenarios.id, id));
-  revalidateGame();
-}
-
-export async function deleteScenario(formData: FormData) {
-  await requireTeacher();
-  const id = Number(formData.get("id"));
-  await db.delete(scenarios).where(eq(scenarios.id, id));
-  await db.delete(gameNotifications).where(eq(gameNotifications.href, `/exodus/scenarios/${id}`));
-  revalidateGame();
-  redirect("/exodus/scenarios");
-}
-
-/** A clan leader's written answer to a scenario. They can change it until the scenario closes. */
-export async function answerScenario(_: FormState, formData: FormData): Promise<FormState> {
+/**
+ * Adds a message to a thread: a leader answering for their clan, or a teacher
+ * answering as the thread's character. Sending also marks the thread read for
+ * the sender.
+ */
+export async function sendWord(threadId: number, text: string): Promise<FormState> {
   const player = await getPlayer();
-  if (!player.clan) return { error: "Only a clan leader can answer." };
-  const id = Number(formData.get("id"));
-  const response = String(formData.get("response") ?? "").trim();
-  if (!response) return { error: "Write your clan's answer first." };
+  const body = text.trim().slice(0, MAX_WORD_LENGTH);
+  if (!body) return { error: "Write something first." };
+  const [thread] = await db.select().from(councilThreads).where(eq(councilThreads.id, threadId));
+  if (!thread || !canSeeClan(player, thread.clanSlug)) return { error: "That conversation is gone." };
 
-  const [scenario] = await db.select().from(scenarios).where(eq(scenarios.id, id));
-  if (!scenario) return { error: "That scenario no longer exists." };
-  if (scenario.closed) return { error: "This scenario is closed." };
-
-  const where = and(eq(scenarioRecipients.scenarioId, id), eq(scenarioRecipients.clanSlug, player.clan));
-  const [recipient] = await db.select().from(scenarioRecipients).where(where);
-  if (!recipient) return { error: "This scenario wasn't sent to your clan." };
-
-  await db.update(scenarioRecipients).set({ response, respondedAt: new Date() }).where(where);
-  await notify("teachers", {
-    kind: "response",
-    title: `${clanInfo(player.clan).name} ${recipient.respondedAt ? "changed their answer to" : "answered"} “${scenario.title}”`,
-    body: response.length > 160 ? `${response.slice(0, 157)}…` : response,
-    href: `/exodus/scenarios/${id}#${player.clan}`,
-  });
+  const now = new Date();
+  await db
+    .insert(councilMessages)
+    .values({ threadId, fromLeader: !player.isTeacher, body, authorId: player.user.id, createdAt: now });
+  await db
+    .update(councilThreads)
+    .set(player.isTeacher ? { lastMessageAt: now, teacherReadAt: now } : { lastMessageAt: now, leaderReadAt: now })
+    .where(eq(councilThreads.id, threadId));
   revalidateGame();
-  return { success: recipient.respondedAt ? "Answer updated." : "Answer sent to the elders." };
+  return { success: "Sent." };
+}
+
+/** Marks a thread read for whoever is looking at it. */
+export async function markThreadRead(threadId: number) {
+  const player = await getPlayer();
+  const [thread] = await db
+    .select({ clanSlug: councilThreads.clanSlug })
+    .from(councilThreads)
+    .where(eq(councilThreads.id, threadId));
+  if (!thread || !canSeeClan(player, thread.clanSlug)) return;
+  await db
+    .update(councilThreads)
+    .set(player.isTeacher ? { teacherReadAt: new Date() } : { leaderReadAt: new Date() })
+    .where(eq(councilThreads.id, threadId));
+  revalidateGame();
+}
+
+export async function deleteThread(formData: FormData) {
+  await requireTeacher();
+  const id = Number(formData.get("id"));
+  if (Number.isInteger(id)) await db.delete(councilThreads).where(eq(councilThreads.id, id));
+  revalidateGame();
+  redirect("/exodus/council");
 }
 
 // --- News ------------------------------------------------------------------
@@ -284,9 +356,9 @@ export async function createNews(_: FormState, formData: FormData): Promise<Form
     .insert(gameNews)
     .values({ ...news, authorId: user.id })
     .returning({ id: gameNews.id });
-  await notify(await existingClans(), {
-    kind: "news",
-    title: `News: ${news.title}`,
+  await say(await existingClans(), JOSHUA, {
+    kind: "notice",
+    body: `News from the camp: “${news.title}”`,
     href: `/exodus/news/${id}`,
   });
   revalidateGame();
@@ -312,40 +384,7 @@ export async function deleteNews(formData: FormData) {
   await requireTeacher();
   const id = Number(formData.get("id"));
   await db.delete(gameNews).where(eq(gameNews.id, id));
-  await db.delete(gameNotifications).where(eq(gameNotifications.href, `/exodus/news/${id}`));
+  await db.delete(councilMessages).where(eq(councilMessages.href, `/exodus/news/${id}`));
   revalidateGame();
   redirect("/exodus/news");
-}
-
-// --- Notifications ---------------------------------------------------------
-
-/** A teacher's message to one or more clans, delivered as a notification. */
-export async function sendMessage(_: FormState, formData: FormData): Promise<FormState> {
-  await requireTeacher();
-  const targets = readClans(formData);
-  const title = String(formData.get("title") ?? "").trim();
-  const body = String(formData.get("body") ?? "").trim();
-  if (targets.length === 0) return { error: "Pick at least one clan." };
-  if (!title) return { error: "Write a message." };
-
-  await notify(targets, { kind: "message", title, body: body || undefined });
-  revalidateGame();
-  return { success: `Sent to ${targets.length === 1 ? clanInfo(targets[0]).name : `${targets.length} clans`}.` };
-}
-
-/** Marks the player's notifications up to and including id `upTo` as read. */
-export async function markNotificationsRead(upTo: number) {
-  const player = await getPlayer();
-  if (!Number.isInteger(upTo) || (!player.isTeacher && !player.clan)) return;
-  await db
-    .update(gameNotifications)
-    .set({ read: true })
-    .where(
-      and(
-        eq(gameNotifications.read, false),
-        lte(gameNotifications.id, upTo),
-        player.isTeacher ? isNull(gameNotifications.clanSlug) : eq(gameNotifications.clanSlug, player.clan!),
-      ),
-    );
-  revalidateGame();
 }

@@ -146,10 +146,15 @@ export const clans = pgTable("clans", {
     .unique()
     .references(() => users.id, { onDelete: "set null" }),
   resources: jsonb("resources").$type<Record<string, number>>().notNull(),
+  // Daily manna (see lib/exodus/manna.ts), as Central-time dates. `fedThrough`
+  // is the last day the clan has food for; `judgedThrough` is the last day
+  // whose hunger has been settled. Both start empty until the manna begins.
+  fedThrough: date("fed_through"),
+  judgedThrough: date("judged_through"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-// The people of a clan. `role` is one of CLAN_ROLES in lib/exodus/roles.ts.
+// The people of a clan. `role` is free text a teacher writes (see lib/exodus/roles.ts).
 export const clanMembers = pgTable("clan_members", {
   id: serial("id").primaryKey(),
   clanSlug: text("clan_slug")
@@ -159,33 +164,6 @@ export const clanMembers = pgTable("clan_members", {
   role: text("role").notNull().default("Villager"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
-
-// A situation a teacher puts to some or all clans; each answers in writing.
-// `prompt` is Markdown. Closed scenarios can no longer be answered.
-export const scenarios = pgTable("scenarios", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  prompt: text("prompt").notNull(),
-  closed: boolean("closed").notNull().default(false),
-  authorId: integer("author_id").references(() => users.id, { onDelete: "set null" }),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
-
-// Which clans a scenario was sent to, and each clan's answer once given.
-export const scenarioRecipients = pgTable(
-  "scenario_recipients",
-  {
-    scenarioId: integer("scenario_id")
-      .notNull()
-      .references(() => scenarios.id, { onDelete: "cascade" }),
-    clanSlug: text("clan_slug")
-      .notNull()
-      .references(() => clans.slug, { onDelete: "cascade" }),
-    response: text("response"),
-    respondedAt: timestamp("responded_at"),
-  },
-  (t) => [primaryKey({ columns: [t.scenarioId, t.clanSlug] })],
-);
 
 // News of the camp, posted by teachers and read by every clan. `content` is Markdown.
 export const gameNews = pgTable("game_news", {
@@ -197,18 +175,44 @@ export const gameNews = pgTable("game_news", {
   updatedAt: timestamp("updated_at"),
 });
 
-export const NOTIFICATION_KINDS = ["scenario", "news", "resources", "response", "message"] as const;
-export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
+// The council: people who come to a clan leader's tent with matters to settle.
+// Each thread is one character (played by a teacher, or the game itself)
+// talking with one clan's leader. `persona` names the character; a clan has
+// at most one thread per character. Read times drive the unread counts.
+export const councilThreads = pgTable(
+  "council_threads",
+  {
+    id: serial("id").primaryKey(),
+    clanSlug: text("clan_slug")
+      .notNull()
+      .references(() => clans.slug, { onDelete: "cascade" }),
+    persona: text("persona").notNull(),
+    personaTitle: text("persona_title"),
+    lastMessageAt: timestamp("last_message_at").notNull().defaultNow(),
+    leaderReadAt: timestamp("leader_read_at"),
+    teacherReadAt: timestamp("teacher_read_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => [unique().on(t.clanSlug, t.persona)],
+);
 
-// In-game notifications. A row with a clan goes to that clan's leader; a row
-// with no clan goes to the teachers (e.g. "Eagle Clan answered a scenario").
-export const gameNotifications = pgTable("game_notifications", {
+export const COUNCIL_MESSAGE_KINDS = ["word", "notice"] as const;
+export type CouncilMessageKind = (typeof COUNCIL_MESSAGE_KINDS)[number];
+
+// One message in a thread: from the leader, or from the thread's character.
+// A "notice" is sent by the game itself (manna, hunger, supplies, news) and
+// may link somewhere with `href`. `changes` holds what a message added to or
+// took from the clan's supplies (resource key -> amount), shown as a ledger.
+export const councilMessages = pgTable("council_messages", {
   id: serial("id").primaryKey(),
-  clanSlug: text("clan_slug").references(() => clans.slug, { onDelete: "cascade" }),
-  kind: text("kind").$type<NotificationKind>().notNull(),
-  title: text("title").notNull(),
-  body: text("body"),
+  threadId: integer("thread_id")
+    .notNull()
+    .references(() => councilThreads.id, { onDelete: "cascade" }),
+  fromLeader: boolean("from_leader").notNull(),
+  kind: text("kind").$type<CouncilMessageKind>().notNull().default("word"),
+  body: text("body").notNull(),
   href: text("href"),
-  read: boolean("read").notNull().default(false),
+  changes: jsonb("changes").$type<Record<string, number>>(),
+  authorId: integer("author_id").references(() => users.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { CountBadge } from "@/components/nav-links";
 
 /** `match` is an extra path prefix that also lights the tab up. */
 type GameLink = { href: string; label: string; badge?: number; match?: string };
@@ -15,26 +16,30 @@ function isActive(pathname: string, { href, match }: GameLink) {
 export function GameNav({ links }: { links: GameLink[] }) {
   const pathname = usePathname();
   return (
-    <nav className="-mx-4 mb-6 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-      <div className="flex w-max gap-1 rounded-2xl border border-line bg-night-900/70 p-1">
-        {links.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={`relative flex min-h-10 items-center gap-1.5 rounded-xl px-3.5 text-sm font-medium whitespace-nowrap transition ${
-              isActive(pathname, link)
-                ? "bg-amber-400/15 text-amber-200"
-                : "text-slate-400 hover:bg-wash hover:text-slate-100"
-            }`}
-          >
-            {link.label}
-            {link.badge ? (
-              <span className="grid h-5 min-w-5 place-items-center rounded-full bg-amber-400 px-1.5 text-[11px] font-bold text-ink">
-                {link.badge > 99 ? "99+" : link.badge}
-              </span>
-            ) : null}
-          </Link>
-        ))}
+    <nav className="-mx-4 mb-7 overflow-x-auto border-b border-[var(--ex-rule)] px-4 sm:mx-0 sm:px-0">
+      <div className="flex w-max gap-1">
+        {links.map((link) => {
+          const active = isActive(pathname, link);
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`relative flex min-h-11 items-center gap-2 px-3.5 font-display text-[15px] whitespace-nowrap transition ${
+                active ? "font-semibold text-[var(--ex-gold)]" : "text-slate-400 hover:text-slate-100"
+              }`}
+            >
+              {link.label}
+              {link.badge ? <CountBadge count={link.badge} className="font-sans" /> : null}
+              {active && (
+                <span className="absolute inset-x-2 -bottom-px flex items-center justify-center" aria-hidden>
+                  <span className="h-0.5 flex-1 bg-[var(--ex-gold)]" />
+                  <span className="mx-1 size-1.5 rotate-45 bg-[var(--ex-gold)]" />
+                  <span className="h-0.5 flex-1 bg-[var(--ex-gold)]" />
+                </span>
+              )}
+            </Link>
+          );
+        })}
       </div>
     </nav>
   );

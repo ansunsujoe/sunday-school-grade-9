@@ -5,7 +5,24 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Icon, type IconName } from "./icons";
 
-type NavLink = { href: string; label: string; icon: IconName; more?: boolean };
+/** `badge` is a count of things waiting there, e.g. unread messages in The Exodus. */
+type NavLink = { href: string; label: string; icon: IconName; more?: boolean; badge?: number };
+
+/**
+ * A count of things waiting, with a soft pulse so it catches the eye. The
+ * pulse stops for anyone who prefers reduced motion.
+ */
+export function CountBadge({ count, className = "" }: { count: number; className?: string }) {
+  if (count <= 0) return null;
+  return (
+    <span className={`relative inline-grid ${className}`} aria-label={`${count} waiting`}>
+      <span className="absolute inset-0 rounded-full bg-amber-400 opacity-60 motion-safe:animate-ping" aria-hidden />
+      <span className="relative grid h-4.5 min-w-4.5 place-items-center rounded-full bg-amber-400 px-1 text-[10px] leading-none font-bold text-ink ring-2 ring-night-950">
+        {count > 99 ? "99+" : count}
+      </span>
+    </span>
+  );
+}
 
 function isActive(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -16,17 +33,18 @@ export function NavLinks({ links }: { links: NavLink[] }) {
   const pathname = usePathname();
   return (
     <nav className="hidden gap-1 md:flex">
-      {links.map(({ href, label }) => (
+      {links.map(({ href, label, badge }) => (
         <Link
           key={href}
           href={href}
-          className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
+          className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition ${
             isActive(pathname, href)
               ? "bg-amber-400/10 text-amber-200"
               : "text-slate-400 hover:bg-wash hover:text-slate-100"
           }`}
         >
           {label}
+          {badge ? <CountBadge count={badge} /> : null}
         </Link>
       ))}
     </nav>
@@ -80,8 +98,15 @@ export function TabBar({ links }: { links: NavLink[] }) {
       )}
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-night-950/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl">
         <div className="mx-auto flex h-15 max-w-md">
-          {primary.map(({ href, label, icon }) => (
-            <Tab key={href} href={href} label={label} icon={icon} active={!open && isActive(pathname, href)} />
+          {primary.map(({ href, label, icon, badge }) => (
+            <Tab
+              key={href}
+              href={href}
+              label={label}
+              icon={icon}
+              badge={badge}
+              active={!open && isActive(pathname, href)}
+            />
           ))}
           {extra.length > 0 && (
             <button
@@ -103,13 +128,16 @@ export function TabBar({ links }: { links: NavLink[] }) {
 
 const tabClass = "flex min-w-0 flex-1 flex-col items-center justify-center gap-1 text-[11px] font-medium transition";
 
-function Tab({ href, label, icon, active }: NavLink & { active: boolean }) {
+function Tab({ href, label, icon, badge, active }: NavLink & { active: boolean }) {
   return (
     <Link
       href={href}
       className={`${tabClass} ${active ? "text-amber-300" : "text-slate-500 active:text-slate-300"}`}
     >
-      <Icon name={icon} className="size-[22px]" />
+      <span className="relative">
+        <Icon name={icon} className="size-[22px]" />
+        {badge ? <CountBadge count={badge} className="absolute -top-1.5 -right-3" /> : null}
+      </span>
       <span className="max-w-full truncate px-1">{label}</span>
     </Link>
   );
