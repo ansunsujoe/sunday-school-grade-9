@@ -132,6 +132,18 @@ export const questionBox = pgTable("question_box", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// The memory verse (KJV), one per Sunday at most. A verse stays up from its
+// Sunday until the next one in the schedule.
+export const memoryVerses = pgTable("memory_verses", {
+  id: serial("id").primaryKey(),
+  sunday: date("sunday").notNull().unique(),
+  reference: text("reference").notNull(),
+  text: text("text").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export type MemoryVerse = typeof memoryVerses.$inferSelect;
+
 export type Role = (typeof roleEnum.enumValues)[number];
 
 // ---------------------------------------------------------------------------

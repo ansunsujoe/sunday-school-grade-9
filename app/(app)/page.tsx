@@ -15,14 +15,14 @@ import {
   type AnnouncementItem,
 } from "@/lib/queries";
 import { currentSunday, summarize } from "@/lib/school-year";
-import { verseForWeek } from "@/lib/verses";
+import { getMemoryVerse } from "@/lib/verses";
 import { ThreadList } from "./exodus/council/council-ui";
 
 export default async function HomePage() {
   const user = await requireUser();
   const [latest] = CONTENT;
   const announcements = await getAnnouncements(user, 3);
-  const verse = verseForWeek(currentSunday(today()));
+  const verse = await getMemoryVerse(currentSunday(today()));
 
   return (
     <div>
@@ -35,14 +35,25 @@ export default async function HomePage() {
         <p className="relative text-xs font-semibold tracking-[0.2em] text-amber-300/80 uppercase">
           Welcome, {user.name.split(" ")[0]}
         </p>
-        <blockquote className="relative mt-4 max-w-5xl">
-          <p className="font-display text-2xl leading-snug font-medium text-balance text-slate-50 sm:text-3xl">
-            “{verse.text}”
-          </p>
-          <footer className="mt-3 text-sm font-medium text-amber-200/90">
-            {verse.ref} <span className="text-slate-500">· Verse of the week</span>
-          </footer>
-        </blockquote>
+        {verse && (
+          <>
+            <blockquote className="relative mt-4 max-w-5xl">
+              <p className="font-display text-2xl leading-snug font-medium text-balance text-slate-50 sm:text-3xl">
+                “{verse.text}”
+              </p>
+              <footer className="mt-3 text-sm font-medium text-amber-200/90">
+                {verse.reference} <span className="text-slate-500">· Memory verse</span>
+              </footer>
+            </blockquote>
+            <Link
+              href="/memory-verse"
+              className="relative mt-5 inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-amber-300/25 bg-amber-400/10 px-4 text-sm font-semibold text-amber-200 transition hover:bg-amber-400/20"
+            >
+              Practice it
+              <Icon name="chevronRight" className="size-4" />
+            </Link>
+          </>
+        )}
       </section>
 
       {user.role === "student" && <ExodusToday />}

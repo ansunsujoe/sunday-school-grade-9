@@ -11,6 +11,7 @@ import { TentAlert } from "./tent-alert";
 const TEACHER_LINKS = [
   { href: "/", label: "Home", icon: "home" },
   { href: "/content", label: "Content", icon: "book" },
+  { href: "/memory-verse", label: "Memory verse", icon: "scroll", more: true },
   { href: "/calendar", label: "Calendar", icon: "calendar", more: true },
   { href: "/exodus", label: "Exodus", icon: "tent" },
   { href: "/quizzes", label: "Quizzes", icon: "quiz", more: true },
@@ -21,6 +22,7 @@ const TEACHER_LINKS = [
 const STUDENT_LINKS = [
   { href: "/", label: "Home", icon: "home" },
   { href: "/content", label: "Content", icon: "book" },
+  { href: "/memory-verse", label: "Memory verse", icon: "scroll", more: true },
   { href: "/calendar", label: "Calendar", icon: "calendar", more: true },
   { href: "/exodus", label: "Exodus", icon: "tent" },
   { href: "/quizzes", label: "Quizzes", icon: "quiz" },
