@@ -8,7 +8,7 @@
 export const MANNA_TIME_ZONE = "America/Chicago";
 
 /** People who die when a clan goes a day without food. */
-export const HUNGER_DEATHS = 5;
+export const HUNGER_DEATHS = 2;
 
 /** A YYYY-MM-DD date in Central time. */
 export type GameDay = string;
