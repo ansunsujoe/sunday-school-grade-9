@@ -10,6 +10,7 @@ import { requireTeacher } from "@/lib/dal";
 import { db } from "@/lib/db";
 import { announcements } from "@/lib/db/schema";
 import { formatDateTime } from "@/lib/format";
+import { getAnnouncementRecipients, getStudents } from "@/lib/queries";
 import { AnnouncementFields } from "../../announcement-fields";
 
 export default async function EditAnnouncementPage({ params }: { params: Promise<{ id: string }> }) {
@@ -19,6 +20,7 @@ export default async function EditAnnouncementPage({ params }: { params: Promise
 
   const [announcement] = await db.select().from(announcements).where(eq(announcements.id, id));
   if (!announcement) notFound();
+  const [students, recipients] = await Promise.all([getStudents(), getAnnouncementRecipients([id])]);
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -30,13 +32,17 @@ export default async function EditAnnouncementPage({ params }: { params: Promise
       </Link>
       <PageHeader
         title="Edit announcement"
-        description={`Posted ${formatDateTime(announcement.createdAt)}. Edits don't mark it as new again.`}
+        description={`Posted ${formatDateTime(announcement.createdAt)}. Edits don't mark it as new again, except for students you add.`}
       />
       <div className="space-y-6">
         <Card>
           <ActionForm action={updateAnnouncement} submitLabel="Save changes">
             <input type="hidden" name="id" value={id} />
-            <AnnouncementFields announcement={announcement} />
+            <AnnouncementFields
+              announcement={announcement}
+              students={students}
+              recipientIds={recipients.get(id)?.map((s) => s.id)}
+            />
           </ActionForm>
         </Card>
         <form action={deleteAnnouncement}>

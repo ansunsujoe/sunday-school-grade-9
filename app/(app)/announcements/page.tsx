@@ -4,7 +4,7 @@ import { Markdown } from "@/components/markdown";
 import { Card, EmptyState, PageHeader, buttonClass } from "@/components/ui";
 import { requireUser } from "@/lib/dal";
 import { formatDateTime, timeAgo } from "@/lib/format";
-import { getAnnouncements } from "@/lib/queries";
+import { getAnnouncementRecipients, getAnnouncements } from "@/lib/queries";
 import { AnnouncementFrame, MarkRead } from "./read-tracking";
 
 export default async function AnnouncementsPage() {
@@ -12,6 +12,9 @@ export default async function AnnouncementsPage() {
   const isTeacher = user.role === "teacher";
   const items = await getAnnouncements(user);
   const unreadIds = items.filter((a) => a.unread).map((a) => a.id);
+  const recipients = isTeacher
+    ? await getAnnouncementRecipients(items.filter((a) => a.audience === "selected").map((a) => a.id))
+    : new Map<number, { id: number; name: string }[]>();
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -59,6 +62,13 @@ export default async function AnnouncementsPage() {
                       )}
                       <span className="text-slate-500"> · {timeAgo(a.createdAt)}</span>
                     </p>
+                    {a.audience === "selected" && (
+                      <p className="mt-2 text-xs text-violet-300">
+                        {isTeacher
+                          ? `To ${recipients.get(a.id)?.map((s) => s.name).join(", ") || "no one (their accounts were removed)"}`
+                          : "Sent to you"}
+                      </p>
+                    )}
                   </div>
                 </header>
                 <div className="mt-4 sm:pl-13">

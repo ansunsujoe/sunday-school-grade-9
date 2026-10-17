@@ -4,10 +4,12 @@ import { Icon } from "@/components/icons";
 import { Card, PageHeader } from "@/components/ui";
 import { createAnnouncement } from "@/lib/actions/announcements";
 import { requireTeacher } from "@/lib/dal";
+import { getStudents } from "@/lib/queries";
 import { AnnouncementFields } from "../announcement-fields";
 
 export default async function NewAnnouncementPage() {
   await requireTeacher();
+  const students = await getStudents();
   return (
     <div className="mx-auto max-w-3xl">
       <Link
@@ -16,10 +18,10 @@ export default async function NewAnnouncementPage() {
       >
         <Icon name="arrowLeft" className="size-4" /> Announcements
       </Link>
-      <PageHeader title="New announcement" description="Everyone in the class will see it, marked as new." />
+      <PageHeader title="New announcement" description="Whoever you send it to will see it, marked as new." />
       <Card>
         <ActionForm action={createAnnouncement} submitLabel="Post" pendingLabel="Posting…">
-          <AnnouncementFields />
+          <AnnouncementFields students={students} />
         </ActionForm>
       </Card>
     </div>

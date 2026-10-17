@@ -1,8 +1,9 @@
 import "server-only";
-import { and, asc, count, desc, eq, gte, isNull, lte, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, exists, gte, inArray, isNull, lte, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
   announcementReads,
+  announcementRecipients,
   announcements,
   events,
   questionBox,
@@ -53,11 +54,31 @@ export function getEvents(role: Role, from: string, to: string) {
     .orderBy(asc(events.date), sql`${events.startTime} asc nulls first`, asc(events.id));
 }
 
-type Reader = { id: number; createdAt: Date };
+type Reader = { id: number; role: Role; createdAt: Date };
 
 // Announcements from before someone's account existed never count as unread.
 const unreadBy = (user: Reader) =>
   and(isNull(announcementReads.userId), gte(announcements.createdAt, user.createdAt));
+
+// Teachers see every announcement; students see the ones for everyone and the
+// ones addressed to them.
+const visibleTo = (user: Reader) =>
+  user.role === "teacher"
+    ? undefined
+    : or(
+        eq(announcements.audience, "all"),
+        exists(
+          db
+            .select({ one: sql`1` })
+            .from(announcementRecipients)
+            .where(
+              and(
+                eq(announcementRecipients.announcementId, announcements.id),
+                eq(announcementRecipients.userId, user.id),
+              ),
+            ),
+        ),
+      );
 
 /** Announcements newest first, with the author's name and whether `user` hasn't seen it. */
 export function getAnnouncements(user: Reader, limit?: number) {
@@ -68,6 +89,7 @@ export function getAnnouncements(user: Reader, limit?: number) {
       body: announcements.body,
       createdAt: announcements.createdAt,
       updatedAt: announcements.updatedAt,
+      audience: announcements.audience,
       author: users.name,
       unread: sql<boolean>`coalesce(${unreadBy(user)}, false)`,
     })
@@ -77,8 +99,25 @@ export function getAnnouncements(user: Reader, limit?: number) {
       announcementReads,
       and(eq(announcementReads.announcementId, announcements.id), eq(announcementReads.userId, user.id)),
     )
+    .where(visibleTo(user))
     .orderBy(desc(announcements.createdAt), desc(announcements.id));
   return limit ? query.limit(limit) : query;
+}
+
+/** The students each of the given announcements was sent to, by announcement id. */
+export async function getAnnouncementRecipients(ids: number[]) {
+  const byAnnouncement = new Map<number, { id: number; name: string }[]>();
+  if (ids.length === 0) return byAnnouncement;
+  const rows = await db
+    .select({ announcementId: announcementRecipients.announcementId, id: users.id, name: users.name })
+    .from(announcementRecipients)
+    .innerJoin(users, eq(announcementRecipients.userId, users.id))
+    .where(inArray(announcementRecipients.announcementId, ids))
+    .orderBy(asc(users.name));
+  for (const { announcementId, ...student } of rows) {
+    byAnnouncement.set(announcementId, [...(byAnnouncement.get(announcementId) ?? []), student]);
+  }
+  return byAnnouncement;
 }
 
 export type AnnouncementItem = Awaited<ReturnType<typeof getAnnouncements>>[number];
@@ -91,7 +130,7 @@ export async function getUnreadAnnouncementCount(user: Reader) {
       announcementReads,
       and(eq(announcementReads.announcementId, announcements.id), eq(announcementReads.userId, user.id)),
     )
-    .where(unreadBy(user));
+    .where(and(unreadBy(user), visibleTo(user)));
   return n;
 }
 

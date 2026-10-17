@@ -99,15 +99,35 @@ export const events = pgTable("events", {
 
 export type CalendarEvent = typeof events.$inferSelect;
 
-// Posted by teachers, read by everyone. `body` is Markdown.
+export const ANNOUNCEMENT_AUDIENCES = ["all", "selected"] as const;
+export type AnnouncementAudience = (typeof ANNOUNCEMENT_AUDIENCES)[number];
+
+// Posted by teachers. `body` is Markdown. "all" announcements are seen by
+// everyone; "selected" ones only by teachers and the students listed in
+// announcement_recipients.
 export const announcements = pgTable("announcements", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   body: text("body").notNull(),
+  audience: text("audience").$type<AnnouncementAudience>().notNull().default("all"),
   authorId: integer("author_id").references(() => users.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at"),
 });
+
+// The students a "selected" announcement is for.
+export const announcementRecipients = pgTable(
+  "announcement_recipients",
+  {
+    announcementId: integer("announcement_id")
+      .notNull()
+      .references(() => announcements.id, { onDelete: "cascade" }),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+  },
+  (t) => [primaryKey({ columns: [t.announcementId, t.userId] })],
+);
 
 // One row per user per announcement they have seen; no row means unread.
 export const announcementReads = pgTable(
