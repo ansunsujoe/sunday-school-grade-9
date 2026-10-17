@@ -34,7 +34,8 @@ export async function saveMapScore(guesses: MapGuess[]): Promise<SavedMapScore> 
   for (const g of guesses) {
     const place = PLACES.find((p) => p.slug === g.slug);
     if (!place || ![g.lat, g.lon, g.ms].every(Number.isFinite)) return { ok: false, error: "That game doesn't add up." };
-    const ms = Math.min(MAX_MS, Math.max(MIN_MS, g.ms));
+    // Browser timers give fractions of a millisecond; the table keeps whole ones.
+    const ms = Math.round(Math.min(MAX_MS, Math.max(MIN_MS, g.ms)));
     const result = scoreGuess({ lat: g.lat, lon: g.lon }, place, ms);
     score += result.points;
     if (result.found) found++;
