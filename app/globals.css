@@ -322,3 +322,412 @@ input[type="number"] {
     --color-stone-400: #57534e;
   }
 }
+
+/* Where in the Wilderness: a quiet gray atlas so the places carry the color. */
+.wm-map {
+  --wm-sea: #15181d;
+  --wm-land: #2a2e35;
+  --wm-coast: #3a3f47;
+  --wm-grid: rgb(255 255 255 / 0.04);
+  --wm-border: rgb(255 255 255 / 0.16);
+  --wm-muted: #6b7280;
+  --wm-water-text: #4b5563;
+  --wm-text: #e5e7eb;
+  --wm-dot: #f3f4f6;
+  --wm-route: rgb(251 191 36 / 0.45);
+  --wm-region: rgb(255 255 255 / 0.035);
+  --wm-region-edge: rgb(255 255 255 / 0.28);
+  --wm-region-text: #c4c8cf;
+  --wm-weave: rgb(251 191 36 / 0.07);
+  --wm-answer: #34d399;
+  --wm-answer-soft: rgb(52 211 153 / 0.12);
+  --wm-line: #fbbf24;
+  --wm-pin: #fbbf24;
+  --wm-pin-edge: #78350f;
+}
+
+@media (prefers-color-scheme: light) {
+  .wm-map {
+    --wm-sea: #d4d8de;
+    --wm-land: #f3f4f6;
+    --wm-coast: #b8bec7;
+    --wm-grid: rgb(15 23 42 / 0.05);
+    --wm-border: rgb(15 23 42 / 0.22);
+    --wm-muted: #8a919c;
+    --wm-water-text: #8a919c;
+    --wm-text: #1f2937;
+    --wm-dot: #1f2937;
+    --wm-route: rgb(217 119 6 / 0.55);
+    --wm-region: rgb(15 23 42 / 0.03);
+    --wm-region-edge: rgb(15 23 42 / 0.3);
+    --wm-region-text: #4b5563;
+    --wm-weave: rgb(146 64 14 / 0.08);
+    --wm-answer: #059669;
+    --wm-answer-soft: rgb(5 150 105 / 0.1);
+    --wm-line: #d97706;
+    --wm-pin: #f59e0b;
+    --wm-pin-edge: #78350f;
+  }
+}
+
+.wm-place:focus-visible .wm-label {
+  fill: var(--wm-pin);
+  text-decoration: underline;
+}
+.wm-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: scale 0.2s;
+}
+.wm-live:hover .wm-dot,
+.wm-live:focus-visible .wm-dot {
+  scale: 1.5;
+}
+.wm-live:hover .wm-label {
+  fill: var(--wm-pin);
+}
+
+/*
+  Every entrance below keeps its first frame through its delay (`both`), so
+  staggered items wait unseen instead of flashing in and then animating.
+*/
+@media (prefers-reduced-motion: no-preference) {
+  .wm-drop {
+    animation: wm-drop 0.35s cubic-bezier(0.3, 1.6, 0.6, 1) both;
+  }
+  .wm-ripple {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: wm-ripple 0.6s ease-out both;
+  }
+  .wm-ping {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: wm-ping 1.6s ease-out infinite;
+  }
+  .wm-pop {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: wm-pop 0.45s cubic-bezier(0.3, 1.8, 0.5, 1) both;
+  }
+  .wm-float {
+    animation: wm-float 0.8s cubic-bezier(0.2, 1.2, 0.4, 1) 0.1s both;
+  }
+  .wm-route {
+    animation: wm-march 2.5s linear infinite;
+  }
+  .wm-compass {
+    animation: wm-settle 2.4s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+  }
+  .wm-unroll {
+    transform-origin: top;
+    animation: wm-unroll 0.55s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+  }
+  .wm-word {
+    display: inline-block;
+    white-space: pre;
+    animation: wm-word 0.4s ease-out both;
+  }
+  .wm-rise {
+    animation: wm-rise 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+  }
+  .wm-stamp {
+    display: inline-block;
+    animation: wm-stamp 0.45s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+  }
+  .wm-grow {
+    transform-origin: bottom;
+    animation: wm-grow 0.8s cubic-bezier(0.2, 1.1, 0.3, 1) both;
+  }
+  .wm-current {
+    animation: wm-glint 1.4s ease-in-out infinite;
+  }
+  .wm-ready {
+    animation: wm-glow 1.8s ease-in-out infinite;
+  }
+  .wm-shimmer {
+    background-image: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.45) 50%, transparent 70%);
+    background-size: 200% 100%;
+    animation: wm-shimmer 1.4s linear infinite;
+  }
+}
+
+@keyframes wm-drop {
+  from {
+    translate: 0 -26px;
+    opacity: 0;
+  }
+}
+@keyframes wm-ripple {
+  from {
+    scale: 0.2;
+    opacity: 1;
+  }
+  to {
+    scale: 1.4;
+    opacity: 0;
+  }
+}
+@keyframes wm-ping {
+  from {
+    scale: 0.7;
+    opacity: 1;
+  }
+  to {
+    scale: 2.2;
+    opacity: 0;
+  }
+}
+@keyframes wm-pop {
+  from {
+    scale: 0;
+  }
+}
+@keyframes wm-float {
+  from {
+    translate: 0 14px;
+    opacity: 0;
+  }
+}
+@keyframes wm-march {
+  to {
+    stroke-dashoffset: -32;
+  }
+}
+@keyframes wm-settle {
+  from {
+    rotate: -160deg;
+    opacity: 0;
+  }
+}
+@keyframes wm-unroll {
+  from {
+    scale: 1 0.2;
+    opacity: 0;
+  }
+}
+@keyframes wm-word {
+  from {
+    translate: 0 0.4em;
+    opacity: 0;
+    filter: blur(3px);
+  }
+}
+@keyframes wm-rise {
+  from {
+    translate: 0 12px;
+    opacity: 0;
+  }
+}
+@keyframes wm-stamp {
+  from {
+    scale: 2.2;
+    rotate: -8deg;
+    opacity: 0;
+  }
+}
+@keyframes wm-grow {
+  from {
+    scale: 1 0;
+  }
+}
+@keyframes wm-glint {
+  50% {
+    background-color: var(--ex-gold-soft);
+  }
+}
+@keyframes wm-glow {
+  50% {
+    box-shadow: 0 0 0 4px rgb(251 191 36 / 0.18), 0 10px 25px -5px rgb(245 158 11 / 0.35);
+  }
+}
+@keyframes wm-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+/* Phone tab bar (components/nav-links.tsx): the open tab's icon gives a small bounce. */
+@media (prefers-reduced-motion: no-preference) {
+  .nav-pop {
+    animation: nav-pop 0.35s ease-out both;
+  }
+  .nav-fade {
+    animation: nav-fade 0.2s ease-out both;
+  }
+  .nav-sheet {
+    transform-origin: bottom;
+    animation: nav-sheet 0.3s cubic-bezier(0.2, 1.1, 0.3, 1) both;
+  }
+  .nav-rise {
+    animation: nav-rise 0.3s ease-out both;
+  }
+}
+
+@keyframes nav-pop {
+  45% {
+    scale: 1.12;
+  }
+}
+@keyframes nav-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes nav-sheet {
+  from {
+    translate: 0 16px;
+    scale: 1 0.9;
+    opacity: 0;
+  }
+}
+@keyframes nav-rise {
+  from {
+    translate: 0 6px;
+    opacity: 0;
+  }
+}
+
+/* Activity card pictures (app/(app)/activities/art.tsx). */
+@media (prefers-reduced-motion: no-preference) {
+  .art-in {
+    animation: wm-rise 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+  }
+  .art-emblem {
+    animation: art-emblem 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+  }
+  .art-twinkle {
+    animation: art-twinkle 2.6s ease-in-out infinite;
+  }
+  .art-flicker {
+    animation: art-flicker 1.8s ease-in-out infinite;
+  }
+  .art-pillar {
+    transform-box: fill-box;
+    transform-origin: bottom;
+    animation: art-pillar 3.2s ease-in-out infinite;
+  }
+  .art-glow {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: art-glow 3.2s ease-in-out infinite;
+  }
+  .art-march {
+    animation: art-march 3s linear infinite;
+  }
+  .art-bob {
+    animation: art-bob 2.4s ease-in-out infinite;
+  }
+}
+
+@keyframes art-emblem {
+  from {
+    translate: 0 10px;
+    scale: 0.6;
+    opacity: 0;
+  }
+}
+@keyframes art-twinkle {
+  50% {
+    opacity: 0.25;
+  }
+}
+@keyframes art-flicker {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+  40% {
+    opacity: 0.55;
+  }
+  70% {
+    opacity: 1;
+  }
+}
+@keyframes art-pillar {
+  50% {
+    scale: 1.08 1;
+    opacity: 0.85;
+  }
+}
+@keyframes art-glow {
+  50% {
+    scale: 1.12;
+    opacity: 0.75;
+  }
+}
+@keyframes art-march {
+  to {
+    stroke-dashoffset: -50;
+  }
+}
+@keyframes art-bob {
+  50% {
+    translate: 0 -6px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .art-clue {
+    animation: art-clue 4s ease-in-out infinite;
+  }
+}
+@keyframes art-clue {
+  50% {
+    translate: 0 -4px;
+  }
+}
+
+/* The Wilderness game takes the whole screen below large screens; the page behind stays put. */
+@media (max-width: 1023px) {
+  html.wm-playing,
+  html.wm-playing body {
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* "+points" lifting off the score as it counts up. */
+  .wm-gain {
+    animation: wm-gain 1.6s ease-out 1.5s both;
+  }
+  /* The result rising from the bottom of the screen. */
+  .wm-sheet {
+    animation: wm-sheet 0.4s cubic-bezier(0.2, 1, 0.3, 1) both;
+  }
+}
+@keyframes wm-gain {
+  from {
+    translate: 0 6px;
+    opacity: 0;
+  }
+  25% {
+    translate: 0 0;
+    opacity: 1;
+  }
+  to {
+    translate: 0 -14px;
+    opacity: 0;
+  }
+}
+@keyframes wm-sheet {
+  from {
+    translate: 0 40px;
+    opacity: 0;
+  }
+}
+
+/* Mid-game on large screens, the game's title and tabs step aside and the page drops its width cap, for the map. */
+@media (min-width: 1024px) {
+  html.wm-playing .wm-chrome {
+    display: none;
+  }
+  html.wm-playing .wm-stage,
+  html.wm-wide .wm-stage {
+    max-width: none;
+  }
+}

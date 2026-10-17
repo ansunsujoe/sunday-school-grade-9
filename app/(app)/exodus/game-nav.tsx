@@ -4,12 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CountBadge } from "@/components/nav-links";
 
-/** `match` is an extra path prefix that also lights the tab up. */
-type GameLink = { href: string; label: string; badge?: number; match?: string };
+/**
+ * `match` is an extra path prefix that also lights the tab up. `exact` lights
+ * it only on its own page, for a game's home tab.
+ */
+type GameLink = { href: string; label: string; badge?: number; match?: string; exact?: boolean };
 
-function isActive(pathname: string, { href, match }: GameLink) {
+function isActive(pathname: string, { href, match, exact }: GameLink) {
   if (match && pathname.startsWith(match)) return true;
-  return href === "/exodus" ? pathname === "/exodus" : pathname.startsWith(href);
+  return exact || href === "/exodus" ? pathname === href : pathname.startsWith(href);
 }
 
 /** The game's own tabs, under the main app header. Scrolls sideways on narrow phones. */

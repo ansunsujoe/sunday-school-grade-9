@@ -3,17 +3,16 @@ import { Icon, LogoMark } from "@/components/icons";
 import { NavLinks, TabBar } from "@/components/nav-links";
 import { logout } from "@/lib/actions/auth";
 import { requireUser } from "@/lib/dal";
-import { getCouncilUnread, getPlayer } from "@/lib/exodus/queries";
 import { getQuestionBoxCount, getUnreadAnnouncementCount } from "@/lib/queries";
 import { TentAlert } from "./tent-alert";
 
 // Links marked `more` sit behind the "More" tab on phones.
 const TEACHER_LINKS = [
   { href: "/", label: "Home", icon: "home" },
-  { href: "/content", label: "Content", icon: "book" },
-  { href: "/memory-verse", label: "Memory verse", icon: "scroll", more: true },
+  { href: "/content", label: "Content", icon: "content" },
+  { href: "/memory-verse", label: "Memory verse", icon: "verse", more: true },
   { href: "/calendar", label: "Calendar", icon: "calendar", more: true },
-  { href: "/exodus", label: "Exodus", icon: "tent" },
+  { href: "/activities", label: "Activities", icon: "activities", match: ["/exodus"] },
   { href: "/quizzes", label: "Quizzes", icon: "quiz", more: true },
   { href: "/grades", label: "Gradebook", icon: "grades" },
   { href: "/people", label: "People", icon: "people", more: true },
@@ -21,10 +20,10 @@ const TEACHER_LINKS = [
 
 const STUDENT_LINKS = [
   { href: "/", label: "Home", icon: "home" },
-  { href: "/content", label: "Content", icon: "book" },
-  { href: "/memory-verse", label: "Memory verse", icon: "scroll", more: true },
+  { href: "/content", label: "Content", icon: "content" },
+  { href: "/memory-verse", label: "Memory verse", icon: "verse", more: true },
   { href: "/calendar", label: "Calendar", icon: "calendar", more: true },
-  { href: "/exodus", label: "Exodus", icon: "tent" },
+  { href: "/activities", label: "Activities", icon: "activities", match: ["/exodus"] },
   { href: "/quizzes", label: "Quizzes", icon: "quiz" },
   { href: "/grades", label: "My grades", icon: "grades", more: true },
 ] as const;
@@ -41,15 +40,11 @@ function initials(name: string) {
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
   const isTeacher = user.role === "teacher";
-  const [unread, questions, council] = await Promise.all([
+  const [unread, questions] = await Promise.all([
     getUnreadAnnouncementCount(user),
     isTeacher ? getQuestionBoxCount() : 0,
-    getPlayer().then(getCouncilUnread),
   ]);
-  // The Exodus link carries a live count of messages waiting in the council.
-  const links = (isTeacher ? TEACHER_LINKS : STUDENT_LINKS).map((l) =>
-    l.href === "/exodus" ? { ...l, badge: council } : l,
-  );
+  const links = isTeacher ? TEACHER_LINKS : STUDENT_LINKS;
 
   return (
     <div className="flex min-h-full flex-1 flex-col">

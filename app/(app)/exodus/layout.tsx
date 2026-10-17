@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { Icon } from "@/components/icons";
 import { getCouncilUnread, getPlayer } from "@/lib/exodus/queries";
 import { GameNav } from "./game-nav";
 
@@ -17,6 +19,12 @@ export default async function ExodusLayout({ children }: { children: React.React
   return (
     <div className="ex-scope">
       <div className="ex-backdrop" aria-hidden />
+      <Link
+        href="/activities"
+        className="relative mb-2 inline-flex items-center gap-1.5 text-sm text-slate-400 transition hover:text-slate-100"
+      >
+        <Icon name="arrowLeft" className="size-4" /> Activities
+      </Link>
       <header className="mb-1 flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
         <div className="flex items-baseline gap-3">
           <p className="font-display text-2xl font-semibold tracking-tight text-slate-50">The Exodus</p>

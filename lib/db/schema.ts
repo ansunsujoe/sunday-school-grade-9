@@ -248,3 +248,21 @@ export const councilMessages = pgTable("council_messages", {
   authorId: integer("author_id").references(() => users.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+// ---------------------------------------------------------------------------
+// Activities. Places and clues for Where in the Wilderness live in lib/activities.
+
+// One finished game of Where in the Wilderness, by anyone (students and teachers).
+// The leaderboard ranks each player's best `score`; `found` is how many of
+// the `rounds` they placed on the right spot, `durationMs` their total time.
+export const mapScores = pgTable("map_scores", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  score: integer("score").notNull(),
+  found: integer("found").notNull(),
+  rounds: integer("rounds").notNull(),
+  durationMs: integer("duration_ms").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
