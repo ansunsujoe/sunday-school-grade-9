@@ -6,9 +6,9 @@ import {
   ChartLineUp,
   Compass,
   DotsThreeOutline,
-  Exam,
   HouseLine,
   Scroll,
+  SquaresFour,
   UsersThree,
   X,
   type Icon,
@@ -23,10 +23,10 @@ const NAV_ICONS = {
   activities: Compass,
   verse: Scroll,
   calendar: CalendarDots,
-  quiz: Exam,
   grades: ChartLineUp,
   people: UsersThree,
   more: DotsThreeOutline,
+  menu: SquaresFour,
   close: X,
 } satisfies Record<string, Icon>;
 

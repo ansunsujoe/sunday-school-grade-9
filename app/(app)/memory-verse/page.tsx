@@ -14,7 +14,7 @@ export default async function MemoryVersePage() {
   const verse = await getMemoryVerse(currentSunday(today()));
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-7xl">
       <PageHeader
         eyebrow={verse ? `Memory verse · from ${formatDate(verse.sunday)}` : "Memory verse"}
         title={verse?.reference ?? "Memory verse"}
@@ -27,12 +27,15 @@ export default async function MemoryVersePage() {
           )
         }
       />
-      {verse ? (
-        <VersePractice key={verse.id} text={verse.text} reference={verse.reference} />
-      ) : (
-        <EmptyState>No memory verse yet.</EmptyState>
-      )}
-      {isTeacher && <Schedule current={verse} />}
+      {/* Wide screens: the verse takes the room, and a teacher's schedule runs down the side. */}
+      <div className={isTeacher ? "xl:grid xl:grid-cols-[minmax(0,1fr)_22rem] xl:gap-12" : ""}>
+        {verse ? (
+          <VersePractice key={verse.id} text={verse.text} reference={verse.reference} />
+        ) : (
+          <EmptyState>No memory verse yet.</EmptyState>
+        )}
+        {isTeacher && <Schedule current={verse} />}
+      </div>
     </div>
   );
 }
@@ -41,10 +44,8 @@ export default async function MemoryVersePage() {
 async function Schedule({ current }: { current: MemoryVerse | null }) {
   const verses = await getMemoryVerses();
   return (
-    <section className="mt-12">
-      <div className="border-b border-line pb-2">
-        <h2 className="font-display text-lg font-semibold text-slate-100">Schedule</h2>
-      </div>
+    <section className="mt-12 xl:mt-0">
+      <h2 className="ex-heading mb-1">Schedule</h2>
       {verses.length === 0 ? (
         <EmptyState>Add a verse and it shows here.</EmptyState>
       ) : (

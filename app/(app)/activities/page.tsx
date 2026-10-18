@@ -14,7 +14,6 @@ export default async function ActivitiesPage() {
 
   return (
     <div className="ex-scope">
-      <div className="ex-backdrop" aria-hidden />
       <header className="mb-1 flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
         <div>
           <p className="font-display text-xs font-semibold tracking-[0.25em] text-[var(--ex-gold)] uppercase">

@@ -41,7 +41,7 @@ export default async function QuizPage({ params }: { params: Promise<{ id: strin
 
   return (
     <>
-      <Link href="/quizzes" className="text-sm text-slate-400 hover:text-slate-100">
+      <Link href="/content#quizzes" className="text-sm text-slate-400 hover:text-slate-100">
         ← All quizzes
       </Link>
       <PageHeader

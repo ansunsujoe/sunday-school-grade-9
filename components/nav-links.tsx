@@ -2,16 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavIcon, type NavIconName } from "./nav-icons";
 
-/** `match` lists other path prefixes that belong to the same tab. */
+/**
+ * `match` lists other path prefixes that belong to the same tab. On phones,
+ * links marked `more` aren't tabs; every link with a `group` is listed in the
+ * menu sheet under that heading, with its `hint` beneath the label.
+ */
 type NavLink = {
   href: string;
   label: string;
   icon: NavIconName;
   more?: boolean;
   match?: readonly string[];
+  group?: string;
+  hint?: string;
 };
 
 /**
@@ -36,12 +42,15 @@ function isActive(pathname: string, { href, match }: Pick<NavLink, "href" | "mat
   return href === "/" ? pathname === "/" : pathname.startsWith(href);
 }
 
-/** Inline nav for tablets and up. */
+/**
+ * Inline nav for tablets and up. Home is left out: the logo beside it goes
+ * home. (On phones Home stays a tab, within thumb's reach.)
+ */
 export function NavLinks({ links }: { links: readonly NavLink[] }) {
   const pathname = usePathname();
   return (
     <nav className="hidden gap-1 md:flex">
-      {links.map(({ href, label, match }) => (
+      {links.filter((l) => l.href !== "/").map(({ href, label, match }) => (
         <Link
           key={href}
           href={href}
@@ -61,7 +70,7 @@ export function NavLinks({ links }: { links: readonly NavLink[] }) {
 /**
  * The tab bar pinned to the bottom of the screen on phones: a gold diamond
  * slides along the top rule to the open tab, whose icon fills in over a soft
- * gold pill. Links marked `more` open from a sheet.
+ * gold pill. The last tab opens the menu: a sheet with every page, grouped.
  */
 export function TabBar({ links }: { links: readonly NavLink[] }) {
   const pathname = usePathname();
@@ -83,42 +92,10 @@ export function TabBar({ links }: { links: readonly NavLink[] }) {
 
   return (
     <div className="md:hidden">
-      {open && (
-        <>
-          <button
-            type="button"
-            aria-label="Close menu"
-            onClick={() => setOpen(false)}
-            className="nav-fade fixed inset-0 z-30 bg-black/50 backdrop-blur-[2px]"
-          />
-          {/* .ex-panel sets its own position, so the sheet floats from a wrapper. */}
-          <div
-            id="more-sheet"
-            className="nav-sheet fixed inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-40"
-          >
-            <ul className="ex-panel grid grid-cols-2 gap-1 p-2">
-              {extra.map(({ href, label, icon, match }, i) => {
-                const active = isActive(pathname, { href, match });
-                return (
-                  <li key={href} className="nav-rise" style={{ animationDelay: `${40 + i * 40}ms` }}>
-                    <Link
-                      href={href}
-                      onClick={() => setOpen(false)}
-                      className={`flex items-center gap-3 px-3 py-3 text-[15px] transition active:bg-wash ${
-                        active ? "text-[var(--ex-gold)]" : "text-slate-200"
-                      }`}
-                    >
-                      <NavIcon name={icon} active={active} className="size-6 shrink-0" />
-                      <span className="leading-tight font-medium">{label}</span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </>
+      {extra.length > 0 && (
+        <MenuSheet links={links} open={open} onClose={() => setOpen(false)} pathname={pathname} />
       )}
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--ex-rule)] bg-night-950/92 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl">
+      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--ex-rule)] bg-night-950/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl">
         <div className="relative mx-auto flex h-16 max-w-md">
           {/*
             The diamond that slides to the open tab, centred on the gold rule
@@ -149,16 +126,156 @@ export function TabBar({ links }: { links: readonly NavLink[] }) {
               type="button"
               onClick={() => setOpen((o) => !o)}
               aria-expanded={open}
-              aria-controls="more-sheet"
+              aria-controls="menu-sheet"
               className={`${tabClass} ${open || extraActive ? "text-[var(--ex-gold)]" : "text-slate-500"}`}
             >
-              <TabIcon name={open ? "close" : "more"} active={open || extraActive} />
-              More
+              <TabIcon name={open ? "close" : "menu"} active={open || extraActive} />
+              Menu
             </button>
           )}
         </div>
       </nav>
     </div>
+  );
+}
+
+/**
+ * Every page, grouped, in a sheet that rises from behind the tab bar. It
+ * stays mounted so it can slide away again; drag it down, tap outside, or
+ * press Escape to close it.
+ */
+function MenuSheet({
+  links,
+  open,
+  onClose,
+  pathname,
+}: {
+  links: readonly NavLink[];
+  open: boolean;
+  onClose: () => void;
+  pathname: string;
+}) {
+  const [drag, setDrag] = useState<{ start: number; dy: number } | null>(null);
+  const sheet = useRef<HTMLDivElement>(null);
+
+  const groups: { name: string; links: NavLink[] }[] = [];
+  for (const link of links) {
+    if (!link.group) continue;
+    const group = groups.find((g) => g.name === link.group);
+    if (group) group.links.push(link);
+    else groups.push({ name: link.group, links: [link] });
+  }
+
+  // While open: the page behind stays put, Escape closes, focus moves in.
+  useEffect(() => {
+    if (!open) return;
+    const html = document.documentElement;
+    html.classList.add("nav-open");
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    sheet.current?.focus({ preventScroll: true });
+    return () => {
+      html.classList.remove("nav-open");
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open, onClose]);
+
+  function endDrag() {
+    if (drag && drag.dy > 70) onClose();
+    setDrag(null);
+  }
+
+  const offset = drag ? Math.max(0, drag.dy) : 0;
+  return (
+    <>
+      <div
+        aria-hidden
+        onClick={onClose}
+        className={`fixed inset-0 z-30 bg-black/55 backdrop-blur-[2px] transition-opacity duration-300 ${
+          open ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+      />
+      <div
+        ref={sheet}
+        id="menu-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu"
+        tabIndex={-1}
+        inert={!open}
+        className={`fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 max-h-[calc(100dvh-8rem)] overflow-y-auto overscroll-contain rounded-t-3xl border-t border-[var(--ex-rule)] bg-night-900 shadow-[0_-20px_50px_-12px] shadow-black/60 outline-none ${
+          drag ? "" : "transition-transform duration-300 ease-[cubic-bezier(0.2,0.9,0.3,1)]"
+        }`}
+        style={{ transform: open ? `translateY(${offset}px)` : "translateY(calc(100% + 5rem))" }}
+      >
+        {/* The handle: drag down to close. */}
+        <div
+          className="flex touch-none justify-center pt-2.5 pb-1"
+          onPointerDown={(e) => {
+            e.currentTarget.setPointerCapture(e.pointerId);
+            setDrag({ start: e.clientY, dy: 0 });
+          }}
+          onPointerMove={(e) => drag && setDrag({ ...drag, dy: e.clientY - drag.start })}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+        >
+          <span className="h-1 w-10 rounded-full bg-line-strong" />
+        </div>
+
+        <div className="px-4 pb-3">
+          {groups.map((group, gi) => (
+            <section key={group.name} className={gi ? "mt-3" : "mt-0.5"}>
+              <h2 className="mb-1.5 px-2 text-[11px] font-semibold tracking-[0.18em] text-[var(--ex-gold)] uppercase">
+                {group.name}
+              </h2>
+              <ul className="overflow-hidden rounded-2xl bg-wash">
+                {group.links.map(({ href, label, icon, hint, match }, i) => {
+                  const active = isActive(pathname, { href, match });
+                  return (
+                    <li key={href} className="border-line-faint not-first:border-t">
+                      <Link
+                        href={href}
+                        onClick={onClose}
+                        aria-current={active ? "page" : undefined}
+                        className={`flex items-center gap-3 px-3 py-2 transition active:bg-wash-hover ${
+                          open ? "nav-rise" : ""
+                        }`}
+                        style={{ animationDelay: `${60 + (gi * 3 + i) * 25}ms` }}
+                      >
+                        <span
+                          className={`grid size-10 shrink-0 place-items-center rounded-xl ${
+                            active ? "bg-amber-400/15 text-[var(--ex-gold)]" : "bg-night-800 text-slate-300"
+                          }`}
+                        >
+                          <NavIcon name={icon} active={active} className="size-[22px]" />
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span
+                            className={`block text-[15px] leading-tight font-medium ${
+                              active ? "text-[var(--ex-gold)]" : "text-slate-100"
+                            }`}
+                          >
+                            {label}
+                          </span>
+                          {hint && <span className="mt-0.5 block truncate text-xs text-slate-500">{hint}</span>}
+                        </span>
+                        {active ? (
+                          <span className="size-1.5 rotate-45 bg-[var(--ex-gold)]" aria-hidden />
+                        ) : (
+                          <svg viewBox="0 0 24 24" className="size-4 text-slate-600" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden>
+                            <path d="m9 6 6 6-6 6" />
+                          </svg>
+                        )}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ))}
+        </div>
+      </div>
+    </>
   );
 }
 

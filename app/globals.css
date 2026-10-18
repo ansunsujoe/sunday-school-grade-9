@@ -202,7 +202,7 @@ input[type="number"] {
   }
 }
 
-/* Fixed behind the game: dawn and dusk glows over a woven lattice that fades down the page. */
+/* Fixed behind every page: dawn and dusk glows over a woven lattice that fades out near the bottom. */
 .ex-backdrop {
   position: fixed;
   inset: 0;
@@ -220,7 +220,7 @@ input[type="number"] {
   background-color: var(--ex-weave);
   mask-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cg fill='none' stroke='%23000' stroke-width='1'%3E%3Cpath d='M22 0 44 22 22 44 0 22Z'/%3E%3Cpath d='M22 9 35 22 22 35 9 22Z'/%3E%3C/g%3E%3Ccircle cx='22' cy='22' r='2'/%3E%3Ccircle cx='0' cy='0' r='1.5'/%3E%3Ccircle cx='44' cy='0' r='1.5'/%3E%3Ccircle cx='0' cy='44' r='1.5'/%3E%3Ccircle cx='44' cy='44' r='1.5'/%3E%3C/svg%3E"),
-    linear-gradient(to bottom, #000 0%, transparent 75%);
+    linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
   mask-size: 44px 44px, 100% 100%;
   mask-repeat: repeat, no-repeat;
   mask-composite: intersect;
@@ -730,4 +730,10 @@ input[type="number"] {
   html.wm-wide .wm-stage {
     max-width: none;
   }
+}
+
+/* While the phone menu sheet is open, the page behind it stays put. */
+html.nav-open,
+html.nav-open body {
+  overflow: hidden;
 }

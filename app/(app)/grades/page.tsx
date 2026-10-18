@@ -8,6 +8,7 @@ import { SUNDAYS, currentSunday, summarize } from "@/lib/school-year";
 import { YearView } from "./year-view";
 import { WeekSheet } from "./week-form";
 import { WeekPicker } from "./week-picker";
+import { ClassTally, YearTrack } from "./week-overview";
 
 export default async function GradesPage({
   searchParams,
@@ -36,23 +37,25 @@ export default async function GradesPage({
   const [students, grades] = await Promise.all([getStudents(), getWeeklyGrades()]);
   const forDate = new Map(grades.filter((g) => g.date === date).map((g) => [g.studentId, g]));
 
+  const weekGrades = [...forDate.values()];
+
   return (
     <>
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
-        <div>
-          <h1 className="font-display text-2xl font-semibold text-slate-50">Gradebook</h1>
-          <p className="text-xs text-slate-500">
-            Week {SUNDAYS.indexOf(date) + 1} of {SUNDAYS.length} · {formatDate(date)}
-          </p>
-        </div>
-        <div className="w-full sm:w-72">
-          <WeekPicker
-            weeks={SUNDAYS.map((s) => ({ value: s, label: formatShortDate(s) }))}
-            value={date}
-            current={thisWeek}
-          />
-        </div>
-      </div>
+      <PageHeader
+        eyebrow={`Week ${SUNDAYS.indexOf(date) + 1} of ${SUNDAYS.length} · ${formatDate(date)}`}
+        title="Gradebook"
+        action={
+          <div className="w-full sm:w-80">
+            <WeekPicker
+              weeks={SUNDAYS.map((s) => ({ value: s, label: formatShortDate(s) }))}
+              value={date}
+              current={thisWeek}
+            />
+          </div>
+        }
+      />
+      <YearTrack date={date} thisWeek={thisWeek} />
+      {students.length > 0 && <ClassTally grades={weekGrades} students={students.length} />}
       {students.length === 0 ? (
         <Card>
           <EmptyState>

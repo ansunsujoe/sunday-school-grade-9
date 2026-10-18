@@ -2,7 +2,7 @@ import { desc } from "drizzle-orm";
 import { ActionForm } from "@/components/action-form";
 import { ConfirmButton } from "@/components/confirm-button";
 import { Icon } from "@/components/icons";
-import { Card, EmptyState, Field, PageHeader, inputClass } from "@/components/ui";
+import { Card, EmptyState, Field, PageHeader, Seal, inputClass } from "@/components/ui";
 import { askQuestion, removeQuestion } from "@/lib/actions/question-box";
 import { requireUser } from "@/lib/dal";
 import { db } from "@/lib/db";
@@ -74,9 +74,9 @@ async function TeacherInbox() {
             <li key={q.id}>
               <Card>
                 <div className="flex items-start gap-3">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-amber-400/10 text-amber-300 ring-1 ring-amber-400/20">
-                    <Icon name="question" className="size-5" />
-                  </span>
+                  <Seal>
+                    <Icon name="question" className="size-[18px]" />
+                  </Seal>
                   <div className="min-w-0 flex-1">
                     <p className="text-xs text-slate-400">
                       <time dateTime={q.createdAt.toISOString()}>{formatDateTime(q.createdAt)}</time>

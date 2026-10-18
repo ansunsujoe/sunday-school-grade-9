@@ -81,7 +81,7 @@ export default async function CalendarPage({
       />
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
-        <section className="overflow-hidden rounded-2xl border border-line bg-night-900/70 shadow-xl shadow-black/20 backdrop-blur-sm">
+        <section className="ex-panel overflow-hidden">
           {/* Month switcher and legend */}
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line-subtle p-3 sm:p-4">
             <div className="flex items-center gap-2">

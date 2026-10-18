@@ -19,7 +19,7 @@ function isActive(pathname: string, { href, match, exact }: GameLink) {
 export function GameNav({ links }: { links: GameLink[] }) {
   const pathname = usePathname();
   return (
-    <nav className="-mx-4 mb-7 overflow-x-auto border-b border-[var(--ex-rule)] px-4 sm:mx-0 sm:px-0">
+    <nav className="-mx-5 mb-7 overflow-x-auto border-b border-[var(--ex-rule)] px-5 sm:mx-0 sm:px-0">
       <div className="flex w-max gap-1">
         {links.map((link) => {
           const active = isActive(pathname, link);

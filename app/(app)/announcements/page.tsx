@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { Markdown } from "@/components/markdown";
-import { Card, EmptyState, PageHeader, buttonClass } from "@/components/ui";
+import { Card, EmptyState, PageHeader, Seal, buttonClass } from "@/components/ui";
 import { requireUser } from "@/lib/dal";
 import { formatDateTime, timeAgo } from "@/lib/format";
 import { getAnnouncementRecipients, getAnnouncements } from "@/lib/queries";
@@ -45,9 +45,9 @@ export default async function AnnouncementsPage() {
             <li key={a.id}>
               <AnnouncementFrame id={a.id} unread={a.unread}>
                 <header className="flex items-start gap-3 pr-14">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-amber-400/10 text-amber-300 ring-1 ring-amber-400/20">
-                    <Icon name="megaphone" className="size-5" />
-                  </span>
+                  <Seal>
+                    <Icon name="megaphone" className="size-[18px]" />
+                  </Seal>
                   <div className="min-w-0">
                     <h2 className="font-display text-xl leading-snug font-semibold text-balance text-slate-50">
                       {a.title}

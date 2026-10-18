@@ -62,7 +62,7 @@ export async function createQuiz(_: FormState, formData: FormData): Promise<Form
     .returning({ id: quizzes.id });
   await db.insert(questions).values(questionRows(quiz.id, draft));
 
-  revalidatePath("/quizzes");
+  revalidatePath("/content");
   redirect(`/quizzes/${quiz.id}`);
 }
 
@@ -94,7 +94,7 @@ export async function updateQuiz(_: FormState, formData: FormData): Promise<Form
     db.insert(questions).values(questionRows(quizId, draft)),
   ]);
 
-  revalidatePath("/quizzes");
+  revalidatePath("/content");
   redirect(`/quizzes/${quizId}`);
 }
 
@@ -105,7 +105,7 @@ export async function setQuizPublished(formData: FormData) {
     .update(quizzes)
     .set({ published: formData.get("published") === "true" })
     .where(eq(quizzes.id, quizId));
-  revalidatePath("/quizzes");
+  revalidatePath("/content");
   revalidatePath(`/quizzes/${quizId}`);
   revalidatePath("/grades");
 }
@@ -113,9 +113,9 @@ export async function setQuizPublished(formData: FormData) {
 export async function deleteQuiz(formData: FormData) {
   await requireTeacher();
   await db.delete(quizzes).where(eq(quizzes.id, Number(formData.get("quizId"))));
-  revalidatePath("/quizzes");
+  revalidatePath("/content");
   revalidatePath("/grades");
-  redirect("/quizzes");
+  redirect("/content#quizzes");
 }
 
 /** Lets a student retake a quiz by clearing their submission. */
@@ -160,7 +160,7 @@ export async function submitQuiz(_: FormState, formData: FormData): Promise<Form
   if (!inserted.length) return { error: "You've already taken this quiz." };
 
   revalidatePath(`/quizzes/${quizId}`);
-  revalidatePath("/quizzes");
+  revalidatePath("/content");
   revalidatePath("/grades");
   redirect(`/quizzes/${quizId}`);
 }

@@ -15,7 +15,7 @@ export function Prose({ children }: { children: React.ReactNode }) {
  */
 export function Scripture({ cite, children }: { cite: string; children: React.ReactNode }) {
   return (
-    <figure className="not-prose relative my-5 overflow-hidden first:mt-0 rounded-xl border border-amber-300/15 bg-amber-400/[0.05] py-3.5 pr-4 pl-5 sm:pr-5">
+    <figure className="not-prose relative my-5 overflow-hidden first:mt-0 border border-amber-300/15 bg-amber-400/[0.05] py-3.5 pr-4 pl-5 sm:pr-5">
       <span aria-hidden className="absolute inset-y-0 left-0 w-1 bg-amber-400/60" />
       <blockquote className="font-display text-[15px] leading-relaxed text-slate-200 sm:text-base">
         {children}
@@ -48,7 +48,7 @@ export function Callout({
   children: React.ReactNode;
 }) {
   return (
-    <aside className={`not-prose my-6 rounded-2xl border p-4 sm:p-5 ${CALLOUT_TONES[tone]}`}>
+    <aside className={`not-prose my-6 border p-4 sm:p-5 ${CALLOUT_TONES[tone]}`}>
       <p className="mb-1.5 text-[11px] font-bold tracking-[0.2em] text-(--label) uppercase">{label}</p>
       <div className="text-lg leading-relaxed text-slate-200 sm:text-xl [&_em]:text-slate-50 [&_strong]:text-slate-50">
         {children}

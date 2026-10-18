@@ -38,7 +38,7 @@ export function CycleCell({
         onClick={() => setV(NEXT[v])}
         data-absent={(marksAbsent && v === "N") || undefined}
         aria-label={`${label}: ${v === "Y" ? yes : v === "N" ? no : "blank"}. Tap to change.`}
-        className={`grid h-9 w-full place-items-center text-sm font-semibold tabular-nums transition select-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:outline-none focus-visible:ring-inset ${TONES[v]}`}
+        className={`grid h-10 w-full place-items-center lg:h-12 text-sm font-semibold tabular-nums transition select-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:outline-none focus-visible:ring-inset ${TONES[v]}`}
       >
         {text}
       </button>

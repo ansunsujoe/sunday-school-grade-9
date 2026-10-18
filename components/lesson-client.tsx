@@ -36,7 +36,7 @@ export function SectionTracker({ title, stops }: { title: string; stops: Stop[] 
   const activeIndex = stops.findIndex((s) => s.id === active);
 
   return (
-    <nav className="rounded-2xl border border-line bg-night-900/70 p-4 shadow-xl shadow-black/20 backdrop-blur-sm sm:p-5">
+    <nav className="ex-panel p-4 sm:p-5">
       <h2 className="mb-3 text-base font-semibold text-slate-100">{title}</h2>
       <ol className="relative space-y-0.5">
         <span className="absolute top-3 bottom-3 left-[13px] w-px bg-wash-hover" aria-hidden />
@@ -106,7 +106,7 @@ export function DailyJournal({ storageKey, prompt }: { storageKey: string; promp
   const done = entries.filter((e) => e.trim()).length;
 
   return (
-    <div className="not-prose my-6 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.04] p-4 sm:p-5">
+    <div className="not-prose my-6 border border-emerald-400/20 bg-emerald-400/[0.04] p-4 sm:p-5">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-slate-300">{prompt}</p>
         <span className="flex items-center gap-2 text-xs font-semibold text-emerald-200">

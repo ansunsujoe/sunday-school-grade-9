@@ -29,23 +29,31 @@ export function PageHeader({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="mb-5 flex flex-wrap items-end justify-between gap-4 sm:mb-6">
-      <div className="min-w-0">
-        {eyebrow && (
-          <p className="mb-1 text-sm text-amber-300/80">
-            {eyebrow}
-          </p>
-        )}
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-balance text-slate-50 sm:text-4xl">
-          {title}
-        </h1>
-        {description && <p className="mt-2 text-sm text-slate-400">{description}</p>}
+    <div className="mb-5 sm:mb-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="min-w-0">
+          {eyebrow && (
+            <p className="mb-1.5 font-display text-xs font-semibold tracking-[0.2em] text-[var(--ex-gold)] uppercase">
+              {eyebrow}
+            </p>
+          )}
+          <h1 className="font-display text-3xl font-semibold tracking-tight text-balance text-slate-50 sm:text-4xl">
+            {title}
+          </h1>
+          {description && <p className="mt-2 text-sm text-slate-400">{description}</p>}
+        </div>
+        {action}
       </div>
-      {action}
+      {/* Gold bells and pomegranates, as under The Exodus's title. */}
+      <div className="ex-bells mt-4" aria-hidden />
     </div>
   );
 }
 
+/**
+ * A panel in The Exodus's style: square, double-ruled, gold corner brackets,
+ * with its title in gold small caps and a rule running out from it.
+ */
 export function Card({
   title,
   children,
@@ -56,12 +64,20 @@ export function Card({
   className?: string;
 }) {
   return (
-    <section
-      className={`rounded-xl border border-line-subtle bg-night-900/60 p-4 sm:p-5 ${className}`}
-    >
-      {title && <h2 className="mb-4 text-base font-semibold text-slate-100">{title}</h2>}
+    <section className={`ex-panel p-4 sm:p-5 ${className}`}>
+      {title && <h2 className="ex-heading mb-4">{title}</h2>}
       {children}
     </section>
+  );
+}
+
+/** An icon set in a small gold diamond, like The Exodus's glyph seals, to lead a row or card. */
+export function Seal({ children, className = "size-10" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <span className={`relative grid shrink-0 place-items-center text-[var(--ex-gold)] ${className}`}>
+      <span className="absolute inset-[18%] rotate-45 border border-current bg-amber-400/5 opacity-50" aria-hidden />
+      <span className="relative">{children}</span>
+    </span>
   );
 }
 
@@ -104,7 +120,7 @@ export function Badge({
   };
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium whitespace-nowrap ring-1 ring-inset ${tones[tone]}`}
+      className={`inline-flex items-center px-2 py-0.5 text-xs font-medium whitespace-nowrap ring-1 ring-inset ${tones[tone]}`}
     >
       {children}
     </span>

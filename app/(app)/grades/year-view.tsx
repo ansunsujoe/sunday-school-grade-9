@@ -39,7 +39,7 @@ export function YearView({ grades }: { grades: WeeklyGrade[] }) {
 
       <Card className="overflow-clip p-0!">
         <table className="w-full text-sm">
-          <thead className="sticky top-[calc(61px+env(safe-area-inset-top))] bg-night-800/95 text-xs tracking-wide text-slate-400 uppercase backdrop-blur">
+          <thead className="sticky top-[calc(61px+env(safe-area-inset-top))] border-b border-[var(--ex-rule)] bg-night-900/95 font-display text-[10px] tracking-[0.14em] text-[var(--ex-gold)] uppercase backdrop-blur">
             <tr>
               <th className="py-3 pl-4 text-left font-medium sm:pl-6">Sunday</th>
               <th className="px-1 py-3 font-medium">Att.</th>
@@ -58,7 +58,7 @@ export function YearView({ grades }: { grades: WeeklyGrade[] }) {
                   <tr key={`${sunday}-month`}>
                     <th
                       colSpan={5}
-                      className="border-t border-line-subtle bg-wash py-2 pl-4 text-left font-display text-xs font-semibold tracking-wide text-amber-200/80 sm:pl-6"
+                      className="border-t border-[var(--ex-rule)] bg-amber-400/[0.05] py-2 pl-4 text-left font-display text-xs font-semibold tracking-[0.16em] text-[var(--ex-gold)] uppercase sm:pl-6"
                     >
                       {formatMonth(sunday)}
                     </th>

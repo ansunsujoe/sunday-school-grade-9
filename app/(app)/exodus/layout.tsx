@@ -18,7 +18,6 @@ export default async function ExodusLayout({ children }: { children: React.React
 
   return (
     <div className="ex-scope">
-      <div className="ex-backdrop" aria-hidden />
       <Link
         href="/activities"
         className="relative mb-2 inline-flex items-center gap-1.5 text-sm text-slate-400 transition hover:text-slate-100"

@@ -6,26 +6,25 @@ import { requireUser } from "@/lib/dal";
 import { getQuestionBoxCount, getUnreadAnnouncementCount } from "@/lib/queries";
 import { TentAlert } from "./tent-alert";
 
-// Links marked `more` sit behind the "More" tab on phones.
+// On phones, links marked `more` aren't tabs; the Menu tab's sheet lists
+// every link with a `group`, under that heading.
 const TEACHER_LINKS = [
   { href: "/", label: "Home", icon: "home" },
-  { href: "/content", label: "Content", icon: "content" },
-  { href: "/memory-verse", label: "Memory verse", icon: "verse", more: true },
-  { href: "/calendar", label: "Calendar", icon: "calendar", more: true },
-  { href: "/activities", label: "Activities", icon: "activities", match: ["/exodus"] },
-  { href: "/quizzes", label: "Quizzes", icon: "quiz", more: true },
-  { href: "/grades", label: "Gradebook", icon: "grades" },
-  { href: "/people", label: "People", icon: "people", more: true },
+  { href: "/content", label: "Content", icon: "content", match: ["/quizzes"], group: "Learn", hint: "Lessons, quizzes, and notes" },
+  { href: "/memory-verse", label: "Memory verse", icon: "verse", more: true, group: "Learn", hint: "This week's verse and the schedule" },
+  { href: "/calendar", label: "Calendar", icon: "calendar", more: true, group: "Class", hint: "Sundays and events" },
+  { href: "/activities", label: "Activities", icon: "activities", match: ["/exodus"], group: "Play", hint: "The Exodus and Where in the Wilderness?" },
+  { href: "/grades", label: "Gradebook", icon: "grades", group: "Class", hint: "Weekly grades" },
+  { href: "/people", label: "People", icon: "people", more: true, group: "Class", hint: "Students and teachers" },
 ] as const;
 
 const STUDENT_LINKS = [
   { href: "/", label: "Home", icon: "home" },
-  { href: "/content", label: "Content", icon: "content" },
-  { href: "/memory-verse", label: "Memory verse", icon: "verse", more: true },
-  { href: "/calendar", label: "Calendar", icon: "calendar", more: true },
-  { href: "/activities", label: "Activities", icon: "activities", match: ["/exodus"] },
-  { href: "/quizzes", label: "Quizzes", icon: "quiz" },
-  { href: "/grades", label: "My grades", icon: "grades", more: true },
+  { href: "/content", label: "Content", icon: "content", match: ["/quizzes"], group: "Learn", hint: "Lessons, quizzes, and notes" },
+  { href: "/memory-verse", label: "Memory verse", icon: "verse", more: true, group: "Learn", hint: "Practice this week's verse" },
+  { href: "/calendar", label: "Calendar", icon: "calendar", more: true, group: "Class", hint: "Sundays and events" },
+  { href: "/activities", label: "Activities", icon: "activities", match: ["/exodus"], group: "Play", hint: "The Exodus and Where in the Wilderness?" },
+  { href: "/grades", label: "My grades", icon: "grades", group: "Class", hint: "Your weekly grades" },
 ] as const;
 
 function initials(name: string) {
@@ -48,8 +47,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex min-h-full flex-1 flex-col">
+      {/* The Exodus's woven tent-cloth lattice behind every page (.ex-backdrop in globals.css). */}
+      <div className="ex-backdrop" aria-hidden />
       <header className="sticky top-0 z-30 border-b border-line-subtle bg-night-950/75 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
-        <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-5 lg:px-6">
+        <div className="flex items-center justify-between gap-3 px-5 py-3 lg:px-6">
           <div className="flex min-w-0 items-center gap-6">
             <Link href="/" className="flex min-w-0 items-center gap-2.5">
               <LogoMark />
@@ -120,7 +121,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </div>
       </header>
       <TentAlert />
-      <main className="w-full flex-1 px-4 pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-5 sm:pt-8 md:pb-10 lg:px-6">
+      <main className="w-full flex-1 px-5 pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:pt-8 md:pb-10 lg:px-6">
         {children}
       </main>
       <TabBar links={links} />

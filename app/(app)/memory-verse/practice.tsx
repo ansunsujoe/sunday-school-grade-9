@@ -115,14 +115,21 @@ export function VersePractice({ text, reference }: { text: string; reference: st
       </div>
       <p className="mt-3 text-sm text-slate-400">{MODES.find((m) => m.id === mode)?.help}</p>
 
-      <section className="mt-5 rounded-2xl border border-amber-300/15 bg-night-900/70 p-5 shadow-xl shadow-black/20 sm:p-8">
+      {/* The verse, set large between two gold rules, with a big opening quotation mark. */}
+      <section className="relative mt-8 border-y border-[var(--ex-rule)] py-8 pl-2 sm:py-10 sm:pl-14 lg:py-12">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute top-1 -left-1 font-display text-7xl leading-none text-[var(--ex-gold)] opacity-30 select-none sm:top-4 sm:text-8xl"
+        >
+          “
+        </span>
         {mode === "read" ? (
-          <p className="font-display text-2xl leading-relaxed font-medium text-balance text-slate-50 sm:text-3xl">
+          <p className="font-display text-2xl leading-relaxed font-medium text-balance text-slate-50 sm:text-3xl lg:text-4xl lg:leading-snug xl:text-[2.6rem]">
             {text}
           </p>
         ) : (
           <p
-            className="font-display text-2xl leading-relaxed font-medium text-slate-50 sm:text-3xl"
+            className="font-display text-2xl leading-relaxed font-medium text-slate-50 sm:text-3xl lg:text-4xl lg:leading-snug xl:text-[2.6rem]"
             onClick={() => inputRef.current?.focus()}
           >
             {words.map((w, i) => {
@@ -166,7 +173,10 @@ export function VersePractice({ text, reference }: { text: string; reference: st
             })}
           </p>
         )}
-        <p className="mt-4 text-sm font-medium text-amber-200/90">{reference} · KJV</p>
+        <p className="mt-6 flex items-center gap-3 font-display text-sm font-semibold tracking-[0.18em] text-[var(--ex-gold)] uppercase">
+          <span className="h-px w-8 bg-[var(--ex-gold-soft)]" aria-hidden />
+          {reference} · KJV
+        </p>
       </section>
 
       {mode !== "read" && !done && (

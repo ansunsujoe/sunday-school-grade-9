@@ -4,6 +4,7 @@ import { LoginForm } from "./login-form";
 export default function LoginPage() {
   return (
     <main className="flex flex-1 items-center justify-center px-4 py-16">
+      <div className="ex-backdrop" aria-hidden />
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <LogoMark className="mx-auto size-14" />
@@ -12,7 +13,7 @@ export default function LoginPage() {
           </h1>
           <p className="mt-2 text-sm text-slate-400">Sign in with the account your teacher gave you.</p>
         </div>
-        <div className="rounded-2xl border border-line bg-night-900/70 p-6 shadow-2xl shadow-black/40 backdrop-blur-sm">
+        <div className="ex-panel p-6 shadow-2xl shadow-black/40">
           <LoginForm />
         </div>
         <figure className="mt-10 text-center">

@@ -1,21 +1,23 @@
-import { desc, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import Link from "next/link";
 import { Icon } from "@/components/icons";
-import { Badge, EmptyState, Stat, TextLink, scoreTone } from "@/components/ui";
+import { Badge, EmptyState, Stat, TextLink } from "@/components/ui";
 import { CONTENT, contentHref, type ContentItem } from "@/lib/content";
 import { requireUser, type CurrentUser } from "@/lib/dal";
 import { db } from "@/lib/db";
-import { quizzes, submissions, users } from "@/lib/db/schema";
+import { submissions } from "@/lib/db/schema";
 import { getCouncilUnread, getPlayer, getThreads } from "@/lib/exodus/queries";
-import { percent, plainText, timeAgo, today } from "@/lib/format";
+import { formatTime, plainText, timeAgo, today } from "@/lib/format";
 import {
   getAnnouncements,
+  getEvents,
   getPublishedQuizzes,
   getWeeklyGrades,
   type AnnouncementItem,
 } from "@/lib/queries";
 import { currentSunday, summarize } from "@/lib/school-year";
 import { getMemoryVerse } from "@/lib/verses";
+import { TONES, eventTone } from "./calendar/event-tone";
 import { ThreadList } from "./exodus/council/council-ui";
 
 export default async function HomePage() {
@@ -26,39 +28,48 @@ export default async function HomePage() {
 
   return (
     <div>
-      <section className="relative overflow-hidden rounded-3xl border border-amber-300/15 bg-linear-to-br from-night-800 via-night-900 to-night-950 p-5 shadow-2xl shadow-black/30 sm:p-8">
-        <div className="pointer-events-none absolute -top-24 -right-16 size-72 rounded-full bg-amber-400/15 blur-3xl" />
+      {/*
+        The welcome and this week's verse, open on the page (the sections below
+        are the panels), with the cross in its own column, centred beside the words.
+      */}
+      <section className="relative flex items-center gap-4 sm:gap-8">
+        <div className="pointer-events-none absolute -top-28 -right-10 size-80 rounded-full bg-amber-400/10 blur-3xl" />
+        <div className="relative min-w-0 flex-1">
+          <p className="relative font-display text-xs font-semibold tracking-[0.25em] text-[var(--ex-gold)] uppercase">
+            Welcome, {user.name.split(" ")[0]}
+          </p>
+          {verse && (
+            <>
+              <blockquote className="relative mt-4 max-w-5xl">
+                <p className="font-display text-2xl leading-snug font-medium text-balance text-slate-50 sm:text-3xl lg:text-4xl">
+                  “{verse.text}”
+                </p>
+                <footer className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 font-display text-xs font-semibold tracking-[0.18em] text-[var(--ex-gold)] uppercase">
+                  <span className="h-px w-8 bg-[var(--ex-gold-soft)]" aria-hidden />
+                  <span className="whitespace-nowrap">{verse.reference}</span>
+                  <span className="whitespace-nowrap text-slate-500">· Memory verse</span>
+                </footer>
+              </blockquote>
+              <Link
+                href="/memory-verse"
+                className="relative mt-6 inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-amber-300/25 bg-amber-400/10 px-4 text-sm font-semibold text-amber-200 transition hover:bg-amber-400/20"
+              >
+                Practice it
+                <Icon name="chevronRight" className="size-4" />
+              </Link>
+            </>
+          )}
+        </div>
         <Icon
           name="cross"
-          className="pointer-events-none absolute -right-6 -bottom-10 size-56 text-amber-200/[0.05] sm:right-6"
+          className="pointer-events-none relative size-20 shrink-0 text-amber-200/[0.1] sm:size-36 lg:size-52"
         />
-        <p className="relative text-xs font-semibold tracking-[0.2em] text-amber-300/80 uppercase">
-          Welcome, {user.name.split(" ")[0]}
-        </p>
-        {verse && (
-          <>
-            <blockquote className="relative mt-4 max-w-5xl">
-              <p className="font-display text-2xl leading-snug font-medium text-balance text-slate-50 sm:text-3xl">
-                “{verse.text}”
-              </p>
-              <footer className="mt-3 text-sm font-medium text-amber-200/90">
-                {verse.reference} <span className="text-slate-500">· Memory verse</span>
-              </footer>
-            </blockquote>
-            <Link
-              href="/memory-verse"
-              className="relative mt-5 inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-amber-300/25 bg-amber-400/10 px-4 text-sm font-semibold text-amber-200 transition hover:bg-amber-400/20"
-            >
-              Practice it
-              <Icon name="chevronRight" className="size-4" />
-            </Link>
-          </>
-        )}
       </section>
+      <div className="ex-bells mt-8" aria-hidden />
 
       {user.role === "student" && <ExodusToday />}
 
-      <div className="mt-8 grid gap-x-10 gap-y-8 md:grid-cols-2">
+      <div className="mt-6 grid gap-5 md:grid-cols-2">
         <LatestAnnouncements items={announcements} />
         <Section title="Latest lesson">
           {latest ? (
@@ -81,7 +92,7 @@ export default async function HomePage() {
   );
 }
 
-/** A titled block of the home page: a heading over a hairline, no box. */
+/** A titled block of the home page, in The Exodus's panel with a gold small-caps heading. */
 function Section({
   title,
   action,
@@ -94,10 +105,10 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className={className}>
-      <div className="flex items-baseline justify-between gap-3 border-b border-line pb-2">
-        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-slate-100">{title}</h2>
-        {action && <span className="text-sm">{action}</span>}
+    <section className={`ex-panel p-4 sm:p-5 ${className}`}>
+      <div className="mb-1 flex items-center gap-3">
+        <h2 className="ex-heading min-w-0 flex-1">{title}</h2>
+        {action && <span className="shrink-0 text-sm">{action}</span>}
       </div>
       {children}
     </section>
@@ -112,7 +123,7 @@ async function ExodusToday() {
 
   return (
     <Section
-      className="mt-8"
+      className="mt-6"
       title={
         <>
           At your tent
@@ -137,7 +148,7 @@ function LatestAnnouncements({ items }: { items: AnnouncementItem[] }) {
         </>
       }
       action={<TextLink href="/announcements">See all</TextLink>}
-      className="md:row-span-2"
+      className="md:row-span-2 md:self-start"
     >
       {items.length === 0 ? (
         <EmptyState>No announcements yet.</EmptyState>
@@ -190,38 +201,42 @@ function ContentLink({ item, children }: { item: ContentItem; children: React.Re
   );
 }
 
+/** What's coming on the calendar, so teachers can plan ahead at a glance. */
 async function TeacherHome() {
-  const recent = await db
-    .select({
-      id: submissions.id,
-      score: submissions.score,
-      total: submissions.total,
-      student: users.name,
-      quizId: quizzes.id,
-      quiz: quizzes.title,
-    })
-    .from(submissions)
-    .innerJoin(users, eq(submissions.studentId, users.id))
-    .innerJoin(quizzes, eq(submissions.quizId, quizzes.id))
-    .orderBy(desc(submissions.submittedAt))
-    .limit(8);
+  const upcoming = await getEvents("teacher", today(), "9999-12-31").limit(5);
+  const now = today();
 
   return (
-    <Section title="Recent quiz submissions" action={<TextLink href="/quizzes">Quizzes</TextLink>}>
-      {recent.length === 0 ? (
-        <EmptyState>No submissions yet.</EmptyState>
+    <Section title="Next up" action={<TextLink href="/calendar">Calendar</TextLink>}>
+      {upcoming.length === 0 ? (
+        <EmptyState>Nothing on the calendar yet.</EmptyState>
       ) : (
-        <ul className="divide-y divide-line-faint text-sm">
-          {recent.map((r) => {
-            const pct = percent(r.score, r.total);
+        <ul className="divide-y divide-line-faint">
+          {upcoming.map((e) => {
+            const tone = TONES[eventTone(e)];
+            const day = new Date(`${e.date}T00:00:00Z`);
             return (
-              <li key={r.id}>
-                <Link href={`/quizzes/${r.quizId}`} className="group flex items-baseline gap-3 py-2.5">
-                  <span className="min-w-0 flex-1 truncate">
-                    <span className="text-slate-200 group-hover:text-amber-200">{r.student}</span>
-                    <span className="text-slate-500"> · {r.quiz}</span>
+              <li key={e.id}>
+                <Link href={`/calendar?month=${e.date.slice(0, 7)}`} className="group flex items-center gap-4 py-3">
+                  {/* A small page torn from a calendar. */}
+                  <span className="grid w-12 shrink-0 border border-[var(--ex-rule)] text-center">
+                    <span className="bg-amber-400/10 py-0.5 text-[10px] font-semibold tracking-[0.14em] text-[var(--ex-gold)] uppercase">
+                      {day.toLocaleDateString("en-US", { timeZone: "UTC", month: "short" })}
+                    </span>
+                    <span className="py-1 font-display text-xl leading-none font-semibold text-slate-50">
+                      {day.getUTCDate()}
+                    </span>
                   </span>
-                  <span className={`font-semibold tabular-nums ${SCORE_TEXT[scoreTone(pct)]}`}>{pct}%</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-medium text-slate-100 group-hover:text-amber-200">{e.title}</span>
+                    <span className="mt-0.5 flex items-center gap-1.5 text-xs text-slate-400">
+                      <span className={`size-1.5 shrink-0 rounded-full ${tone.dot}`} />
+                      {day.toLocaleDateString("en-US", { timeZone: "UTC", weekday: "short" })} ·{" "}
+                      {e.startTime ? formatTime(e.startTime) : "All day"}
+                      {eventTone(e) !== "all" && <span className={tone.text}>· {tone.label}</span>}
+                    </span>
+                  </span>
+                  <span className="shrink-0 text-xs text-slate-500">{daysAway(e.date, now)}</span>
                 </Link>
               </li>
             );
@@ -232,12 +247,13 @@ async function TeacherHome() {
   );
 }
 
-const SCORE_TEXT = {
-  slate: "text-slate-400",
-  green: "text-emerald-300",
-  amber: "text-orange-300",
-  red: "text-rose-300",
-} as const;
+/** "Today", "Tomorrow", or "In 5 days" from one YYYY-MM-DD date to another. */
+function daysAway(date: string, from: string) {
+  const days = Math.round((Date.parse(`${date}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000);
+  if (days <= 0) return "Today";
+  if (days === 1) return "Tomorrow";
+  return `In ${days} days`;
+}
 
 async function StudentHome({ user }: { user: CurrentUser }) {
   const [quizList, mine, grades] = await Promise.all([
