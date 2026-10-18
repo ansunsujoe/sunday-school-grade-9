@@ -306,6 +306,24 @@ input[type="number"] {
   bottom: -12px;
 }
 
+/*
+  The camp behind the welcome on the home page, feathered on every side so it
+  melts into the lattice: under the words on a phone, beside them from sm up.
+*/
+.home-camp {
+  mask-image:
+    linear-gradient(to bottom, transparent 0%, #000 30%, #000 60%, transparent 100%),
+    linear-gradient(to right, transparent 0%, #000 18%, #000 82%, transparent 100%);
+  mask-composite: intersect;
+}
+@media (width >= 40rem) {
+  .home-camp {
+    mask-image:
+      linear-gradient(to bottom, transparent 0%, #000 12%, #000 58%, transparent 96%),
+      linear-gradient(to right, transparent 0%, #000 40%, #000 92%, transparent 100%);
+  }
+}
+
 /* On light paper the pale status colors wash out, so deepen them inside the game. */
 @media (prefers-color-scheme: light) {
   .ex-scope,

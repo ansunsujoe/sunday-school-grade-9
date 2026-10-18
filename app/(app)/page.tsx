@@ -17,6 +17,7 @@ import {
 } from "@/lib/queries";
 import { currentSunday, summarize } from "@/lib/school-year";
 import { getMemoryVerse } from "@/lib/verses";
+import { CampScene } from "./activities/art";
 import { TONES, eventTone } from "./calendar/event-tone";
 import { ThreadList } from "./exodus/council/council-ui";
 
@@ -30,29 +31,34 @@ export default async function HomePage() {
     <div>
       {/*
         The welcome and this week's verse, open on the page (the sections below
-        are the panels), with the cross in its own column, centred beside the words.
+        are the panels). The camp at night sits behind it with its sky left
+        clear, so the woven lattice shows between the stars, and its edges
+        feather away into the page.
       */}
-      <section className="relative flex items-center gap-4 sm:gap-8">
-        <div className="pointer-events-none absolute -top-28 -right-10 size-80 rounded-full bg-amber-400/10 blur-3xl" />
-        <div className="relative min-w-0 flex-1">
-          <p className="relative font-display text-xs font-semibold tracking-[0.25em] text-[var(--ex-gold)] uppercase">
+      <section className="relative isolate pb-44 sm:py-6 lg:py-10">
+        <div className="home-camp pointer-events-none absolute -inset-x-5 -bottom-6 -z-10 h-72 sm:inset-x-auto sm:-top-20 sm:-right-6 sm:-bottom-8 sm:h-auto sm:w-[68%]">
+          <CampScene open className="size-full" />
+        </div>
+        <div className="relative sm:max-w-[60%] lg:max-w-[58%]">
+          <p className="font-display text-xs font-semibold tracking-[0.25em] text-[var(--ex-gold)] uppercase">
             Welcome, {user.name.split(" ")[0]}
           </p>
           {verse && (
             <>
-              <blockquote className="relative mt-4 max-w-5xl">
+              <blockquote className="mt-4">
                 <p className="font-display text-2xl leading-snug font-medium text-balance text-slate-50 sm:text-3xl lg:text-4xl">
                   “{verse.text}”
                 </p>
-                <footer className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 font-display text-xs font-semibold tracking-[0.18em] text-[var(--ex-gold)] uppercase">
-                  <span className="h-px w-8 bg-[var(--ex-gold-soft)]" aria-hidden />
+                <footer className="mt-4 flex items-center gap-2.5 font-display text-xs font-semibold tracking-[0.12em] text-[var(--ex-gold)] uppercase sm:gap-3 sm:tracking-[0.18em]">
                   <span className="whitespace-nowrap">{verse.reference}</span>
-                  <span className="whitespace-nowrap text-slate-500">· Memory verse</span>
+                  <span className="shrink-0 rounded-full border border-amber-300/25 bg-amber-400/10 px-2.5 py-0.5 text-[0.65rem] tracking-[0.12em] whitespace-nowrap text-amber-200/90 sm:tracking-[0.15em]">
+                    Memory verse
+                  </span>
                 </footer>
               </blockquote>
               <Link
                 href="/memory-verse"
-                className="relative mt-6 inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-amber-300/25 bg-amber-400/10 px-4 text-sm font-semibold text-amber-200 transition hover:bg-amber-400/20"
+                className="mt-6 inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-amber-300/25 bg-amber-400/10 px-4 text-sm font-semibold text-amber-200 backdrop-blur transition hover:bg-amber-400/20"
               >
                 Practice it
                 <Icon name="chevronRight" className="size-4" />
@@ -60,10 +66,6 @@ export default async function HomePage() {
             </>
           )}
         </div>
-        <Icon
-          name="cross"
-          className="pointer-events-none relative size-20 shrink-0 text-amber-200/[0.1] sm:size-36 lg:size-52"
-        />
       </section>
       <div className="ex-bells mt-8" aria-hidden />
 

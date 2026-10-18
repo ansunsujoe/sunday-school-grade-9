@@ -32,9 +32,10 @@ function Tent({ x, y, s = 1, lamp = false, delay = 0 }: { x: number; y: number; 
 
 /**
  * The camp at night: stars over the dunes, the tents of the clans, and the
- * pillar of fire standing over them (Exodus 13:21).
+ * pillar of fire standing over them (Exodus 13:21). `open` leaves the sky
+ * clear so the page behind shows through between the stars.
  */
-export function CampScene({ className = "" }: { className?: string }) {
+export function CampScene({ className = "", open = false }: { className?: string; open?: boolean }) {
   return (
     <svg viewBox="0 30 400 170" preserveAspectRatio="xMidYMax slice" aria-hidden className={className}>
       <defs>
@@ -69,7 +70,7 @@ export function CampScene({ className = "" }: { className?: string }) {
           <stop offset="1" stopColor="#2a1c17" />
         </linearGradient>
       </defs>
-      <rect y="30" width="400" height="170" fill="url(#art-sky)" />
+      {!open && <rect y="30" width="400" height="170" fill="url(#art-sky)" />}
       {STARS.map(([x, y, r], i) => (
         <circle
           key={i}
