@@ -26,12 +26,7 @@ export const PLACES: Place[] = [
     lat: 30.55,
     lon: 32.1,
     label: { dx: -12, dy: -10, anchor: "end" },
-    clues: [
-      { text: "Sanctifying the firstborn", ref: "Exodus 13:1–2" },
-      { text: "Booths", ref: "Name meaning" },
-      { text: "The first camp after leaving Rameses", ref: "Numbers 33:5" },
-      { text: "Unleavened cakes baked from the dough they brought out of Egypt", ref: "Exodus 12:37–39" },
-    ],
+    clues: [{ text: "Sanctify the firstborn", ref: "Exodus 13:1–2" }],
   },
   {
     slug: "etham",
@@ -40,8 +35,8 @@ export const PLACES: Place[] = [
     lon: 32.43,
     label: { dx: 12, dy: -8, anchor: "start" },
     clues: [
-      { text: "Camped in the edge of the wilderness", ref: "Exodus 13:20" },
-      { text: "A pillar of cloud by day and a pillar of fire by night", ref: "Exodus 13:21–22" },
+      { text: "Fortress", ref: "Name meaning" },
+      { text: "Pillar of cloud and pillar of fire", ref: "Exodus 13:21–22" },
     ],
   },
   {
@@ -51,10 +46,8 @@ export const PLACES: Place[] = [
     lon: 32.36,
     label: { dx: -12, dy: 5, anchor: "end" },
     clues: [
-      { text: "Between Migdol and the sea, over against Baal-zephon", ref: "Exodus 14:2" },
-      { text: "“They are entangled in the land, the wilderness hath shut them in”", ref: "Exodus 14:3" },
-      { text: "Pharaoh’s horsemen overtook them here", ref: "Exodus 14:9" },
-      { text: "“Fear ye not, stand still, and see the salvation of the LORD”", ref: "Exodus 14:13" },
+      { text: "Many reeds", ref: "Name meaning" },
+      { text: "The people wavered as Egypt pursued", ref: "Exodus 14:10–12" },
     ],
   },
   {
@@ -64,10 +57,9 @@ export const PLACES: Place[] = [
     lon: 32.57,
     label: { dx: -12, dy: 18, anchor: "end" },
     clues: [
-      { text: "The waters were a wall on their right hand and on their left", ref: "Exodus 14:22" },
-      { text: "A strong east wind all that night", ref: "Exodus 14:21" },
-      { text: "“The horse and his rider hath he thrown into the sea”", ref: "Exodus 15:1" },
-      { text: "Miriam took a timbrel, and the women went out after her with dances", ref: "Exodus 15:20" },
+      { text: "Water baptism", ref: "1 Corinthians 10:1–2" },
+      { text: "Crossed on dry ground", ref: "Exodus 14:22" },
+      { text: "A song of victory", ref: "Exodus 15:1" },
     ],
   },
   {
@@ -77,11 +69,7 @@ export const PLACES: Place[] = [
     lon: 33.05,
     region: { rx: 95, ry: 55 },
     label: { dx: 0, dy: -64, anchor: "middle" },
-    clues: [
-      { text: "Three days without finding any water", ref: "Exodus 15:22" },
-      { text: "Separation from the world: its attractions are dry and cannot satisfy", ref: "Lesson 3" },
-      { text: "The first wilderness after crossing the sea", ref: "Exodus 15:22" },
-    ],
+    clues: [{ text: "Separation from the world", ref: "Lesson 3" }],
   },
   {
     slug: "marah",
@@ -91,9 +79,8 @@ export const PLACES: Place[] = [
     label: { dx: -12, dy: 5, anchor: "end" },
     clues: [
       { text: "Bitter", ref: "Name meaning" },
-      { text: "A tree cast into the waters made them sweet", ref: "Exodus 15:25" },
-      { text: "“I am the LORD that healeth thee”", ref: "Exodus 15:26" },
-      { text: "Diligently hearken, do what is right, give ear to His commandments", ref: "Exodus 15:26" },
+      { text: "A tree made the water sweet", ref: "Exodus 15:25" },
+      { text: "God our healer", ref: "Exodus 15:26" },
     ],
   },
   {
@@ -103,9 +90,8 @@ export const PLACES: Place[] = [
     lon: 33.03,
     label: { dx: -12, dy: 5, anchor: "end" },
     clues: [
-      { text: "Twelve wells of water and threescore and ten palm trees", ref: "Exodus 15:27" },
-      { text: "Fellowship with our ministers and fellow believers", ref: "Lesson 3" },
-      { text: "An oasis after the bitter water", ref: "Exodus 15:27" },
+      { text: "An oasis", ref: "Exodus 15:27" },
+      { text: "12 wells and 70 palm trees", ref: "Exodus 15:27" },
     ],
   },
   {
@@ -115,12 +101,7 @@ export const PLACES: Place[] = [
     lon: 33.27,
     region: { rx: 40, ry: 50 },
     label: { dx: -46, dy: 5, anchor: "end" },
-    clues: [
-      { text: "Bread rained from heaven: manna for the first time", ref: "Exodus 16:4" },
-      { text: "Quails came up at evening and covered the camp", ref: "Exodus 16:13" },
-      { text: "“Would to God we had died … when we sat by the flesh pots”", ref: "Exodus 16:3" },
-      { text: "Jesus, the true bread from heaven, gathered fresh every morning", ref: "John 6:35" },
-    ],
+    clues: [{ text: "The first manna", ref: "Exodus 16:4, 14–15" }],
   },
   {
     slug: "dophkah",
@@ -130,8 +111,7 @@ export const PLACES: Place[] = [
     label: { dx: 12, dy: -6, anchor: "start" },
     clues: [
       { text: "Knocking", ref: "Name meaning" },
-      { text: "Persistent prayer: keep knocking until the answer comes", ref: "Matthew 7:7" },
-      { text: "The camp right after the Wilderness of Sin", ref: "Numbers 33:12" },
+      { text: "Persistent prayer", ref: "Matthew 7:7" },
     ],
   },
   {
@@ -142,8 +122,7 @@ export const PLACES: Place[] = [
     label: { dx: 12, dy: -4, anchor: "start" },
     clues: [
       { text: "Near water", ref: "Name meaning" },
-      { text: "A time of rest and meditation on God’s Word", ref: "Lesson 3" },
-      { text: "The last camp before Rephidim", ref: "Numbers 33:13–14" },
+      { text: "Meditating on God’s Word", ref: "Lesson 3" },
     ],
   },
   {
@@ -153,10 +132,8 @@ export const PLACES: Place[] = [
     lon: 33.66,
     label: { dx: 12, dy: 10, anchor: "start" },
     clues: [
-      { text: "Moses smote the rock in Horeb and water came out", ref: "Exodus 17:6" },
-      { text: "Aaron and Hur held up Moses’ hands until the going down of the sun", ref: "Exodus 17:12" },
-      { text: "Joshua fought with Amalek", ref: "Exodus 17:9–13" },
-      { text: "An altar called Jehovah-nissi: the LORD is my banner", ref: "Exodus 17:15" },
+      { text: "Strike the rock for water", ref: "Exodus 17:6" },
+      { text: "Amalek attacked", ref: "Exodus 17:8" },
     ],
   },
   {
@@ -167,10 +144,22 @@ export const PLACES: Place[] = [
     region: { rx: 52, ry: 40 },
     label: { dx: 0, dy: 58, anchor: "middle" },
     clues: [
-      { text: "The Ten Commandments, written on tables of stone", ref: "Exodus 20; 31:18" },
-      { text: "The mount quaked greatly and smoked like a furnace", ref: "Exodus 19:18" },
-      { text: "Where the tabernacle was first set up", ref: "Exodus 40:17" },
-      { text: "Camped nearly a year before the cloud was taken up", ref: "Numbers 10:11–12" },
+      { text: "The Lord descended in fire on the mountain", ref: "Exodus 19:18" },
+      { text: "Baptism of the Holy Spirit", ref: "Acts 2:1–4" },
+      { text: "The Ten Commandments", ref: "Exodus 20" },
+      { text: "The priesthood began", ref: "Exodus 28:1" },
+      { text: "The tabernacle was built", ref: "Exodus 40:17" },
+    ],
+  },
+  {
+    slug: "taberah",
+    name: "Taberah",
+    lat: 28.72,
+    lon: 34.06,
+    label: { dx: -12, dy: -6, anchor: "end" },
+    clues: [
+      { text: "Burning", ref: "Name meaning" },
+      { text: "Fire on the edge of the camp", ref: "Numbers 11:1" },
     ],
   },
   {
@@ -180,10 +169,9 @@ export const PLACES: Place[] = [
     lon: 34.22,
     label: { dx: 12, dy: 5, anchor: "start" },
     clues: [
-      { text: "Graves of lust", ref: "Name meaning" },
-      { text: "“We remember the fish … the cucumbers, and the melons, and the leeks”", ref: "Numbers 11:5" },
-      { text: "Quails two cubits deep, and a plague while the flesh was between their teeth", ref: "Numbers 11:31–33" },
-      { text: "Seventy elders received the spirit that was upon Moses", ref: "Numbers 11:24–25" },
+      { text: "They despised the manna", ref: "Numbers 11:6" },
+      { text: "They lusted after meat", ref: "Numbers 11:4" },
+      { text: "A plague while eating quail", ref: "Numbers 11:33" },
     ],
   },
   {
@@ -194,9 +182,7 @@ export const PLACES: Place[] = [
     label: { dx: 12, dy: 5, anchor: "start" },
     clues: [
       { text: "Miriam and Aaron spoke against Moses", ref: "Numbers 12:1" },
-      { text: "Miriam became leprous, white as snow", ref: "Numbers 12:10" },
-      { text: "The people did not journey until Miriam was brought in again", ref: "Numbers 12:15" },
-      { text: "“The man Moses was very meek, above all the men”", ref: "Numbers 12:3" },
+      { text: "Miriam became leprous", ref: "Numbers 12:10" },
     ],
   },
   {
@@ -207,10 +193,9 @@ export const PLACES: Place[] = [
     region: { rx: 105, ry: 80 },
     label: { dx: 0, dy: 5, anchor: "middle" },
     clues: [
-      { text: "Twelve men sent to spy out the land of Canaan", ref: "Numbers 13:1–3" },
-      { text: "“We were in our own sight as grasshoppers”", ref: "Numbers 13:33" },
-      { text: "Forty years of wandering: a year for each day", ref: "Numbers 14:34" },
-      { text: "Caleb: “Let us go up at once, and possess it”", ref: "Numbers 13:30" },
+      { text: "Twelve spies sent", ref: "Numbers 13:1–3" },
+      { text: "Korah’s rebellion", ref: "Numbers 16:31–32" },
+      { text: "Aaron’s rod budded", ref: "Numbers 17:8" },
     ],
   },
   {
@@ -221,8 +206,7 @@ export const PLACES: Place[] = [
     label: { dx: 12, dy: 5, anchor: "start" },
     clues: [
       { text: "Miriam died and was buried", ref: "Numbers 20:1" },
-      { text: "Moses smote the rock twice instead of speaking to it", ref: "Numbers 20:11" },
-      { text: "The waters of Meribah, where Moses and Aaron did not sanctify the LORD", ref: "Numbers 20:12–13" },
+      { text: "Struck the rock instead of speaking", ref: "Numbers 20:8–11" },
     ],
   },
 ];
