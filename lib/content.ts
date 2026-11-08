@@ -24,6 +24,15 @@ export type ContentItem = {
 
 const ITEMS: ContentItem[] = [
   {
+    slug: "lesson-6",
+    title: "Lesson 6: Mount Hor to Moab",
+    kind: "lesson",
+    summary: "Journey of the Israelites, Numbers 20–22.",
+    url: "https://lesson6-pi-gold.vercel.app/#join",
+    page: false,
+    added: "2026-09-26",
+  },
+  {
     slug: "lesson-5",
     title: "Lesson 5: Rebellion in the Wilderness",
     kind: "lesson",
@@ -32,11 +41,29 @@ const ITEMS: ContentItem[] = [
     added: "2026-09-26",
   },
   {
+    slug: "lesson-4",
+    title: "Lesson 4: Rephidim to Sinai",
+    kind: "lesson",
+    summary: "Journey of the Israelites, Exodus 17–19.",
+    url: "https://docs.google.com/presentation/d/1IcXPFOQkbAIaDr3g0TGsDdI1Bym_KGZ9/edit?usp=sharing&ouid=109692003489601915443&rtpof=true&sd=true",
+    page: false,
+    added: "2026-09-26",
+  },
+  {
     slug: "lesson-3",
     title: "Lesson 3: Shur to Alush",
     kind: "lesson",
     summary: "Journey of the Israelites, Exodus 15–17.",
     url: "https://lesson3-gray.vercel.app/Grade_9___Lesson_3.pdf",
+    page: false,
+    added: "2026-09-26",
+  },
+  {
+    slug: "lesson-2",
+    title: "Lesson 2: The Red Sea",
+    kind: "lesson",
+    summary: "Journey of the Israelites, Exodus 14–15.",
+    url: "https://docs.google.com/presentation/d/1myG1EtF9ucOfklV7zGa6yJvoP2CP9Nv4/edit?usp=sharing&ouid=109692003489601915443&rtpof=true&sd=true",
     page: false,
     added: "2026-09-26",
   },
