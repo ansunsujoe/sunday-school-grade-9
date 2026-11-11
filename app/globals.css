@@ -85,6 +85,7 @@
     --color-slate-500: #64748b;
 
     /* Accent text that was pale gold on dark → deeper amber on light. */
+    --color-amber-50: #451a03;
     --color-amber-100: #78350f;
     --color-amber-200: #92400e;
     --color-amber-300: #b45309;

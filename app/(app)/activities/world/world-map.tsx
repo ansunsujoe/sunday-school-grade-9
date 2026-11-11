@@ -395,26 +395,27 @@ export function WorldMap({
           </svg>
         </div>
 
-        {/* Overlays: the way back out, or a hint on the world. */}
+        {/* Overlays: the way back out, or a hint on the world. The map is dark in light mode too, so
+            these use fixed light golds, not theme colors that turn dark. */}
         {region ? (
           <div className="pointer-events-none absolute inset-x-2 top-2 flex items-start justify-between gap-2">
             <button
               type="button"
               onClick={() => setRegion(null)}
-              className="pointer-events-auto inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg border border-amber-300/40 bg-[#051226]/85 px-3 text-sm font-semibold text-amber-200 shadow-lg backdrop-blur transition hover:bg-[#051226]"
+              className="pointer-events-auto inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg border border-amber-300/40 bg-[#051226]/85 px-3 text-sm font-semibold text-[#fde68a] shadow-lg backdrop-blur transition hover:bg-[#051226]"
             >
               <Icon name="arrowLeft" className="size-4" /> World
             </button>
             {/* The region's passage: its territories take these verses, in order. */}
             <p className="min-w-0 rounded-lg border border-amber-300/40 bg-[#051226]/85 px-3 py-1.5 text-right shadow-lg backdrop-blur">
-              <span className="block font-display text-xs font-semibold tracking-[0.15em] text-amber-200/80 uppercase">
+              <span className="block font-display text-xs font-semibold tracking-[0.15em] text-[#fde68a]/80 uppercase">
                 {regionInfo(region).name}
               </span>
-              <span className="block font-display text-sm font-semibold text-amber-100">{regionInfo(region).passage}</span>
+              <span className="block font-display text-sm font-semibold text-[#fef3c7]">{regionInfo(region).passage}</span>
             </p>
           </div>
         ) : (
-          <p className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 rounded-md bg-[#051226]/70 px-2.5 py-1 text-xs whitespace-nowrap text-amber-100/80 backdrop-blur">
+          <p className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 rounded-md bg-[#051226]/70 px-2.5 py-1 text-xs whitespace-nowrap text-[#fef3c7]/80 backdrop-blur">
             Tap a region to zoom in
           </p>
         )}
