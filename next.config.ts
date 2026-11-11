@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
     return [
       { source: "/lessons", destination: "/content", permanent: true },
       { source: "/lessons/:id", destination: "/content/:id", permanent: true },
+      // The Exodus has ended; its old links and notifications land on Activities.
+      { source: "/exodus", destination: "/activities", permanent: false },
+      { source: "/exodus/:path*", destination: "/activities", permanent: false },
     ];
   },
 };

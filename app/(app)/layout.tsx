@@ -4,7 +4,6 @@ import { NavLinks, TabBar } from "@/components/nav-links";
 import { logout } from "@/lib/actions/auth";
 import { requireUser } from "@/lib/dal";
 import { getQuestionBoxCount, getUnreadAnnouncementCount } from "@/lib/queries";
-import { TentAlert } from "./tent-alert";
 
 // On phones, links marked `more` aren't tabs; the Menu tab's sheet lists
 // every link with a `group`, under that heading.
@@ -13,7 +12,7 @@ const TEACHER_LINKS = [
   { href: "/content", label: "Content", icon: "content", match: ["/quizzes"], group: "Learn", hint: "Lessons, quizzes, and notes" },
   { href: "/memory-verse", label: "Memory verse", icon: "verse", more: true, group: "Learn", hint: "This week's verse and the schedule" },
   { href: "/calendar", label: "Calendar", icon: "calendar", more: true, group: "Class", hint: "Sundays and events" },
-  { href: "/activities", label: "Activities", icon: "activities", match: ["/exodus"], group: "Play", hint: "The Exodus and Where in the Wilderness?" },
+  { href: "/activities", label: "Activities", icon: "activities", group: "Play", hint: "Verse Royale and Where in the Wilderness?" },
   { href: "/grades", label: "Gradebook", icon: "grades", group: "Class", hint: "Weekly grades" },
   { href: "/people", label: "People", icon: "people", more: true, group: "Class", hint: "Students and teachers" },
 ] as const;
@@ -23,7 +22,7 @@ const STUDENT_LINKS = [
   { href: "/content", label: "Content", icon: "content", match: ["/quizzes"], group: "Learn", hint: "Lessons, quizzes, and notes" },
   { href: "/memory-verse", label: "Memory verse", icon: "verse", more: true, group: "Learn", hint: "Practice this week's verse" },
   { href: "/calendar", label: "Calendar", icon: "calendar", more: true, group: "Class", hint: "Sundays and events" },
-  { href: "/activities", label: "Activities", icon: "activities", match: ["/exodus"], group: "Play", hint: "The Exodus and Where in the Wilderness?" },
+  { href: "/activities", label: "Activities", icon: "activities", group: "Play", hint: "Verse Royale and Where in the Wilderness?" },
   { href: "/grades", label: "My grades", icon: "grades", group: "Class", hint: "Your weekly grades" },
 ] as const;
 
@@ -120,7 +119,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
         </div>
       </header>
-      <TentAlert />
       <main className="w-full flex-1 px-5 pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:pt-8 md:pb-10 lg:px-6">
         {children}
       </main>

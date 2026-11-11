@@ -1,16 +1,18 @@
 import { getLeaderboard } from "@/lib/activities/leaderboard";
 import { PLACES } from "@/lib/activities/places";
 import { requireUser } from "@/lib/dal";
-import { getClans, getCouncilUnread, getPlayer } from "@/lib/exodus/queries";
-import { CampScene, MapScene } from "./art";
+import { getHolders } from "@/lib/verse-map/queries";
+import { TERRITORIES } from "@/lib/verse-map/map";
+import { MapScene, WorldScene } from "./art";
 import { ActivityCard } from "./activity-card";
 
 export default async function ActivitiesPage() {
   const user = await requireUser();
-  const [player, clans, board] = await Promise.all([getPlayer(), getClans(), getLeaderboard()]);
-  const unread = await getCouncilUnread(player);
+  const [board, holders] = await Promise.all([getLeaderboard(), getHolders()]);
+  const mineHeld = holders.filter((h) => h.userId === user.id);
+  const held = mineHeld.length;
+  const soldiers = mineHeld.reduce((sum, h) => sum + h.soldiers, 0);
   const mine = board.find((row) => row.userId === user.id);
-  const people = clans.reduce((sum, c) => sum + c.people, 0);
 
   return (
     <div className="ex-scope">
@@ -29,30 +31,6 @@ export default async function ActivitiesPage() {
       <ul className="grid gap-6 md:grid-cols-2 xl:max-w-6xl">
         <li className="art-in">
           <ActivityCard
-            href="/exodus"
-            tag="Class game"
-            title="The Exodus"
-            summary="Lead your clan through the wilderness: gather manna, keep your people, and settle matters in the council."
-            art={<CampScene className="size-full" />}
-            alert={unread > 0 ? `${unread} waiting at the tents` : undefined}
-            emblems
-            stats={
-              clans.length
-                ? [
-                    { label: "In the camp", value: people.toLocaleString() },
-                    { label: "Clans", value: String(clans.length) },
-                    {
-                      label: "Council",
-                      value: unread ? `${unread} new` : "All quiet",
-                      tone: unread ? "gold" : undefined,
-                    },
-                  ]
-                : [{ label: "The camp", value: "Not set out yet" }]
-            }
-          />
-        </li>
-        <li className="art-in [animation-delay:120ms]">
-          <ActivityCard
             href="/activities/wilderness-map"
             tag="Map game"
             title="Where in the Wilderness?"
@@ -66,6 +44,20 @@ export default async function ActivitiesPage() {
                 tone: mine && mine.rank <= 3 ? "gold" : undefined,
               },
               { label: "Places", value: String(PLACES.length) },
+            ]}
+          />
+        </li>
+        <li className="art-in [animation-delay:120ms]">
+          <ActivityCard
+            href="/activities/world"
+            tag="Memory verses"
+            title="Verse Royale"
+            summary="Every territory is a verse. Type it from memory: each mistake costs a soldier. Match or beat the holder's soldiers to take their ground."
+            art={<WorldScene className="size-full" />}
+            stats={[
+              { label: "You hold", value: user.role === "teacher" ? "—" : `${held} of ${TERRITORIES.length}` },
+              { label: "Claimed", value: `${holders.length} of ${TERRITORIES.length}` },
+              ...(user.role === "teacher" ? [] : [{ label: "Your soldiers", value: String(soldiers), tone: soldiers ? ("gold" as const) : undefined }]),
             ]}
           />
         </li>

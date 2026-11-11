@@ -6,7 +6,6 @@ import { CONTENT, contentHref, type ContentItem } from "@/lib/content";
 import { requireUser, type CurrentUser } from "@/lib/dal";
 import { db } from "@/lib/db";
 import { submissions } from "@/lib/db/schema";
-import { getCouncilUnread, getPlayer, getThreads } from "@/lib/exodus/queries";
 import { formatTime, plainText, timeAgo, today } from "@/lib/format";
 import {
   getAnnouncements,
@@ -19,7 +18,6 @@ import { currentSunday, summarize } from "@/lib/school-year";
 import { getMemoryVerse } from "@/lib/verses";
 import { CampScene } from "./activities/art";
 import { TONES, eventTone } from "./calendar/event-tone";
-import { ThreadList } from "./exodus/council/council-ui";
 
 export default async function HomePage() {
   const user = await requireUser();
@@ -69,8 +67,6 @@ export default async function HomePage() {
       </section>
       <div className="ex-bells mt-8" aria-hidden />
 
-      {user.role === "student" && <ExodusToday />}
-
       <div className="mt-6 grid gap-5 md:grid-cols-2">
         <LatestAnnouncements items={announcements} />
         <Section title="Latest lesson">
@@ -94,7 +90,7 @@ export default async function HomePage() {
   );
 }
 
-/** A titled block of the home page, in The Exodus's panel with a gold small-caps heading. */
+/** A titled block of the home page, in a double-ruled panel with a gold small-caps heading. */
 function Section({
   title,
   action,
@@ -114,28 +110,6 @@ function Section({
       </div>
       {children}
     </section>
-  );
-}
-
-/** Who is waiting at a clan leader's tent (the baker comes each morning about the manna), so no one is missed. */
-async function ExodusToday() {
-  const player = await getPlayer();
-  if (!player.clan) return null;
-  const [threads, unread] = await Promise.all([getThreads(player, { limit: 3 }), getCouncilUnread(player)]);
-
-  return (
-    <Section
-      className="mt-6"
-      title={
-        <>
-          At your tent
-          {unread > 0 && <Badge tone="gold">{unread} new</Badge>}
-        </>
-      }
-      action={<TextLink href="/exodus/council">Council</TextLink>}
-    >
-      <ThreadList threads={threads} emptyText="No one has come to your tent yet." />
-    </Section>
   );
 }
 

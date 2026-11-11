@@ -266,3 +266,34 @@ export const mapScores = pgTable("map_scores", {
   durationMs: integer("duration_ms").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+// ---------------------------------------------------------------------------
+// Verse Royale: the verse map (territories and verses live in lib/verse-map).
+
+export const VERSE_MAP_RESULTS = ["passed", "missed", "voided", "timeout"] as const;
+export type VerseMapResult = (typeof VERSE_MAP_RESULTS)[number];
+
+// One try at typing a territory's verse. Both times are set by the database,
+// so the timing can't come from the browser. `result` is empty while the try
+// is under way. A try starts at 5 points and loses one per mistake; "passed"
+// means it kept at least one, and `score` is the soldiers it's worth. Who holds
+// a territory comes from replaying its passed tries in order (lib/verse-map/queries.ts).
+export const verseMapAttempts = pgTable("verse_map_attempts", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  territory: text("territory").notNull(),
+  startedAt: timestamp("started_at").notNull().defaultNow(),
+  finishedAt: timestamp("finished_at"),
+  result: text("result").$type<VerseMapResult>(),
+  durationMs: integer("duration_ms"),
+  // "letters" (the first letter of each word, checked one by one) or "words" (the whole verse).
+  mode: text("mode").$type<"letters" | "words">().notNull().default("words"),
+  // In letters mode, the letters typed so far, recorded by the server as each one comes in.
+  letters: text("letters").notNull().default(""),
+  mistakes: integer("mistakes"),
+  score: integer("score"),
+  // Why a try was voided (left the page, pasted), or how far a missed one got.
+  note: text("note"),
+});

@@ -3,6 +3,8 @@
 
 import { CORE, LAKES, LAND } from "@/lib/activities/sinai-map";
 import { PLACES, START, project } from "@/lib/activities/places";
+import { TERRITORIES } from "@/lib/verse-map/map";
+import { MAP_HEIGHT, MAP_WIDTH, SHAPES } from "@/lib/verse-map/shapes";
 import { Weave } from "./wilderness-map/weave";
 
 // Stars as [x, y, radius]; fixed so the sky is the same every visit.
@@ -193,5 +195,33 @@ export function MapScene({ className = "" }: { className?: string }) {
         </div>
       </div>
     </div>
+  );
+}
+
+// Clan colors for the Verse Royale banner (as on its board).
+const WORLD_COLORS = ["#38bdf8", "#f59e0b", "#fb7185", "#34d399", "#818cf8", "#2dd4bf"];
+
+/** Verse Royale: the world map, a scatter of territories lit in clan colors. */
+export function WorldScene({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox={`0 -10 ${MAP_WIDTH} ${MAP_HEIGHT - 60}`} preserveAspectRatio="xMidYMid slice" className={className} aria-hidden>
+      <rect y={-10} width={MAP_WIDTH} height={MAP_HEIGHT} fill="#070b16" />
+      {TERRITORIES.map((t, i) => {
+        // A fixed scatter of claimed ground, so the banner is the same every visit.
+        const lit = (i * 7) % 5 < 2;
+        return (
+          <path
+            key={t.slug}
+            d={SHAPES[t.slug].d}
+            fill={lit ? WORLD_COLORS[(i * 5) % WORLD_COLORS.length] : "#1b2540"}
+            fillOpacity={lit ? 0.85 : 1}
+            stroke="#070b16"
+            strokeWidth={1}
+            className={lit ? "art-flicker" : undefined}
+            style={lit ? { animationDelay: `${(i * 137) % 2000}ms` } : undefined}
+          />
+        );
+      })}
+    </svg>
   );
 }
